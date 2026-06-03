@@ -40,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process']);
 
     // Tickets
+    Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);
     Route::get('/tickets', [TicketController::class, 'myTickets']);
     Route::get('/tickets/{ticket_code}', [TicketController::class, 'showQR']);
 });
