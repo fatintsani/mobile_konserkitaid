@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/event_provider.dart';
 import 'providers/checkout_provider.dart';
+import 'providers/ticket_provider.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
 
@@ -13,6 +14,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
         ChangeNotifierProvider(create: (_) => CheckoutProvider()),
+        ChangeNotifierProvider(create: (_) => TicketProvider()),
       ],
       child: const KonserKitaApp(),
     ),

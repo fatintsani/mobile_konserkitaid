@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +11,7 @@ import '../screens/my_tickets_screen.dart';
 import '../screens/ticket_selection_screen.dart';
 import '../screens/checkout_screen.dart';
 import '../screens/payment_status_screen.dart';
+import '../screens/ticket_detail_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -38,6 +39,13 @@ class AppRouter {
       GoRoute(
         path: '/my-tickets',
         builder: (context, state) => const MyTicketsScreen(),
+      ),
+      GoRoute(
+        path: '/my-tickets/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return TicketDetailScreen(ticketId: id);
+        },
       ),
       GoRoute(
         path: '/event/:id/tickets',

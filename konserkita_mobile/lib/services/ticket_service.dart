@@ -17,4 +17,16 @@ class TicketService {
       throw Exception(e.response?.data['message'] ?? 'Failed to load tickets');
     }
   }
+
+  Future<Ticket> getTicketDetail(int id) async {
+    try {
+      final response = await _apiService.dio.get('/my-tickets/$id');
+      if (response.data['success']) {
+        return Ticket.fromJson(response.data['data']);
+      }
+      throw Exception('Ticket not found');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to load ticket details');
+    }
+  }
 }

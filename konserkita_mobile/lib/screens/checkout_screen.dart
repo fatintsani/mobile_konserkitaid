@@ -77,7 +77,7 @@ class CheckoutScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Card(
-              color: AppConstants.primaryColor.withOpacity(0.1),
+              color: AppConstants.primaryColor.withValues(alpha: 0.1),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -94,7 +94,7 @@ class CheckoutScreen extends StatelessWidget {
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))]),
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5))]),
         child: ElevatedButton(
           onPressed: checkoutProvider.isLoading ? null : () async {
             bool success = await context.read<CheckoutProvider>().checkout(event.id);

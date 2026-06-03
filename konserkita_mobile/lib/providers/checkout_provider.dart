@@ -5,7 +5,7 @@ import '../models/ticket_type.dart';
 class CheckoutProvider with ChangeNotifier {
   final CheckoutService _checkoutService = CheckoutService();
   
-  Map<TicketType, int> _selectedTickets = {};
+  final Map<TicketType, int> _selectedTickets = {};
   bool _isLoading = false;
   String? _error;
   Map<String, dynamic>? _transactionResult;
