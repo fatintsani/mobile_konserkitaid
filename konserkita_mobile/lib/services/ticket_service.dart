@@ -18,9 +18,9 @@ class TicketService {
     }
   }
 
-  Future<Ticket> getTicketDetail(int id) async {
+  Future<Ticket> getTicketDetail(String code) async {
     try {
-      final response = await _apiService.dio.get('/my-tickets/$id');
+      final response = await _apiService.dio.get('/tickets/$code');
       if (response.data['success']) {
         return Ticket.fromJson(response.data['data']);
       }

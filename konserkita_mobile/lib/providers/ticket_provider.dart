@@ -12,13 +12,13 @@ class TicketProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> fetchTicketDetail(int id) async {
+  Future<void> fetchTicketDetail(String code) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _selectedTicket = await _ticketService.getTicketDetail(id);
+      _selectedTicket = await _ticketService.getTicketDetail(code);
     } catch (e) {
       _error = e.toString();
     } finally {

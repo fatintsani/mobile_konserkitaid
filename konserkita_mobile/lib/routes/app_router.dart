@@ -41,10 +41,10 @@ class AppRouter {
         builder: (context, state) => const MyTicketsScreen(),
       ),
       GoRoute(
-        path: '/my-tickets/:id',
+        path: '/my-tickets/:code',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
-          return TicketDetailScreen(ticketId: id);
+          final code = state.pathParameters['code']!;
+          return TicketDetailScreen(ticketCode: code);
         },
       ),
       GoRoute(

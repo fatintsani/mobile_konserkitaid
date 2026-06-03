@@ -66,7 +66,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             elevation: 2,
                             child: InkWell(
-                              onTap: () => context.push('/my-tickets/${ticket.id}'),
+                              onTap: () => context.push('/my-tickets/${ticket.ticketCode}'),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
                                 child: Column(

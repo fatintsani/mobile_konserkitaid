@@ -5,8 +5,8 @@ import '../providers/ticket_provider.dart';
 import '../utils/constants.dart';
 
 class TicketDetailScreen extends StatefulWidget {
-  final int ticketId;
-  const TicketDetailScreen({super.key, required this.ticketId});
+  final String ticketCode;
+  const TicketDetailScreen({super.key, required this.ticketCode});
 
   @override
   State<TicketDetailScreen> createState() => _TicketDetailScreenState();
@@ -17,7 +17,7 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TicketProvider>().fetchTicketDetail(widget.ticketId);
+      context.read<TicketProvider>().fetchTicketDetail(widget.ticketCode);
     });
   }
 
@@ -33,11 +33,13 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
         foregroundColor: Colors.white,
       ),
       backgroundColor: AppConstants.backgroundColor,
-      body: ticketProvider.isLoading || ticket == null
+      body: ticketProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : ticketProvider.error != null
               ? Center(child: Text(ticketProvider.error!))
-              : SingleChildScrollView(
+              : ticket == null
+                  ? const Center(child: Text('Ticket not found'))
+                  : SingleChildScrollView(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
