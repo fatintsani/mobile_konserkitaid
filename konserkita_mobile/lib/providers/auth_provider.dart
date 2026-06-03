@@ -7,11 +7,13 @@ class AuthProvider with ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   bool _isCheckingAuth = true;
+  String? _error;
 
   User? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
   bool get isCheckingAuth => _isCheckingAuth;
+  String? get error => _error;
 
   Future<void> checkAuthStatus() async {
     _isCheckingAuth = true;
@@ -23,6 +25,27 @@ class AuthProvider with ChangeNotifier {
       _user = null;
     } finally {
       _isCheckingAuth = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateProfile(String name, String phone) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final user = await _authService.updateProfile({
+        'name': name,
+        'phone': phone,
+      });
+      _user = user;
+      return true;
+    } catch (e) {
+      _error = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }
@@ -46,9 +69,10 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
+    _setLoading(true);
     await _authService.logout();
     _user = null;
-    notifyListeners();
+    _setLoading(false);
   }
 
   void _setLoading(bool value) {

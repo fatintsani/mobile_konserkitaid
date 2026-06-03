@@ -78,6 +78,35 @@ class AuthController extends BaseController
         return $this->sendResponse($user, 'Profile retrieved successfully.');
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'sometimes|string|max:255',
+            'phone' => 'sometimes|string|max:20',
+        ]);
+
+        if($validator->fails()){
+            return $this->sendError('Validation Error.', $validator->errors(), 422);       
+        }
+
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->phone;
+        }
+
+        $user->save();
+
+        if ($user->role === 'organizer') {
+            $user->load('organizer');
+        }
+
+        return $this->sendResponse($user, 'Profile updated successfully.');
+    }
+
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();

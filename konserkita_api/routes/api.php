@@ -29,7 +29,12 @@ Route::post('/payment/notification', [PaymentController::class, 'notificationHan
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
+    Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Transactions
+    Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
+    Route::get('/transactions/{id}', [App\Http\Controllers\Api\TransactionController::class, 'show']);
 
     // Wishlist
     Route::get('/wishlists', [WishlistController::class, 'index']);

@@ -14,6 +14,10 @@ import '../screens/payment_status_screen.dart';
 import '../screens/ticket_detail_screen.dart';
 import '../screens/qr_scanner_screen.dart';
 import '../screens/scan_result_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/edit_profile_screen.dart';
+import '../screens/transaction_history_screen.dart';
+import '../screens/transaction_detail_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -79,6 +83,25 @@ class AppRouter {
       GoRoute(
         path: '/payment-status',
         builder: (context, state) => const PaymentStatusScreen(),
+      ),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/edit-profile',
+        builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/transactions',
+        builder: (context, state) => const TransactionHistoryScreen(),
+      ),
+      GoRoute(
+        path: '/transactions/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return TransactionDetailScreen(transactionId: id);
+        },
       ),
     ],
     redirect: (context, state) {
