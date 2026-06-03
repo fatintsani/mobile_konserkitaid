@@ -29,4 +29,15 @@ class TicketService {
       throw Exception(e.response?.data['message'] ?? 'Failed to load ticket details');
     }
   }
+
+  Future<Map<String, dynamic>> scanTicket(String ticketCode) async {
+    try {
+      final response = await _apiService.dio.post('/tickets/scan', data: {
+        'ticket_code': ticketCode,
+      });
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to scan ticket');
+    }
+  }
 }

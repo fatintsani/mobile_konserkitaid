@@ -12,11 +12,29 @@ import '../screens/ticket_selection_screen.dart';
 import '../screens/checkout_screen.dart';
 import '../screens/payment_status_screen.dart';
 import '../screens/ticket_detail_screen.dart';
+import '../screens/qr_scanner_screen.dart';
+import '../screens/scan_result_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
     initialLocation: '/',
     routes: [
+      GoRoute(
+        path: '/scanner',
+        builder: (context, state) => const QRScannerScreen(),
+        redirect: (context, state) {
+          final authProvider = context.read<AuthProvider>();
+          final role = authProvider.user?.role;
+          if (role != 'organizer' && role != 'admin' && role != 'super_admin') {
+            return '/';
+          }
+          return null;
+        },
+      ),
+      GoRoute(
+        path: '/scan-result',
+        builder: (context, state) => const ScanResultScreen(),
+      ),
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),

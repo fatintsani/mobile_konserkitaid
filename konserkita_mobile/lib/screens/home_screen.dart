@@ -24,6 +24,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
+    final authProvider = context.watch<AuthProvider>();
+    final user = authProvider.user;
+    final isOrganizerOrAdmin = user?.role == 'organizer' || user?.role == 'admin' || user?.role == 'super_admin';
 
     return Scaffold(
       appBar: AppBar(
@@ -31,6 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
         actions: [
+          if (isOrganizerOrAdmin)
+            IconButton(
+              icon: const Icon(Icons.qr_code_scanner),
+              onPressed: () => context.push('/scanner'),
+            ),
           IconButton(
             icon: const Icon(Icons.confirmation_number),
             onPressed: () => context.push('/my-tickets'),
