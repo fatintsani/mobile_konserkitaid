@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
 import '../utils/constants.dart';
@@ -80,7 +81,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 subtitle: Text('Stock: ${ticket.stock}'),
                                 trailing: Text('Rp ${ticket.price.toStringAsFixed(0)}', style: const TextStyle(color: AppConstants.primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                               ),
-                            )).toList(),
+                            )),
                           ],
                         ),
                       ),
@@ -91,8 +92,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            // TODO: Navigate to checkout screen
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Checkout feature coming soon')));
+            context.push('/event/${event.id}/tickets');
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppConstants.primaryColor,

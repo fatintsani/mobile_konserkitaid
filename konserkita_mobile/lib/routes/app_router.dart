@@ -8,6 +8,9 @@ import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
 import '../screens/event_detail_screen.dart';
 import '../screens/my_tickets_screen.dart';
+import '../screens/ticket_selection_screen.dart';
+import '../screens/checkout_screen.dart';
+import '../screens/payment_status_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -35,6 +38,21 @@ class AppRouter {
       GoRoute(
         path: '/my-tickets',
         builder: (context, state) => const MyTicketsScreen(),
+      ),
+      GoRoute(
+        path: '/event/:id/tickets',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return TicketSelectionScreen(eventId: id);
+        },
+      ),
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
+      ),
+      GoRoute(
+        path: '/payment-status',
+        builder: (context, state) => const PaymentStatusScreen(),
       ),
     ],
     redirect: (context, state) {

@@ -6,7 +6,7 @@ class AppConstants {
 
   // KonserKita Brand Colors
   static const Color primaryColor = Color(0xFF6200EA); // Deep Purple
-  static const Color secondaryColor = Color(0xFF03DAC6); // Teal accent
-  static const Color backgroundColor = Color(0xFFF3F4F6); // Light gray
+  static const Color secondaryColor = Color(0xFFFF4D8D); // Pink accent
+  static const Color backgroundColor = Color(0xFFF8F7FC); // Light background
   static const Color textColor = Color(0xFF1F2937); // Dark gray
 }

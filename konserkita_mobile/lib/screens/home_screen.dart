@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
-    final user = context.watch<AuthProvider>().user;
 
     return Scaffold(
       appBar: AppBar(
