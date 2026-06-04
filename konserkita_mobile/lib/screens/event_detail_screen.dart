@@ -78,8 +78,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       Container(
                         height: 200,
                         width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image, size: 80, color: Colors.grey),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          image: event.bannerImage != null
+                              ? DecorationImage(
+                                  image: NetworkImage(AppConstants.getImageUrl(event.bannerImage!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: event.bannerImage == null ? const Icon(Icons.image, size: 80, color: Colors.grey) : null,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),

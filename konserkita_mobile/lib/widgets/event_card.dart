@@ -52,11 +52,17 @@ class EventCard extends StatelessWidget {
                 Container(
                   height: 150,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: Colors.grey,
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                    image: event.bannerImage != null
+                        ? DecorationImage(
+                            image: NetworkImage(AppConstants.getImageUrl(event.bannerImage!)),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
                   ),
-                  child: const Icon(Icons.image, size: 50, color: Colors.white70),
+                  child: event.bannerImage == null ? const Icon(Icons.image, size: 50, color: Colors.white70) : null,
                 ),
                 Positioned(
                   top: 8,

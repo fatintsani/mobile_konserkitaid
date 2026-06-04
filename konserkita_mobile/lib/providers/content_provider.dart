@@ -20,13 +20,13 @@ class ContentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final bannerResponse = await http.get(Uri.parse('${AppConstants.apiBaseUrl}/banners'));
+      final bannerResponse = await http.get(Uri.parse('${AppConstants.baseUrl}/banners'));
       if (bannerResponse.statusCode == 200) {
         final data = json.decode(bannerResponse.body);
         _banners = data['data'];
       }
 
-      final categoryResponse = await http.get(Uri.parse('${AppConstants.apiBaseUrl}/categories'));
+      final categoryResponse = await http.get(Uri.parse('${AppConstants.baseUrl}/categories'));
       if (categoryResponse.statusCode == 200) {
         final data = json.decode(categoryResponse.body);
         _categories = data['data'];

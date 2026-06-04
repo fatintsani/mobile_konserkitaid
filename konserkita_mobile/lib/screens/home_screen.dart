@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
                           image: DecorationImage(
-                            image: NetworkImage(banner['image_url']),
+                            image: NetworkImage(AppConstants.getImageUrl(banner['image_url'])),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -146,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return Padding(
                               padding: const EdgeInsets.only(right: 12),
                               child: Chip(
-                                avatar: category['icon'] != null ? CircleAvatar(backgroundImage: NetworkImage(category['icon'])) : null,
+                                avatar: category['icon'] != null ? CircleAvatar(backgroundImage: NetworkImage(AppConstants.getImageUrl(category['icon']))) : null,
                                 label: Text(category['name']),
                                 backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
                               ),
