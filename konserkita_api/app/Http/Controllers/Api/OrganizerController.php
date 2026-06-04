@@ -98,13 +98,15 @@ class OrganizerController extends BaseController
             return $this->sendError('Event not found.');
         }
 
-        $totalTicketsSold = Ticket::whereHas('ticketType', function ($q) use ($event->id) {
-            $q->where('event_id', $event->id);
+        $eventId = $event->id;
+
+        $totalTicketsSold = Ticket::whereHas('ticketType', function ($q) use ($eventId) {
+            $q->where('event_id', $eventId);
         })->count();
 
         $totalRevenue = Transaction::where('payment_status', 'success')
-            ->whereHas('items.ticketType', function ($q) use ($event->id) {
-                $q->where('event_id', $event->id);
+            ->whereHas('items.ticketType', function ($q) use ($eventId) {
+                $q->where('event_id', $eventId);
             })->sum('total_amount');
 
         $eventData = $event->toArray();
@@ -129,18 +131,20 @@ class OrganizerController extends BaseController
             return $this->sendError('Event not found.');
         }
 
+        $eventId = $event->id;
+
         $totalTransactions = Transaction::where('payment_status', 'success')
-            ->whereHas('items.ticketType', function ($q) use ($event->id) {
-                $q->where('event_id', $event->id);
+            ->whereHas('items.ticketType', function ($q) use ($eventId) {
+                $q->where('event_id', $eventId);
             })->count();
 
-        $totalTicketsSold = Ticket::whereHas('ticketType', function ($q) use ($event->id) {
-            $q->where('event_id', $event->id);
+        $totalTicketsSold = Ticket::whereHas('ticketType', function ($q) use ($eventId) {
+            $q->where('event_id', $eventId);
         })->count();
 
         $totalRevenue = Transaction::where('payment_status', 'success')
-            ->whereHas('items.ticketType', function ($q) use ($event->id) {
-                $q->where('event_id', $event->id);
+            ->whereHas('items.ticketType', function ($q) use ($eventId) {
+                $q->where('event_id', $eventId);
             })->sum('total_amount');
 
         $ticketsByType = DB::table('tickets')
@@ -175,9 +179,11 @@ class OrganizerController extends BaseController
             return $this->sendError('Event not found.');
         }
 
+        $eventId = $event->id;
+
         $tickets = Ticket::with(['user', 'ticketType'])
-            ->whereHas('ticketType', function ($q) use ($event->id) {
-                $q->where('event_id', $event->id);
+            ->whereHas('ticketType', function ($q) use ($eventId) {
+                $q->where('event_id', $eventId);
             })
             ->latest()
             ->get();
