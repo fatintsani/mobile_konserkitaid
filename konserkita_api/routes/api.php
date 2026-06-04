@@ -64,6 +64,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'destroyTicketType']);
     });
 
+    // Promo route
+    Route::post('/promos/validate', [App\Http\Controllers\Api\PromoController::class, 'validateCode']);
+
     // Admin Dashboard
     Route::prefix('admin')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\AdminController::class, 'dashboard']);

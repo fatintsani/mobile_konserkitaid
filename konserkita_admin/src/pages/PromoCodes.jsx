@@ -159,13 +159,28 @@ const PromoCodes = () => {
                         }`}>
                           {promo.status}
                         </span>
+                        {promo.end_date && new Date(promo.end_date) < new Date() && (
+                          <span className="ml-2 px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            expired
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           <button onClick={() => handleEdit(promo)} className="text-blue-600 hover:text-blue-900 bg-blue-50 p-1.5 rounded-md">
                             <Edit2 size={18} />
                           </button>
-                          <button onClick={() => handleDelete(promo.id)} className="text-red-600 hover:text-red-900 bg-red-50 p-1.5 rounded-md">
+                          <button 
+                            onClick={() => {
+                              if (promo.used > 0) {
+                                alert('Cannot delete promo code that has been used.');
+                              } else {
+                                handleDelete(promo.id);
+                              }
+                            }} 
+                            className={`p-1.5 rounded-md ${promo.used > 0 ? 'text-gray-400 bg-gray-50 cursor-not-allowed' : 'text-red-600 hover:text-red-900 bg-red-50'}`}
+                            title={promo.used > 0 ? 'Cannot delete used promo' : 'Delete'}
+                          >
                             <Trash2 size={18} />
                           </button>
                         </div>

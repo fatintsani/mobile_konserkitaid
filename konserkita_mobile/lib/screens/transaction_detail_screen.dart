@@ -141,6 +141,12 @@ class TransactionDetailScreen extends StatelessWidget {
                         const Divider(),
                         const SizedBox(height: 8),
                         _buildDetailRow('Subtotal', currencyFormat.format(transaction.subtotal)),
+                        if (transaction.promoCode != null)
+                          _buildDetailRow(
+                            'Diskon (${transaction.promoCode!['code']})', 
+                            '-${currencyFormat.format(transaction.discountAmount)}', 
+                            color: Colors.green
+                          ),
                         _buildDetailRow('Biaya Admin', currencyFormat.format(transaction.adminFee)),
                         const Divider(),
                         _buildDetailRow('Total Pembayaran', currencyFormat.format(transaction.totalAmount), isBold: true, color: AppConstants.primaryColor),

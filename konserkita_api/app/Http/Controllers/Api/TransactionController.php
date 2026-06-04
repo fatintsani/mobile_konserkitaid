@@ -9,7 +9,7 @@ class TransactionController extends BaseController
 {
     public function index(Request $request)
     {
-        $transactions = Transaction::with(['items.ticketType.event'])
+        $transactions = Transaction::with(['items.ticketType.event', 'promoCode'])
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
@@ -30,7 +30,7 @@ class TransactionController extends BaseController
 
     public function show(Request $request, $id)
     {
-        $transaction = Transaction::with(['items.ticketType.event', 'tickets.ticketType'])
+        $transaction = Transaction::with(['items.ticketType.event', 'tickets.ticketType', 'promoCode'])
             ->where('user_id', $request->user()->id)
             ->where('id', $id)
             ->first();

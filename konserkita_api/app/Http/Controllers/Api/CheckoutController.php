@@ -18,6 +18,7 @@ class CheckoutController extends BaseController
             'tickets' => 'required|array',
             'tickets.*.ticket_type_id' => 'required|exists:ticket_types,id',
             'tickets.*.quantity' => 'required|integer|min:1',
+            'promo_code' => 'nullable|string',
         ]);
 
         if($validator->fails()){
@@ -57,11 +58,48 @@ class CheckoutController extends BaseController
                 $ticketType->save();
             }
 
+            // Promo validation logic
+            $discountAmount = 0;
+            $promoCodeId = null;
+            if ($request->filled('promo_code')) {
+                $promo = \App\Models\PromoCode::where('code', $request->promo_code)->where('status', 'active')->first();
+                if (!$promo) {
+                    throw new \Exception("Promo code not found or inactive.");
+                }
+                
+                $now = \Carbon\Carbon::now();
+                if ($promo->start_date && $now->lt($promo->start_date)) throw new \Exception("Promo code is not active yet.");
+                if ($promo->end_date && $now->gt($promo->end_date)) throw new \Exception("Promo code has expired.");
+                if ($promo->used >= $promo->quota) throw new \Exception("Promo code quota exceeded.");
+
+                if ($promo->discount_type === 'percentage') {
+                    $discountAmount = ($promo->discount_value / 100) * $totalAmount;
+                    if ($promo->max_discount && $discountAmount > $promo->max_discount) {
+                        $discountAmount = $promo->max_discount;
+                    }
+                } else {
+                    $discountAmount = $promo->discount_value;
+                }
+
+                if ($discountAmount > $totalAmount) {
+                    $discountAmount = $totalAmount;
+                }
+                $promoCodeId = $promo->id;
+                
+                // Increment used count
+                $promo->increment('used');
+            }
+
+            $finalAmount = $totalAmount - $discountAmount;
+
             // 2. Create Transaction
             $transaction = Transaction::create([
                 'user_id' => $user->id,
-                'total_amount' => $totalAmount,
+                'subtotal' => $totalAmount,
+                'discount_amount' => $discountAmount,
+                'total_amount' => $finalAmount,
                 'payment_status' => 'pending',
+                'promo_code_id' => $promoCodeId,
                 // Dummy snap_token for now, replace with actual Midtrans Snap API call
                 'snap_token' => 'SNAP-' . Str::upper(Str::random(10)), 
             ]);

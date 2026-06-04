@@ -9,11 +9,15 @@ class CheckoutProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   Map<String, dynamic>? _transactionResult;
+  String? _promoCode;
+  double _discountAmount = 0;
 
   Map<TicketType, int> get selectedTickets => _selectedTickets;
   bool get isLoading => _isLoading;
   String? get error => _error;
   Map<String, dynamic>? get transactionResult => _transactionResult;
+  String? get promoCode => _promoCode;
+  double get discountAmount => _discountAmount;
 
   void addTicket(TicketType ticketType) {
     int currentQuantity = _selectedTickets[ticketType] ?? 0;
@@ -38,6 +42,8 @@ class CheckoutProvider with ChangeNotifier {
     _selectedTickets.clear();
     _transactionResult = null;
     _error = null;
+    _promoCode = null;
+    _discountAmount = 0;
     notifyListeners();
   }
 
@@ -57,6 +63,39 @@ class CheckoutProvider with ChangeNotifier {
     return total;
   }
 
+  double get finalTotal {
+    return subtotal - _discountAmount;
+  }
+
+  Future<bool> applyPromo(String code) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _checkoutService.validatePromo(code, subtotal);
+      _promoCode = result['code'];
+      _discountAmount = (result['discount_amount'] as num).toDouble();
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      _promoCode = null;
+      _discountAmount = 0;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  void removePromo() {
+    _promoCode = null;
+    _discountAmount = 0;
+    _error = null;
+    notifyListeners();
+  }
+
   Future<bool> checkout(int eventId) async {
     _isLoading = true;
     _error = null;
@@ -71,7 +110,7 @@ class CheckoutProvider with ChangeNotifier {
         });
       });
 
-      _transactionResult = await _checkoutService.createCheckout(eventId, items);
+      _transactionResult = await _checkoutService.createCheckout(eventId, items, promoCode: _promoCode);
       _isLoading = false;
       notifyListeners();
       return true;
