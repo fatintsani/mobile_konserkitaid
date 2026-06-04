@@ -75,6 +75,15 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+            if (user.role == 'organizer' || user.role == 'admin' || user.role == 'super_admin') ...[
+              _buildMenuCard(
+                context,
+                title: 'Organizer Dashboard',
+                icon: Icons.dashboard,
+                onTap: () => context.push('/organizer'),
+              ),
+              const Divider(indent: 16, endIndent: 16),
+            ],
             _buildMenuCard(
               context,
               title: 'Edit Profile',

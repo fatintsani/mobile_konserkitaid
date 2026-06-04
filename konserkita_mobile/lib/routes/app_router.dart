@@ -1,4 +1,4 @@
-
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +21,11 @@ import '../screens/transaction_detail_screen.dart';
 import '../screens/wishlist_screen.dart';
 import '../screens/search_event_screen.dart';
 import '../screens/notification_screen.dart';
+import '../screens/organizer_dashboard_screen.dart';
+import '../screens/organizer_event_list_screen.dart';
+import '../screens/organizer_event_detail_screen.dart';
+import '../screens/organizer_sales_screen.dart';
+import '../screens/organizer_attendees_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -118,6 +123,40 @@ class AppRouter {
         path: '/notifications',
         builder: (context, state) => const NotificationScreen(),
       ),
+      GoRoute(
+        path: '/organizer',
+        builder: (context, state) => const OrganizerDashboardScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events',
+        builder: (context, state) => const OrganizerEventListScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerEventDetailScreen(eventId: id);
+        },
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/:id/sales',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerSalesScreen(eventId: id);
+        },
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/:id/attendees',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerAttendeesScreen(eventId: id);
+        },
+        redirect: _organizerGuard,
+      ),
     ],
     redirect: (context, state) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -130,4 +169,13 @@ class AppRouter {
       return null;
     },
   );
+
+  static String? _organizerGuard(BuildContext context, GoRouterState state) {
+    final authProvider = context.read<AuthProvider>();
+    final role = authProvider.user?.role;
+    if (role != 'organizer' && role != 'admin' && role != 'super_admin') {
+      return '/';
+    }
+    return null;
+  }
 }

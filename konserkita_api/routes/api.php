@@ -48,6 +48,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 
+    // Organizer Dashboard
+    Route::prefix('organizer')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Api\OrganizerController::class, 'dashboard']);
+        Route::get('/events', [\App\Http\Controllers\Api\OrganizerController::class, 'events']);
+        Route::get('/events/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'eventDetail']);
+        Route::get('/events/{id}/sales', [\App\Http\Controllers\Api\OrganizerController::class, 'sales']);
+        Route::get('/events/{id}/attendees', [\App\Http\Controllers\Api\OrganizerController::class, 'attendees']);
+    });
+
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'process']);
 
