@@ -97,7 +97,7 @@ const Transactions = () => {
                   transactions.map((trx) => (
                     <tr key={trx.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{trx.order_id}</div>
+                        <div className="text-sm font-medium text-gray-900">{trx.invoice_number || `INV-${trx.id}`}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900">{trx.user?.name || 'Unknown'}</div>

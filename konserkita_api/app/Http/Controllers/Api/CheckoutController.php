@@ -132,11 +132,13 @@ class CheckoutController extends BaseController
                 ],
             ];
 
-            $snapToken = Snap::getSnapToken($params);
+            $snapResponse = Snap::createTransaction($params);
+            $snapToken = $snapResponse->token;
+            $paymentUrl = $snapResponse->redirect_url;
             
             $transaction->update([
                 'snap_token' => $snapToken,
-                'payment_url' => "https://app.sandbox.midtrans.com/snap/v3/redirection/" . $snapToken, // Assuming sandbox for now, but we can return just snap_token
+                'payment_url' => $paymentUrl,
             ]);
 
             \App\Models\Notification::create([
