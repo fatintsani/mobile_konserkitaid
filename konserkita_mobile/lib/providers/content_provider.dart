@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import '../utils/constants.dart';
+import '../services/api_service.dart';
+import 'package:dio/dio.dart';
 
 class ContentProvider with ChangeNotifier {
+  final ApiService _apiService = ApiService();
   List<dynamic> _banners = [];
   List<dynamic> _categories = [];
   bool _isLoading = false;
@@ -20,17 +20,17 @@ class ContentProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final bannerResponse = await http.get(Uri.parse('${AppConstants.baseUrl}/banners'));
-      if (bannerResponse.statusCode == 200) {
-        final data = json.decode(bannerResponse.body);
-        _banners = data['data'];
+      final bannerResponse = await _apiService.dio.get('/banners');
+      if (bannerResponse.data['success'] == true) {
+        _banners = bannerResponse.data['data'];
       }
 
-      final categoryResponse = await http.get(Uri.parse('${AppConstants.baseUrl}/categories'));
-      if (categoryResponse.statusCode == 200) {
-        final data = json.decode(categoryResponse.body);
-        _categories = data['data'];
+      final categoryResponse = await _apiService.dio.get('/categories');
+      if (categoryResponse.data['success'] == true) {
+        _categories = categoryResponse.data['data'];
       }
+    } on DioException catch (e) {
+      _error = e.response?.data['message'] ?? e.toString();
     } catch (e) {
       _error = e.toString();
     } finally {
