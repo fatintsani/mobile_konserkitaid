@@ -6,7 +6,8 @@ const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
-
+  const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const [pagination, setPagination] = useState({});
 
   const fetchTransactions = async (pageUrl = null) => {
@@ -34,6 +35,19 @@ const Transactions = () => {
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
+  };
+
+  const handleViewDetails = async (id) => {
+    try {
+      const response = await api.get(`/admin/transactions/${id}`);
+      if (response.data.success) {
+        setSelectedTransaction(response.data.data);
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to load transaction details.');
+    }
   };
 
   return (
@@ -71,6 +85,7 @@ const Transactions = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Amount</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -113,6 +128,11 @@ const Transactions = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                         {new Date(trx.created_at).toLocaleString()}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button onClick={() => handleViewDetails(trx.id)} className="text-[#6C2BD9] hover:text-[#5b24b8] bg-[#6C2BD9] bg-opacity-10 p-1.5 rounded-md text-xs font-bold px-3">
+                          Detail
+                        </button>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -149,6 +169,68 @@ const Transactions = () => {
                   Next
                 </button>
               </nav>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {showModal && selectedTransaction && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => setShowModal(false)} />
+            <div className="relative inline-block w-full max-w-2xl p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold text-gray-900">Transaction Details</h3>
+                <button onClick={() => setShowModal(false)} className="text-gray-400 hover:text-gray-500">✕</button>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
+                  <div>
+                    <div className="text-sm text-gray-500">Invoice Number</div>
+                    <div className="font-semibold">{selectedTransaction.invoice_number || `INV-${selectedTransaction.id}`}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">Status</div>
+                    <div className="font-semibold uppercase">{selectedTransaction.payment_status}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">Customer Name</div>
+                    <div className="font-semibold">{selectedTransaction.user?.name}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-500">Total Amount</div>
+                    <div className="font-semibold text-[#6C2BD9]">{formatCurrency(selectedTransaction.total_amount)}</div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="font-bold mb-2">Midtrans Info</h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                    <div className="text-gray-500">Snap Token</div>
+                    <div className="font-mono break-all">{selectedTransaction.snap_token || '-'}</div>
+                    
+                    <div className="text-gray-500">Payment Type</div>
+                    <div>{selectedTransaction.payment?.payment_type || '-'}</div>
+                    
+                    <div className="text-gray-500">Gateway Transaction ID</div>
+                    <div className="font-mono">{selectedTransaction.payment?.gateway_transaction_id || '-'}</div>
+                    
+                    <div className="text-gray-500">Raw Status</div>
+                    <div>{selectedTransaction.payment?.transaction_status || '-'}</div>
+                    
+                    <div className="text-gray-500">Transaction Time (Paid At)</div>
+                    <div>{selectedTransaction.payment?.transaction_time ? new Date(selectedTransaction.payment.transaction_time).toLocaleString() : '-'}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button onClick={() => setShowModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -13,14 +13,15 @@ class Payment extends Model
     protected $fillable = [
         'transaction_id',
         'payment_type',
+        'gateway_transaction_id',
         'gross_amount',
         'transaction_time',
         'transaction_status',
-        'raw_response',
+        'response_payload',
     ];
 
     protected $casts = [
-        'raw_response' => 'array',
+        'response_payload' => 'array',
         'transaction_time' => 'datetime',
     ];
 

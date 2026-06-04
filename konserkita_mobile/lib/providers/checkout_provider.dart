@@ -122,17 +122,14 @@ class CheckoutProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> simulatePaymentSuccess() async {
-    if (_transactionResult != null) {
-      _isLoading = true;
-      notifyListeners();
+  Future<String> checkPaymentStatus(int transactionId) async {
+    _isLoading = true;
+    notifyListeners();
 
-      bool success = await _checkoutService.simulatePaymentSuccess(_transactionResult!['id']);
-      
-      _isLoading = false;
-      notifyListeners();
-      return success;
-    }
-    return false;
+    String status = await _checkoutService.checkPaymentStatus(transactionId);
+    
+    _isLoading = false;
+    notifyListeners();
+    return status;
   }
 }

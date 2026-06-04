@@ -19,6 +19,7 @@ class Transaction extends Model
         'total_amount',
         'payment_status',
         'snap_token',
+        'payment_url',
         'promo_code_id',
     ];
 

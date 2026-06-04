@@ -8,7 +8,7 @@ class CheckoutService {
     try {
       final response = await _apiService.dio.post('/checkout', data: {
         'tickets': items,
-        if (promoCode != null) 'promo_code': promoCode,
+        'promo_code': ?promoCode,
       });
       
       if (response.data['success']) {
@@ -35,18 +35,15 @@ class CheckoutService {
     }
   }
 
-  // Simulasi callback webhook Midtrans (Karena belum setup Midtrans API seutuhnya)
-  Future<bool> simulatePaymentSuccess(int transactionId) async {
+  Future<String> checkPaymentStatus(int transactionId) async {
     try {
-      await _apiService.dio.post('/payment/notification', data: {
-        'order_id': transactionId,
-        'transaction_status': 'settlement', // Simulate success
-        'gross_amount': 0, // Mock amount
-        'payment_type': 'bank_transfer',
-      });
-      return true;
+      final response = await _apiService.dio.get('/payments/status/$transactionId');
+      if (response.data['success']) {
+        return response.data['data']['payment_status'];
+      }
+      return 'failed';
     } catch (e) {
-      return false;
+      return 'failed';
     }
   }
 }

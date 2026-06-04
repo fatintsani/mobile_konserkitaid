@@ -14,12 +14,18 @@ class PaymentController extends BaseController
     public function notificationHandler(Request $request)
     {
         $payload = $request->all();
+        $serverKey = config('services.midtrans.server_key');
 
-        // 1. Validate Signature Key (TODO: Implement actual Midtrans signature validation)
-        // $signatureKey = hash('sha512', $payload['order_id'] . $payload['status_code'] . $payload['gross_amount'] . config('midtrans.server_key'));
-        // if ($signatureKey !== $payload['signature_key']) { ... }
+        // 1. Validate Signature Key
+        $calculatedSignature = hash('sha512', $payload['order_id'] . $payload['status_code'] . $payload['gross_amount'] . $serverKey);
+        
+        if ($calculatedSignature !== $payload['signature_key']) {
+            return $this->sendError('Invalid signature key.', [], 403);
+        }
 
-        $transactionId = $payload['order_id']; // Asumsi order_id dari midtrans adalah transaction->id
+        // Parse order_id e.g. INV-123-1698888
+        $parts = explode('-', $payload['order_id']);
+        $transactionId = $parts[1] ?? null;
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? null;
 
@@ -35,10 +41,11 @@ class PaymentController extends BaseController
             Payment::create([
                 'transaction_id' => $transaction->id,
                 'payment_type' => $payload['payment_type'] ?? null,
+                'gateway_transaction_id' => $payload['transaction_id'] ?? null,
                 'gross_amount' => $payload['gross_amount'] ?? null,
                 'transaction_time' => $payload['transaction_time'] ?? null,
                 'transaction_status' => $transactionStatus,
-                'raw_response' => $payload,
+                'response_payload' => $payload,
             ]);
 
             // 3. Handle Status
@@ -46,16 +53,17 @@ class PaymentController extends BaseController
                 if ($fraudStatus == 'challenge') {
                     $transaction->update(['payment_status' => 'pending']);
                 } else if ($fraudStatus == 'accept') {
-                    $transaction->update(['payment_status' => 'success']);
+                    $transaction->update(['payment_status' => 'paid']);
                     $this->generateTickets($transaction);
                 }
             } else if ($transactionStatus == 'settlement') {
-                $transaction->update(['payment_status' => 'success']);
+                $transaction->update(['payment_status' => 'paid']);
                 $this->generateTickets($transaction);
             } else if ($transactionStatus == 'cancel' ||
               $transactionStatus == 'deny' ||
-              $transactionStatus == 'expire') {
-                $transaction->update(['payment_status' => 'failed']);
+              $transactionStatus == 'expire' || 
+              $transactionStatus == 'failure') {
+                $transaction->update(['payment_status' => 'expired']); // Wait, expire should map to expired or failed
                 $this->restoreStock($transaction);
             } else if ($transactionStatus == 'pending') {
                 $transaction->update(['payment_status' => 'pending']);
@@ -97,8 +105,33 @@ class PaymentController extends BaseController
 
     private function restoreStock(Transaction $transaction)
     {
+        // Only restore if not already failed/expired to avoid double restore
+        if ($transaction->getOriginal('payment_status') === 'failed' || $transaction->getOriginal('payment_status') === 'expired') {
+            return;
+        }
+
         foreach ($transaction->items as $item) {
             $item->ticketType->increment('stock', $item->quantity);
         }
+    }
+
+    public function status(Request $request, $id)
+    {
+        $query = Transaction::where('id', $id);
+
+        if (!in_array($request->user()->role, ['admin', 'super_admin'])) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        $transaction = $query->first();
+
+        if (!$transaction) {
+            return $this->sendError('Transaction not found.', [], 404);
+        }
+
+        return $this->sendResponse([
+            'id' => $transaction->id,
+            'payment_status' => $transaction->payment_status,
+        ], 'Payment status retrieved.');
     }
 }

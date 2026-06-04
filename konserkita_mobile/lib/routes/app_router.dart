@@ -10,6 +10,7 @@ import '../screens/event_detail_screen.dart';
 import '../screens/my_tickets_screen.dart';
 import '../screens/ticket_selection_screen.dart';
 import '../screens/checkout_screen.dart';
+import '../screens/payment_webview_screen.dart';
 import '../screens/payment_status_screen.dart';
 import '../screens/ticket_detail_screen.dart';
 import '../screens/qr_scanner_screen.dart';
@@ -92,8 +93,21 @@ class AppRouter {
         builder: (context, state) => const CheckoutScreen(),
       ),
       GoRoute(
+        path: '/payment-webview',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return PaymentWebViewScreen(
+            paymentUrl: extra?['paymentUrl'] ?? '',
+            transactionId: extra?['transactionId'] ?? 0,
+          );
+        },
+      ),
+      GoRoute(
         path: '/payment-status',
-        builder: (context, state) => const PaymentStatusScreen(),
+        builder: (context, state) {
+          final extra = state.extra as int?;
+          return PaymentStatusScreen(transactionId: extra);
+        },
       ),
       GoRoute(
         path: '/profile',

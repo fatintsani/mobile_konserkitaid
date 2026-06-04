@@ -199,7 +199,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           onPressed: checkoutProvider.isLoading ? null : () async {
             bool success = await context.read<CheckoutProvider>().checkout(event.id);
             if (success && context.mounted) {
-              context.go('/payment-status');
+              final result = context.read<CheckoutProvider>().transactionResult;
+              if (result != null && result['payment_url'] != null) {
+                context.go('/payment-webview', extra: {
+                  'paymentUrl': result['payment_url'],
+                  'transactionId': result['id'],
+                });
+              } else {
+                context.go('/payment-status', extra: result?['id']);
+              }
             } else if (context.mounted && checkoutProvider.error != null) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(checkoutProvider.error!), backgroundColor: Colors.red));
             }

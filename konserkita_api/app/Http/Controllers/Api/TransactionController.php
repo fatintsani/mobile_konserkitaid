@@ -16,7 +16,11 @@ class TransactionController extends BaseController
             
         $transactions->map(function ($transaction) {
             $transaction->invoice_number = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
-            $transaction->order_status = $transaction->payment_status === 'paid' ? 'completed' : 'pending';
+            $transaction->order_status = match($transaction->payment_status) {
+                'paid' => 'completed',
+                'expired', 'failed' => 'expired', // Or failed, but prompt says expired/failed mapping
+                default => 'pending'
+            };
             
             $firstItem = $transaction->items->first();
             if ($firstItem && $firstItem->ticketType && $firstItem->ticketType->event) {
@@ -40,7 +44,11 @@ class TransactionController extends BaseController
         }
         
         $transaction->invoice_number = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
-        $transaction->order_status = $transaction->payment_status === 'paid' ? 'completed' : 'pending';
+        $transaction->order_status = match($transaction->payment_status) {
+            'paid' => 'completed',
+            'expired', 'failed' => 'expired',
+            default => 'pending'
+        };
 
         $firstItem = $transaction->items->first();
         if ($firstItem && $firstItem->ticketType && $firstItem->ticketType->event) {

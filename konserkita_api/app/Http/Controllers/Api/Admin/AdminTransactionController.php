@@ -25,7 +25,7 @@ class AdminTransactionController extends BaseController
 
     public function show($id)
     {
-        $transaction = Transaction::with(['user', 'items.ticketType.event'])->find($id);
+        $transaction = Transaction::with(['user', 'items.ticketType.event', 'payment'])->find($id);
 
         if (!$transaction) {
             return $this->sendError('Transaction not found.', [], 404);

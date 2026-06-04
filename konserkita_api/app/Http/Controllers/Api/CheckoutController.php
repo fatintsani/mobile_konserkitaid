@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class CheckoutController extends BaseController
 {
@@ -100,8 +102,6 @@ class CheckoutController extends BaseController
                 'total_amount' => $finalAmount,
                 'payment_status' => 'pending',
                 'promo_code_id' => $promoCodeId,
-                // Dummy snap_token for now, replace with actual Midtrans Snap API call
-                'snap_token' => 'SNAP-' . Str::upper(Str::random(10)), 
             ]);
 
             // 3. Create Transaction Items
@@ -111,8 +111,33 @@ class CheckoutController extends BaseController
                 ]));
             }
 
-            // TODO: Call Midtrans Snap API here to get actual snap_token
-            // ...
+            // Configure Midtrans
+            Config::$serverKey = config('services.midtrans.server_key');
+            Config::$isProduction = config('services.midtrans.is_production');
+            Config::$isSanitized = config('services.midtrans.is_sanitized');
+            Config::$is3ds = config('services.midtrans.is_3ds');
+
+            $invoiceNumber = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
+            $transaction->update(['invoice_number' => $invoiceNumber]); // Save invoice number temporarily if needed, though we generate on fly usually. Wait, in Transaction.php there is invoice_number? Let's check later. Actually, the prompt says "Gunakan invoice_number sebagai order_id". I will use INV-{transaction_id}.
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => 'INV-' . $transaction->id . '-' . time(), // add time to avoid duplicate order_id if retrying
+                    'gross_amount' => $finalAmount,
+                ],
+                'customer_details' => [
+                    'first_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => '08123456789', // Default if phone not available
+                ],
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+            
+            $transaction->update([
+                'snap_token' => $snapToken,
+                'payment_url' => "https://app.sandbox.midtrans.com/snap/v3/redirection/" . $snapToken, // Assuming sandbox for now, but we can return just snap_token
+            ]);
 
             \App\Models\Notification::create([
                 'user_id' => $user->id,

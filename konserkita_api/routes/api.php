@@ -26,7 +26,7 @@ Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'show']);
 
 // Midtrans Webhook Notification
-Route::post('/payment/notification', [PaymentController::class, 'notificationHandler']);
+Route::post('/payments/midtrans/callback', [PaymentController::class, 'notificationHandler']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -37,6 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
     Route::get('/transactions/{id}', [App\Http\Controllers\Api\TransactionController::class, 'show']);
+
+    // Payments
+    Route::get('/payments/status/{id}', [PaymentController::class, 'status']);
 
     // Wishlist
     Route::get('/wishlists', [WishlistController::class, 'index']);
