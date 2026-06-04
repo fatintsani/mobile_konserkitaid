@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../models/ticket.dart';
 import '../services/ticket_service.dart';
+import '../services/local_notification_service.dart';
 import '../utils/constants.dart';
 
 class MyTicketsScreen extends StatefulWidget {
@@ -30,6 +31,21 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         _tickets = tickets;
         _isLoading = false;
       });
+
+      // Schedule reminders for active tickets
+      for (var ticket in tickets) {
+        if (!ticket.isUsed && ticket.ticketType?.event != null) {
+          final event = ticket.ticketType!.event!;
+          // Untuk simulasi tahap awal, jadwalkan reminder 10 detik dari sekarang saat membuka halaman
+          // Di production, ini seharusnya di-schedule (H-1) dari event.date & event.time
+          LocalNotificationService.scheduleEventReminder(
+            id: ticket.id,
+            title: 'Reminder: ${event.title}',
+            body: 'Konser kamu akan dimulai besok di ${event.location}!',
+            scheduledDate: DateTime.now().add(const Duration(seconds: 10)),
+          );
+        }
+      }
     } catch (e) {
       setState(() {
         _error = e.toString();

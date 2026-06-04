@@ -86,6 +86,13 @@ class PaymentController extends BaseController
                 ]);
             }
         }
+
+        \App\Models\Notification::create([
+            'user_id' => $transaction->user_id,
+            'title' => 'Pembayaran Berhasil',
+            'message' => 'Tiket Anda telah berhasil diterbitkan. Silakan cek menu My Tickets.',
+            'type' => 'payment_success',
+        ]);
     }
 
     private function restoreStock(Transaction $transaction)

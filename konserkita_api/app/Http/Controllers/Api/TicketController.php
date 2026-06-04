@@ -64,6 +64,13 @@ class TicketController extends BaseController
         $ticket->is_used = true;
         $ticket->save();
 
+        \App\Models\Notification::create([
+            'user_id' => $ticket->user_id,
+            'title' => 'Tiket Digunakan',
+            'message' => 'Tiket Anda telah berhasil dipindai dan digunakan.',
+            'type' => 'ticket_used',
+        ]);
+
         return $this->sendResponse([
             'ticket_code' => $ticket->ticket_code,
             'is_used' => true,

@@ -76,6 +76,13 @@ class CheckoutController extends BaseController
             // TODO: Call Midtrans Snap API here to get actual snap_token
             // ...
 
+            \App\Models\Notification::create([
+                'user_id' => $user->id,
+                'title' => 'Checkout Berhasil',
+                'message' => 'Pesanan tiket Anda telah dibuat. Segera selesaikan pembayaran.',
+                'type' => 'checkout',
+            ]);
+
             DB::commit();
 
             $transaction->load('items.ticketType');

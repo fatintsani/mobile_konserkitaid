@@ -20,6 +20,7 @@ import '../screens/transaction_history_screen.dart';
 import '../screens/transaction_detail_screen.dart';
 import '../screens/wishlist_screen.dart';
 import '../screens/search_event_screen.dart';
+import '../screens/notification_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -112,6 +113,10 @@ class AppRouter {
       GoRoute(
         path: '/search',
         builder: (context, state) => const SearchEventScreen(),
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (context, state) => const NotificationScreen(),
       ),
     ],
     redirect: (context, state) {

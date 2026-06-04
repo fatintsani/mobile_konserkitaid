@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/event_provider.dart';
+import '../providers/notification_provider.dart';
 import '../widgets/event_card.dart';
 import '../utils/constants.dart';
 
@@ -19,6 +20,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventProvider>().fetchEvents();
+      if (context.read<AuthProvider>().isAuthenticated) {
+        context.read<NotificationProvider>().fetchNotifications();
+      }
     });
   }
 
@@ -26,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
     final authProvider = context.watch<AuthProvider>();
+    final notificationProvider = context.watch<NotificationProvider>();
     final user = authProvider.user;
     final isOrganizerOrAdmin = user?.role == 'organizer' || user?.role == 'admin' || user?.role == 'super_admin';
 
@@ -39,6 +44,41 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.search),
             onPressed: () => context.push('/search'),
           ),
+          if (authProvider.isAuthenticated)
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.notifications),
+                  onPressed: () => context.push('/notifications'),
+                ),
+                if (notificationProvider.unreadCount > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: AppConstants.secondaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        '${notificationProvider.unreadCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           if (isOrganizerOrAdmin)
             IconButton(
               icon: const Icon(Icons.qr_code_scanner),
