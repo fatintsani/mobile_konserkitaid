@@ -18,6 +18,8 @@ import '../screens/profile_screen.dart';
 import '../screens/edit_profile_screen.dart';
 import '../screens/transaction_history_screen.dart';
 import '../screens/transaction_detail_screen.dart';
+import '../screens/wishlist_screen.dart';
+import '../screens/search_event_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -102,6 +104,14 @@ class AppRouter {
           final id = int.parse(state.pathParameters['id']!);
           return TransactionDetailScreen(transactionId: id);
         },
+      ),
+      GoRoute(
+        path: '/wishlist',
+        builder: (context, state) => const WishlistScreen(),
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (context, state) => const SearchEventScreen(),
       ),
     ],
     redirect: (context, state) {

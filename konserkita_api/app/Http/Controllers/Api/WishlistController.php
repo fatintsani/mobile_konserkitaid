@@ -35,9 +35,9 @@ class WishlistController extends BaseController
         return $this->sendResponse($wishlist, 'Event added to wishlist.');
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $event_id)
     {
-        $wishlist = Wishlist::where('id', $id)
+        $wishlist = Wishlist::where('event_id', $event_id)
             ->where('user_id', $request->user()->id)
             ->first();
 

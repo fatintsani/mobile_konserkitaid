@@ -1,4 +1,5 @@
 import 'ticket_type.dart';
+import 'event_category.dart';
 
 class Event {
   final int id;
@@ -11,6 +12,7 @@ class Event {
   final String? bannerImage;
   final String status;
   final List<TicketType> ticketTypes;
+  final EventCategory? category;
 
   Event({
     required this.id,
@@ -23,6 +25,7 @@ class Event {
     this.bannerImage,
     required this.status,
     required this.ticketTypes,
+    this.category,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -40,6 +43,7 @@ class Event {
       bannerImage: json['banner_image'],
       status: json['status'],
       ticketTypes: ticketTypesList,
+      category: json['category'] != null ? EventCategory.fromJson(json['category']) : null,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'providers/checkout_provider.dart';
 import 'providers/ticket_provider.dart';
 import 'providers/ticket_validation_provider.dart';
 import 'providers/transaction_provider.dart';
+import 'providers/wishlist_provider.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
 
@@ -19,6 +20,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => TicketProvider()),
         ChangeNotifierProvider(create: (_) => TicketValidationProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
       ],
       child: const KonserKitaApp(),
     ),

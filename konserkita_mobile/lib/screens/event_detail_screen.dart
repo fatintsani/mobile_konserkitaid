@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/wishlist_provider.dart';
 import '../utils/constants.dart';
 
 class EventDetailScreen extends StatefulWidget {
@@ -21,9 +23,32 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     });
   }
 
+  void _handleWishlistToggle(BuildContext context, int eventId) {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Silakan login untuk menambahkan ke wishlist')),
+      );
+      context.push('/login');
+      return;
+    }
+    
+    context.read<WishlistProvider>().toggleWishlist(eventId).then((success) {
+      if (!success) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal mengubah wishlist')),
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
+    final wishlistProvider = context.watch<WishlistProvider>();
+    final isWishlisted = wishlistProvider.isInWishlist(widget.eventId);
     final event = eventProvider.selectedEvent;
 
     return Scaffold(
@@ -31,6 +56,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         title: const Text('Event Detail'),
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          if (event != null)
+            IconButton(
+              icon: Icon(
+                isWishlisted ? Icons.favorite : Icons.favorite_border,
+                color: isWishlisted ? AppConstants.secondaryColor : Colors.white,
+              ),
+              onPressed: () => _handleWishlistToggle(context, widget.eventId),
+            ),
+        ],
       ),
       body: eventProvider.isLoading || event == null
           ? const Center(child: CircularProgressIndicator())

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/event_provider.dart';
+import '../widgets/event_card.dart';
 import '../utils/constants.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,6 +35,10 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () => context.push('/search'),
+          ),
           if (isOrganizerOrAdmin)
             IconButton(
               icon: const Icon(Icons.qr_code_scanner),
@@ -59,52 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     padding: const EdgeInsets.all(16),
                     itemCount: eventProvider.events.length,
                     itemBuilder: (context, index) {
-                      final event = eventProvider.events[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
-                        child: InkWell(
-                          onTap: () => context.push('/event/${event.id}'),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: 150,
-                                width: double.infinity,
-                                color: Colors.grey[300],
-                                child: const Icon(Icons.image, size: 50, color: Colors.grey),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      event.title,
-                                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-                                        const SizedBox(width: 4),
-                                        Text('${event.date} - ${event.time}', style: const TextStyle(color: Colors.grey)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                                        const SizedBox(width: 4),
-                                        Text(event.location, style: const TextStyle(color: Colors.grey)),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+                      return EventCard(event: eventProvider.events[index]);
                     },
                   ),
                 ),
