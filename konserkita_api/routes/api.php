@@ -63,6 +63,32 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'destroyTicketType']);
     });
 
+    // Admin Dashboard
+    Route::prefix('admin')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\AdminController::class, 'dashboard']);
+        
+        Route::get('/events', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'index']);
+        Route::get('/events/{id}', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'show']);
+        Route::put('/events/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'approve']);
+        Route::put('/events/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'reject']);
+        Route::delete('/events/{id}', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'destroy']);
+        
+        Route::get('/users', [\App\Http\Controllers\Api\Admin\AdminUserController::class, 'index']);
+        Route::get('/users/{id}', [\App\Http\Controllers\Api\Admin\AdminUserController::class, 'show']);
+        Route::put('/users/{id}', [\App\Http\Controllers\Api\Admin\AdminUserController::class, 'update']);
+        Route::delete('/users/{id}', [\App\Http\Controllers\Api\Admin\AdminUserController::class, 'destroy']);
+        
+        Route::get('/organizers', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'index']);
+        Route::get('/organizers/{id}', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'show']);
+        Route::put('/organizers/{id}/verify', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'verify']);
+        Route::put('/organizers/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reject']);
+        
+        Route::get('/transactions', [\App\Http\Controllers\Api\Admin\AdminTransactionController::class, 'index']);
+        Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Admin\AdminTransactionController::class, 'show']);
+        
+        Route::get('/reports/sales', [\App\Http\Controllers\Api\Admin\AdminReportController::class, 'sales']);
+    });
+
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
 
     // Checkout
