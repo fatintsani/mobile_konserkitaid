@@ -60,7 +60,7 @@ class _OrganizerSalesScreenState extends State<OrganizerSalesScreen> {
                                   const Text('Total Pendapatan', style: TextStyle(color: Colors.grey, fontSize: 16)),
                                   const SizedBox(height: 8),
                                   Text(
-                                    NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(sales['total_revenue'] ?? 0),
+                                    NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(num.tryParse(sales['total_revenue']?.toString() ?? '0') ?? 0),
                                     style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppConstants.primaryColor),
                                   ),
                                   const Divider(height: 32),
@@ -107,7 +107,7 @@ class _OrganizerSalesScreenState extends State<OrganizerSalesScreen> {
                                 title: Text(type['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                                 subtitle: Text('${type['total_sold']} tiket terjual'),
                                 trailing: Text(
-                                  NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(type['revenue'] ?? 0),
+                                  NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(num.tryParse(type['revenue']?.toString() ?? '0') ?? 0),
                                   style: const TextStyle(fontWeight: FontWeight.bold, color: AppConstants.secondaryColor),
                                 ),
                               ),

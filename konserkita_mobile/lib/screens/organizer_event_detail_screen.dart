@@ -119,7 +119,7 @@ class _OrganizerEventDetailScreenState extends State<OrganizerEventDetailScreen>
                                         const Text('Revenue', style: TextStyle(color: Colors.white70)),
                                         const SizedBox(height: 8),
                                         Text(
-                                          NumberFormat.compactCurrency(locale: 'id_ID', symbol: 'Rp').format(event['total_revenue'] ?? 0),
+                                          NumberFormat.compactCurrency(locale: 'id_ID', symbol: 'Rp').format(num.tryParse(event['total_revenue']?.toString() ?? '0') ?? 0),
                                           style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                                         ),
                                       ],

@@ -61,7 +61,7 @@ class _OrganizerDashboardScreenState extends State<OrganizerDashboardScreen> {
                               _buildStatCard('Tiket Terjual', data['total_tickets_sold'].toString(), Icons.confirmation_number),
                               _buildStatCard(
                                 'Total Revenue',
-                                NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(data['total_revenue'] ?? 0),
+                                NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(num.tryParse(data['total_revenue']?.toString() ?? '0') ?? 0),
                                 Icons.account_balance_wallet,
                               ),
                               _buildStatCard('Check-in', data['checked_in_count'].toString(), Icons.check_circle_outline),
