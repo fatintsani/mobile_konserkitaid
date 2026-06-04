@@ -68,7 +68,8 @@ class OrganizerService {
 
   Future<Map<String, dynamic>> createEvent(Map<String, dynamic> data) async {
     try {
-      final response = await _apiService.dio.post('/organizer/events', data: data);
+      FormData formData = FormData.fromMap(data);
+      final response = await _apiService.dio.post('/organizer/events', data: formData);
       if (response.data['success']) return response.data['data'];
       throw Exception(response.data['message']);
     } on DioException catch (e) {
@@ -78,7 +79,9 @@ class OrganizerService {
 
   Future<Map<String, dynamic>> updateEvent(int id, Map<String, dynamic> data) async {
     try {
-      final response = await _apiService.dio.put('/organizer/events/$id', data: data);
+      FormData formData = FormData.fromMap(data);
+      formData.fields.add(MapEntry('_method', 'PUT')); // Laravel requirement for PUT with FormData
+      final response = await _apiService.dio.post('/organizer/events/$id', data: formData);
       if (response.data['success']) return response.data['data'];
       throw Exception(response.data['message']);
     } on DioException catch (e) {

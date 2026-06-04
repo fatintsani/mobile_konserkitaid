@@ -14,6 +14,8 @@ use App\Http\Requests\StoreTicketTypeRequest;
 use App\Http\Requests\UpdateTicketTypeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class OrganizerController extends BaseController
 {
@@ -217,6 +219,12 @@ class OrganizerController extends BaseController
 
         $data = $request->validated();
         $data['organizer_id'] = $organizerId;
+        $data['slug'] = Str::slug($data['title']) . '-' . time();
+
+        if ($request->hasFile('banner_image')) {
+            $path = $request->file('banner_image')->store('banners', 'public');
+            $data['banner_image'] = Storage::url($path);
+        }
 
         // Default status is pending for organizer
         if (!isset($data['status'])) {
@@ -251,6 +259,15 @@ class OrganizerController extends BaseController
         }
 
         $data = $request->validated();
+        
+        if (isset($data['title'])) {
+            $data['slug'] = Str::slug($data['title']) . '-' . time();
+        }
+
+        if ($request->hasFile('banner_image')) {
+            $path = $request->file('banner_image')->store('banners', 'public');
+            $data['banner_image'] = Storage::url($path);
+        }
 
         $user = $request->user();
         if (in_array($user->role, ['admin', 'super_admin']) && $request->has('status')) {

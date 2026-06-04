@@ -4,6 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../providers/organizer_provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/constants.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import '../models/event.dart';
 
 class OrganizerEventFormScreen extends StatefulWidget {
@@ -26,6 +29,9 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedStatus;
+  
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -56,6 +62,16 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
     _locationController.dispose();
     _bannerController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      setState(() {
+        _selectedImage = File(image.path);
+        _bannerController.text = image.name;
+      });
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -122,23 +138,29 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
       final dateStr = "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
       final timeStr = "${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}";
 
-      final data = {
+      final data = <String, dynamic>{
         'title': _titleController.text,
         'description': _descriptionController.text,
         'category_id': _selectedCategoryId,
         'location': _locationController.text,
         'date': dateStr,
         'time': timeStr,
-        'banner_image': _bannerController.text.isNotEmpty ? _bannerController.text : null,
       };
 
       final authProvider = context.read<AuthProvider>();
+      final provider = context.read<OrganizerProvider>();
+
+      if (_selectedImage != null) {
+        data['banner_image'] = await MultipartFile.fromFile(_selectedImage!.path, filename: _selectedImage!.path.split('/').last);
+      } else if (widget.event != null && _bannerController.text.isNotEmpty) {
+        // Keep existing banner image url if not picking a new one
+      }
+
       final role = authProvider.user?.role;
       if ((role == 'admin' || role == 'super_admin') && _selectedStatus != null) {
         data['status'] = _selectedStatus!;
       }
 
-      final provider = context.read<OrganizerProvider>();
       bool success;
       
       if (widget.event == null) {
@@ -249,9 +271,35 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _bannerController,
-                    decoration: const InputDecoration(labelText: 'Banner URL (Optional)', border: OutlineInputBorder()),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Banner Image (Optional)', style: TextStyle(fontSize: 16)),
+                      const SizedBox(height: 8),
+                      InkWell(
+                        onTap: _pickImage,
+                        child: Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: _selectedImage != null
+                              ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(_selectedImage!, fit: BoxFit.cover))
+                              : (widget.event?.bannerImage != null && widget.event!.bannerImage!.isNotEmpty)
+                                  ? ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.network(widget.event!.bannerImage!, fit: BoxFit.cover))
+                                  : const Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.image, size: 40, color: Colors.grey),
+                                        SizedBox(height: 8),
+                                        Text('Tap to select image', style: TextStyle(color: Colors.grey)),
+                                      ],
+                                    ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   

@@ -20,7 +20,7 @@ class UpdateEventRequest extends FormRequest
             'date' => 'sometimes|required|date',
             'time' => 'sometimes|required|date_format:H:i',
             'location' => 'sometimes|required|string|max:255',
-            'banner_image' => 'nullable|url',
+            'banner_image' => 'nullable|image|max:2048',
             'status' => 'sometimes|required|string|in:draft,pending,published,cancelled,completed',
         ];
     }

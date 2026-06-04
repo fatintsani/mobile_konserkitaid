@@ -20,7 +20,7 @@ class StoreEventRequest extends FormRequest
             'date' => 'required|date',
             'time' => 'required|date_format:H:i',
             'location' => 'required|string|max:255',
-            'banner_image' => 'nullable|url',
+            'banner_image' => 'nullable|image|max:2048',
             'status' => 'nullable|string|in:draft,pending,published,cancelled,completed',
         ];
     }
