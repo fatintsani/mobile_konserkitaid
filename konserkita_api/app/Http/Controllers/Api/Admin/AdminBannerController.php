@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Api\Admin;
+
+use App\Http\Controllers\Api\BaseController;
+use App\Models\Banner;
+use Illuminate\Http\Request;
+
+class AdminBannerController extends BaseController
+{
+    public function index()
+    {
+        $banners = Banner::orderBy('created_at', 'desc')->paginate(10);
+        return $this->sendResponse($banners, 'Banners retrieved successfully.');
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image_url' => 'required|string|max:255',
+            'link_url' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $banner = Banner::create($validated);
+        return $this->sendResponse($banner, 'Banner created successfully.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $banner = Banner::find($id);
+        if (!$banner) {
+            return $this->sendError('Banner not found', [], 404);
+        }
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image_url' => 'required|string|max:255',
+            'link_url' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        $banner->update($validated);
+        return $this->sendResponse($banner, 'Banner updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $banner = Banner::find($id);
+        if (!$banner) {
+            return $this->sendError('Banner not found', [], 404);
+        }
+
+        $banner->delete();
+        return $this->sendResponse([], 'Banner deleted successfully.');
+    }
+}

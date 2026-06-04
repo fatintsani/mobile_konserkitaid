@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+import api from '../api/axios';
 import { CheckCircle, XCircle, Trash2, RefreshCcw } from 'lucide-react';
 
 const Events = () => {

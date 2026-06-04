@@ -12,6 +12,9 @@ import Users from './pages/Users';
 import Organizers from './pages/Organizers';
 import Transactions from './pages/Transactions';
 import Reports from './pages/Reports';
+import Banners from './pages/Banners';
+import PromoCodes from './pages/PromoCodes';
+import Categories from './pages/Categories';
 
 function App() {
   return (
@@ -28,6 +31,9 @@ function App() {
               <Route path="/organizers" element={<Organizers />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/banners" element={<Banners />} />
+              <Route path="/promos" element={<PromoCodes />} />
+              <Route path="/categories" element={<Categories />} />
             </Route>
           </Route>
           

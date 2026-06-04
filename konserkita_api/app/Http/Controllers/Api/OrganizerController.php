@@ -326,9 +326,11 @@ class OrganizerController extends BaseController
         $data = $request->validated();
         $data['event_id'] = $event->id;
         
-        if (!isset($data['status'])) {
-            $data['status'] = 'available';
+        if (isset($data['quota'])) {
+            $data['stock'] = $data['quota'];
+            unset($data['quota']);
         }
+        unset($data['status']);
 
         $ticketType = TicketType::create($data);
 
@@ -350,6 +352,12 @@ class OrganizerController extends BaseController
         }
 
         $data = $request->validated();
+        if (isset($data['quota'])) {
+            $data['stock'] = $data['quota'];
+            unset($data['quota']);
+        }
+        unset($data['status']);
+
         $ticketType->update($data);
 
         return $this->sendResponse($ticketType, 'Ticket type updated successfully.');

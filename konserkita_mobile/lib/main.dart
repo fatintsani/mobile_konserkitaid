@@ -9,6 +9,7 @@ import 'providers/transaction_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/organizer_provider.dart';
+import 'providers/content_provider.dart';
 import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
@@ -29,6 +30,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
         ChangeNotifierProvider(create: (_) => OrganizerProvider()),
+        ChangeNotifierProvider(create: (_) => ContentProvider()),
       ],
       child: const KonserKitaApp(),
     ),

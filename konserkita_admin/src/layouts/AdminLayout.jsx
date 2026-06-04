@@ -10,7 +10,10 @@ import {
   Ticket, 
   BarChart3, 
   LogOut,
-  Menu
+  Menu,
+  Image,
+  Tag,
+  FolderTree
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -31,6 +34,12 @@ const AdminLayout = () => {
     { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
   ];
 
+  const contentItems = [
+    { name: 'Banners', path: '/banners', icon: <Image size={20} /> },
+    { name: 'Promo Codes', path: '/promos', icon: <Tag size={20} /> },
+    { name: 'Categories', path: '/categories', icon: <FolderTree size={20} /> },
+  ];
+
   return (
     <div className="flex h-screen bg-[#F8F7FC] text-gray-800 font-sans">
       {/* Sidebar */}
@@ -41,6 +50,29 @@ const AdminLayout = () => {
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="space-y-1 px-3">
             {navItems.map((item) => (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={({ isActive }) =>
+                  `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'bg-[#6C2BD9] text-white'
+                      : 'text-gray-600 hover:bg-gray-100'
+                  }`
+                }
+              >
+                <span className="mr-3">{item.icon}</span>
+                {item.name}
+              </NavLink>
+            ))}
+
+            <div className="pt-4 pb-2">
+              <p className="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Content
+              </p>
+            </div>
+
+            {contentItems.map((item) => (
               <NavLink
                 key={item.name}
                 to={item.path}

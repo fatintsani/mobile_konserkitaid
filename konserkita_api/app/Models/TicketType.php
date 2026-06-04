@@ -19,8 +19,20 @@ class TicketType extends Model
         'max_buy_per_transaction',
     ];
 
+    protected $appends = ['quota', 'status'];
+
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
+    }
+
+    public function getQuotaAttribute()
+    {
+        return $this->stock;
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->stock > 0 ? 'available' : 'sold_out';
     }
 }

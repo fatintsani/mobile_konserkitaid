@@ -21,6 +21,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'show']);
 
@@ -87,6 +88,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Admin\AdminTransactionController::class, 'show']);
         
         Route::get('/reports/sales', [\App\Http\Controllers\Api\Admin\AdminReportController::class, 'sales']);
+
+        // Content Management
+        Route::apiResource('banners', \App\Http\Controllers\Api\Admin\AdminBannerController::class);
+        Route::apiResource('promos', \App\Http\Controllers\Api\Admin\AdminPromoController::class);
+        Route::apiResource('event-categories', \App\Http\Controllers\Api\Admin\AdminCategoryController::class);
     });
 
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
