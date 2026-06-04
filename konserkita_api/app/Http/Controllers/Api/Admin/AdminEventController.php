@@ -18,8 +18,8 @@ class AdminEventController extends BaseController
             $query->where('status', $status);
         }
 
-        // Limit to 50 for admin panel, can implement pagination later
-        $events = $query->orderBy('created_at', 'desc')->get();
+        // Use pagination with 10 items per page
+        $events = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return $this->sendResponse($events, 'Events retrieved successfully.');
     }

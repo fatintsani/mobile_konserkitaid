@@ -19,7 +19,7 @@ class AdminUserController extends BaseController
             $query->where('role', $role);
         }
 
-        $users = $query->orderBy('created_at', 'desc')->get();
+        $users = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return $this->sendResponse($users, 'Users retrieved successfully.');
     }

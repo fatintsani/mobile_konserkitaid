@@ -10,7 +10,7 @@ class AdminOrganizerController extends BaseController
 {
     public function index(Request $request)
     {
-        $organizers = Organizer::with('user')->orderBy('created_at', 'desc')->get();
+        $organizers = Organizer::with('user')->orderBy('created_at', 'desc')->paginate(10);
         return $this->sendResponse($organizers, 'Organizers retrieved successfully.');
     }
 

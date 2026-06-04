@@ -18,7 +18,7 @@ class AdminTransactionController extends BaseController
             $query->where('payment_status', $status);
         }
 
-        $transactions = $query->orderBy('created_at', 'desc')->get();
+        $transactions = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return $this->sendResponse($transactions, 'Transactions retrieved successfully.');
     }

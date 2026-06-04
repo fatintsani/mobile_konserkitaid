@@ -1,5 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import api from '../api/axios';
 import { CheckCircle, XCircle, Trash2, RefreshCcw } from 'lucide-react';
 
 const Events = () => {
@@ -7,13 +5,18 @@ const Events = () => {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
 
-  const fetchEvents = async () => {
+  const [pagination, setPagination] = useState({});
+
+  const fetchEvents = async (pageUrl = null) => {
     setLoading(true);
     try {
-      const url = statusFilter ? `/admin/events?status=${statusFilter}` : '/admin/events';
+      let url = pageUrl || `/admin/events?page=1`;
+      if (statusFilter && !pageUrl) url += `&status=${statusFilter}`;
+      
       const response = await api.get(url);
       if (response.data.success) {
-        setEvents(response.data.data);
+        setEvents(response.data.data.data);
+        setPagination(response.data.data);
       }
     } catch (error) {
       console.error('Failed to fetch events', error);
@@ -23,7 +26,8 @@ const Events = () => {
   };
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(`/admin/events?page=1${statusFilter ? `&status=${statusFilter}` : ''}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
 
   const handleApprove = async (id) => {
@@ -144,6 +148,38 @@ const Events = () => {
           </div>
         )}
       </div>
+
+      {/* Pagination Controls */}
+      {!loading && pagination.total > 0 && (
+        <div className="flex items-center justify-between bg-white px-4 py-3 border border-gray-100 rounded-xl shadow-sm sm:px-6">
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Showing <span className="font-medium">{pagination.from}</span> to <span className="font-medium">{pagination.to}</span> of{' '}
+                <span className="font-medium">{pagination.total}</span> results
+              </p>
+            </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button
+                  onClick={() => fetchEvents(pagination.prev_page_url)}
+                  disabled={!pagination.prev_page_url}
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => fetchEvents(pagination.next_page_url)}
+                  disabled={!pagination.next_page_url}
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                >
+                  Next
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
