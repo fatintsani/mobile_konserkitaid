@@ -38,7 +38,7 @@ class TransactionDetailScreen extends StatelessWidget {
           final transaction = snapshot.data!;
 
           Color statusColor = Colors.grey;
-          if (transaction.paymentStatus == 'paid' || transaction.paymentStatus == 'settlement') {
+          if (transaction.paymentStatus == 'success' || transaction.paymentStatus == 'settlement') {
             statusColor = Colors.green;
           } else if (transaction.paymentStatus == 'pending') {
             statusColor = Colors.orange;

@@ -52,11 +52,11 @@ class PaymentController extends BaseController
                 if ($fraudStatus == 'challenge') {
                     $transaction->update(['payment_status' => 'pending']);
                 } else if ($fraudStatus == 'accept') {
-                    $transaction->update(['payment_status' => 'paid']);
+                    $transaction->update(['payment_status' => 'success']);
                     $this->generateTickets($transaction);
                 }
             } else if ($transactionStatus == 'settlement') {
-                $transaction->update(['payment_status' => 'paid']);
+                $transaction->update(['payment_status' => 'success']);
                 $this->generateTickets($transaction);
             } else if ($transactionStatus == 'cancel' ||
               $transactionStatus == 'deny' ||
@@ -142,16 +142,16 @@ class PaymentController extends BaseController
                 
                 $newStatus = 'pending';
                 if ($status == 'capture') {
-                    if ($fraud == 'accept') $newStatus = 'paid';
+                    if ($fraud == 'accept') $newStatus = 'success';
                 } else if ($status == 'settlement') {
-                    $newStatus = 'paid';
+                    $newStatus = 'success';
                 } else if (in_array($status, ['cancel', 'deny', 'expire', 'failure'])) {
                     $newStatus = 'expired';
                 }
                 
                 if ($newStatus !== 'pending') {
                     $transaction->update(['payment_status' => $newStatus]);
-                    if ($newStatus === 'paid') {
+                    if ($newStatus === 'success') {
                         $this->generateTickets($transaction);
                     } else if ($newStatus === 'expired') {
                         $this->restoreStock($transaction);
