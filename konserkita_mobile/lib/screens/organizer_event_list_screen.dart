@@ -36,9 +36,15 @@ class _OrganizerEventListScreenState extends State<OrganizerEventListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Event Saya'),
+        title: const Text('My Events'),
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push('/organizer/events/create'),
+        backgroundColor: AppConstants.primaryColor,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
       backgroundColor: AppConstants.backgroundColor,
       body: provider.isLoading
@@ -72,47 +78,80 @@ class _OrganizerEventListScreenState extends State<OrganizerEventListScreen> {
                               borderRadius: BorderRadius.circular(12),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Row(
                                   children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
-                                          child: Text(
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: _getStatusColor(event.status).withValues(alpha: 0.1),
+                                              borderRadius: BorderRadius.circular(12),
+                                            ),
+                                            child: Text(
+                                              event.status.toUpperCase(),
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: _getStatusColor(event.status),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Text(
                                             event.title,
-                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                            maxLines: 1,
+                                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                            maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: _getStatusColor(event.status),
-                                            borderRadius: BorderRadius.circular(8),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                                              const SizedBox(width: 4),
+                                              Text(event.date, style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                                            ],
                                           ),
-                                          child: Text(
-                                            event.status.toUpperCase(),
-                                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
-                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    PopupMenuButton<String>(
+                                      onSelected: (value) async {
+                                        if (value == 'edit') {
+                                          context.push('/organizer/events/${event.id}/edit', extra: event);
+                                        } else if (value == 'delete') {
+                                          final confirm = await showDialog<bool>(
+                                            context: context,
+                                            builder: (ctx) => AlertDialog(
+                                              title: const Text('Delete Event?'),
+                                              content: const Text('Are you sure? This cannot be undone.'),
+                                              actions: [
+                                                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                                TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                                              ],
+                                            ),
+                                          );
+                                          if (confirm == true && context.mounted) {
+                                            final success = await provider.deleteEvent(event.id);
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(content: Text(success ? 'Event deleted' : (provider.error ?? 'Failed to delete'))),
+                                              );
+                                            }
+                                          }
+                                        }
+                                      },
+                                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Text('Edit Event'),
                                         ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
-                                        const SizedBox(width: 4),
-                                        Text('${event.date} ${event.time}', style: const TextStyle(color: Colors.grey, fontSize: 13)),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.location_on, size: 14, color: Colors.grey),
-                                        const SizedBox(width: 4),
-                                        Expanded(child: Text(event.location, style: const TextStyle(color: Colors.grey, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Text('Delete Event', style: TextStyle(color: Colors.red)),
+                                        ),
                                       ],
                                     ),
                                   ],

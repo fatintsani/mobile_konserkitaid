@@ -6,6 +6,12 @@ use App\Models\Event;
 use App\Models\Organizer;
 use App\Models\Ticket;
 use App\Models\Transaction;
+use App\Models\EventCategory;
+use App\Models\TicketType;
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
+use App\Http\Requests\StoreTicketTypeRequest;
+use App\Http\Requests\UpdateTicketTypeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -200,5 +206,165 @@ class OrganizerController extends BaseController
         });
 
         return $this->sendResponse($attendees, 'Attendees retrieved successfully.');
+    }
+
+    public function storeEvent(StoreEventRequest $request)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        if (!$organizerId) {
+            return $this->sendError('You must have an organizer profile to create events.', [], 403);
+        }
+
+        $data = $request->validated();
+        $data['organizer_id'] = $organizerId;
+
+        // Default status is pending for organizer
+        if (!isset($data['status'])) {
+            $data['status'] = 'pending';
+        }
+
+        // Admin/Super Admin can set status directly
+        $user = $request->user();
+        if (in_array($user->role, ['admin', 'super_admin']) && $request->has('status')) {
+            $data['status'] = $request->status;
+        } else {
+            $data['status'] = 'pending';
+        }
+
+        $event = Event::create($data);
+
+        return $this->sendResponse($event, 'Event created successfully.');
+    }
+
+    public function updateEvent(UpdateEventRequest $request, $id)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        
+        $eventQuery = Event::query();
+        if ($organizerId) {
+            $eventQuery->where('organizer_id', $organizerId);
+        }
+
+        $event = $eventQuery->where('id', $id)->first();
+        if (!$event) {
+            return $this->sendError('Event not found or unauthorized.');
+        }
+
+        $data = $request->validated();
+
+        $user = $request->user();
+        if (in_array($user->role, ['admin', 'super_admin']) && $request->has('status')) {
+            $data['status'] = $request->status;
+        } else {
+            unset($data['status']); // organizer cannot update status directly through this endpoint
+        }
+
+        $event->update($data);
+
+        return $this->sendResponse($event, 'Event updated successfully.');
+    }
+
+    public function destroyEvent(Request $request, $id)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        
+        $eventQuery = Event::query();
+        if ($organizerId) {
+            $eventQuery->where('organizer_id', $organizerId);
+        }
+
+        $event = $eventQuery->where('id', $id)->first();
+        if (!$event) {
+            return $this->sendError('Event not found or unauthorized.');
+        }
+
+        // check if event has tickets sold
+        $ticketsSold = Ticket::whereHas('ticketType', function($q) use ($event) {
+            $q->where('event_id', $event->id);
+        })->exists();
+
+        if ($ticketsSold) {
+            return $this->sendError('Cannot delete event because tickets have already been sold.', [], 400);
+        }
+
+        $event->delete();
+
+        return $this->sendResponse([], 'Event deleted successfully.');
+    }
+
+    public function storeTicketType(StoreTicketTypeRequest $request, $id)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        
+        $eventQuery = Event::query();
+        if ($organizerId) {
+            $eventQuery->where('organizer_id', $organizerId);
+        }
+
+        $event = $eventQuery->where('id', $id)->first();
+        if (!$event) {
+            return $this->sendError('Event not found or unauthorized.');
+        }
+
+        $data = $request->validated();
+        $data['event_id'] = $event->id;
+        
+        if (!isset($data['status'])) {
+            $data['status'] = 'available';
+        }
+
+        $ticketType = TicketType::create($data);
+
+        return $this->sendResponse($ticketType, 'Ticket type created successfully.');
+    }
+
+    public function updateTicketType(UpdateTicketTypeRequest $request, $id)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        
+        $ticketType = TicketType::where('id', $id)->first();
+        if (!$ticketType) {
+            return $this->sendError('Ticket type not found.');
+        }
+
+        $event = Event::where('id', $ticketType->event_id)->first();
+        if ($organizerId && $event->organizer_id != $organizerId) {
+            return $this->sendError('Unauthorized.');
+        }
+
+        $data = $request->validated();
+        $ticketType->update($data);
+
+        return $this->sendResponse($ticketType, 'Ticket type updated successfully.');
+    }
+
+    public function destroyTicketType(Request $request, $id)
+    {
+        $organizerId = $this->getOrganizerId($request);
+        
+        $ticketType = TicketType::where('id', $id)->first();
+        if (!$ticketType) {
+            return $this->sendError('Ticket type not found.');
+        }
+
+        $event = Event::where('id', $ticketType->event_id)->first();
+        if ($organizerId && $event->organizer_id != $organizerId) {
+            return $this->sendError('Unauthorized.');
+        }
+
+        $ticketsSold = Ticket::where('ticket_type_id', $ticketType->id)->exists();
+        if ($ticketsSold) {
+            return $this->sendError('Cannot delete ticket type because tickets have already been sold.', [], 400);
+        }
+
+        $ticketType->delete();
+
+        return $this->sendResponse([], 'Ticket type deleted successfully.');
+    }
+
+    public function getCategories(Request $request)
+    {
+        $categories = EventCategory::all();
+        return $this->sendResponse($categories, 'Categories retrieved successfully.');
     }
 }

@@ -167,6 +167,62 @@ class _OrganizerEventDetailScreenState extends State<OrganizerEventDetailScreen>
                               padding: const EdgeInsets.symmetric(vertical: 16),
                             ),
                           ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () => context.push('/organizer/events/${widget.eventId}/ticket-types'),
+                            icon: const Icon(Icons.confirmation_num),
+                            label: const Text('Manage Ticket Types'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: AppConstants.primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () => context.push('/organizer/events/${widget.eventId}/edit', extra: provider.events.firstWhere((e) => e.id == widget.eventId)),
+                            icon: const Icon(Icons.edit),
+                            label: const Text('Edit Event'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.blue,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Event?'),
+                                  content: const Text('Are you sure? This cannot be undone.'),
+                                  actions: [
+                                    TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                    TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                                  ],
+                                ),
+                              );
+                              if (confirm == true && context.mounted) {
+                                final success = await provider.deleteEvent(widget.eventId);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(success ? 'Event deleted' : (provider.error ?? 'Failed to delete'))),
+                                  );
+                                  if (success) {
+                                    context.pop();
+                                  }
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.delete),
+                            label: const Text('Delete Event'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.red,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                          ),
                         ],
                       ),
                     ),

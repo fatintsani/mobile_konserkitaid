@@ -52,10 +52,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('organizer')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Api\OrganizerController::class, 'dashboard']);
         Route::get('/events', [\App\Http\Controllers\Api\OrganizerController::class, 'events']);
+        Route::post('/events', [\App\Http\Controllers\Api\OrganizerController::class, 'storeEvent']);
         Route::get('/events/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'eventDetail']);
+        Route::put('/events/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'updateEvent']);
+        Route::delete('/events/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'destroyEvent']);
         Route::get('/events/{id}/sales', [\App\Http\Controllers\Api\OrganizerController::class, 'sales']);
         Route::get('/events/{id}/attendees', [\App\Http\Controllers\Api\OrganizerController::class, 'attendees']);
+        Route::post('/events/{id}/ticket-types', [\App\Http\Controllers\Api\OrganizerController::class, 'storeTicketType']);
+        Route::put('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'updateTicketType']);
+        Route::delete('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'destroyTicketType']);
     });
+
+    Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
 
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'process']);

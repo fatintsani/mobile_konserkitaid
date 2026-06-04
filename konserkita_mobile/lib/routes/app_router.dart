@@ -26,6 +26,9 @@ import '../screens/organizer_event_list_screen.dart';
 import '../screens/organizer_event_detail_screen.dart';
 import '../screens/organizer_sales_screen.dart';
 import '../screens/organizer_attendees_screen.dart';
+import '../screens/organizer_event_form_screen.dart';
+import '../screens/organizer_ticket_type_manage_screen.dart';
+import '../models/event.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -131,6 +134,27 @@ class AppRouter {
       GoRoute(
         path: '/organizer/events',
         builder: (context, state) => const OrganizerEventListScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/create',
+        builder: (context, state) => const OrganizerEventFormScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/:id/edit',
+        builder: (context, state) {
+          final event = state.extra as Event?;
+          return OrganizerEventFormScreen(event: event);
+        },
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/events/:id/ticket-types',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerTicketTypeManageScreen(eventId: id);
+        },
         redirect: _organizerGuard,
       ),
       GoRoute(
