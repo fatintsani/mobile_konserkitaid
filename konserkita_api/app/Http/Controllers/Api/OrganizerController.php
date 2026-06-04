@@ -38,8 +38,10 @@ class OrganizerController extends BaseController
         }
 
         $totalEvents = $eventsQuery->count();
-        $activeEvents = (clone $eventsQuery)->where('status', 'published')->count();
-        $upcomingEvents = (clone $eventsQuery)->where('status', 'published')->where('date', '>=', date('Y-m-d'))->count();
+        $activeEventsQuery = clone $eventsQuery;
+        $activeEvents = $activeEventsQuery->where('status', 'published')->count();
+        $upcomingEventsQuery = clone $eventsQuery;
+        $upcomingEvents = $upcomingEventsQuery->where('status', 'published')->where('date', '>=', date('Y-m-d'))->count();
 
         $eventIds = $eventsQuery->pluck('id');
 
