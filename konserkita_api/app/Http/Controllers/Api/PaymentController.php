@@ -24,10 +24,11 @@ class PaymentController extends BaseController
         }
 
         $orderId = $payload['order_id'];
+        $transactionId = (int) str_replace('INV-', '', $orderId);
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? null;
 
-        $transaction = Transaction::with('items')->where('invoice_number', $orderId)->first();
+        $transaction = Transaction::with('items')->find($transactionId);
 
         if (!$transaction) {
             return $this->sendError('Transaction not found.', [], 404);
@@ -126,13 +127,15 @@ class PaymentController extends BaseController
         if (!$transaction) {
             return $this->sendError('Transaction not found.', [], 404);
         }
+        
+        $invoiceNumber = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
 
-        if ($transaction->payment_status === 'pending' && $transaction->invoice_number) {
+        if ($transaction->payment_status === 'pending') {
             \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
             \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
             
             try {
-                $midtransStatus = \Midtrans\Transaction::status($transaction->invoice_number);
+                $midtransStatus = \Midtrans\Transaction::status($invoiceNumber);
                 
                 $status = $midtransStatus->transaction_status;
                 $fraud = $midtransStatus->fraud_status ?? null;

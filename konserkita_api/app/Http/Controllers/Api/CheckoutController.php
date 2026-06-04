@@ -116,9 +116,7 @@ class CheckoutController extends BaseController
             Config::$isProduction = config('services.midtrans.is_production');
             Config::$isSanitized = config('services.midtrans.is_sanitized');
             Config::$is3ds = config('services.midtrans.is_3ds');
-
             $invoiceNumber = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
-            $transaction->update(['invoice_number' => $invoiceNumber]); 
 
             $params = [
                 'transaction_details' => [
@@ -149,8 +147,8 @@ class CheckoutController extends BaseController
             ]);
 
             DB::commit();
-
             $transaction->load('items.ticketType');
+            $transaction->invoice_number = $invoiceNumber; // For JSON response
 
             return $this->sendResponse($transaction, 'Checkout successful.');
 
