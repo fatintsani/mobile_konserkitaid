@@ -13,6 +13,7 @@ class Transaction {
   final String paymentStatus;
   final String orderStatus;
   final String? snapToken;
+  final String? paymentUrl;
   final String createdAt;
   final Event? event;
   final List<Ticket>? tickets;
@@ -30,6 +31,7 @@ class Transaction {
     required this.paymentStatus,
     required this.orderStatus,
     this.snapToken,
+    this.paymentUrl,
     required this.createdAt,
     this.event,
     this.tickets,
@@ -49,6 +51,7 @@ class Transaction {
       paymentStatus: json['payment_status'] ?? 'pending',
       orderStatus: json['order_status'] ?? 'pending',
       snapToken: json['snap_token'],
+      paymentUrl: json['payment_url'],
       createdAt: json['created_at'] ?? '',
       event: json['event'] != null ? Event.fromJson(json['event']) : null,
       tickets: json['tickets'] != null

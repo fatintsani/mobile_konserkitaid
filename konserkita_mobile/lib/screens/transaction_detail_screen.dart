@@ -4,6 +4,7 @@ import '../providers/transaction_provider.dart';
 import '../models/transaction.dart';
 import '../utils/constants.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final int transactionId;
@@ -154,6 +155,29 @@ class TransactionDetailScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                
+                if (transaction.paymentStatus == 'pending' && transaction.paymentUrl != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.go('/payment-webview', extra: {
+                          'paymentUrl': transaction.paymentUrl,
+                          'transactionId': transaction.id,
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppConstants.secondaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text(
+                        'Lanjutkan Pembayaran',
+                        style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                
               ],
             ),
           );
