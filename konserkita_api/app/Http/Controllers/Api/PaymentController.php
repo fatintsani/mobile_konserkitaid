@@ -23,13 +23,11 @@ class PaymentController extends BaseController
             return $this->sendError('Invalid signature key.', [], 403);
         }
 
-        // Parse order_id e.g. INV-123-1698888
-        $parts = explode('-', $payload['order_id']);
-        $transactionId = $parts[1] ?? null;
+        $orderId = $payload['order_id'];
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? null;
 
-        $transaction = Transaction::with('items')->find($transactionId);
+        $transaction = Transaction::with('items')->where('invoice_number', $orderId)->first();
 
         if (!$transaction) {
             return $this->sendError('Transaction not found.', [], 404);
@@ -127,6 +125,38 @@ class PaymentController extends BaseController
 
         if (!$transaction) {
             return $this->sendError('Transaction not found.', [], 404);
+        }
+
+        if ($transaction->payment_status === 'pending' && $transaction->invoice_number) {
+            \Midtrans\Config::$serverKey = config('services.midtrans.server_key');
+            \Midtrans\Config::$isProduction = config('services.midtrans.is_production');
+            
+            try {
+                $midtransStatus = \Midtrans\Transaction::status($transaction->invoice_number);
+                
+                $status = $midtransStatus->transaction_status;
+                $fraud = $midtransStatus->fraud_status ?? null;
+                
+                $newStatus = 'pending';
+                if ($status == 'capture') {
+                    if ($fraud == 'accept') $newStatus = 'paid';
+                } else if ($status == 'settlement') {
+                    $newStatus = 'paid';
+                } else if (in_array($status, ['cancel', 'deny', 'expire', 'failure'])) {
+                    $newStatus = 'expired';
+                }
+                
+                if ($newStatus !== 'pending') {
+                    $transaction->update(['payment_status' => $newStatus]);
+                    if ($newStatus === 'paid') {
+                        $this->generateTickets($transaction);
+                    } else if ($newStatus === 'expired') {
+                        $this->restoreStock($transaction);
+                    }
+                }
+            } catch (\Exception $e) {
+                // Ignore if not found on Midtrans
+            }
         }
 
         return $this->sendResponse([

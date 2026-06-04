@@ -75,7 +75,7 @@ class CheckoutProvider with ChangeNotifier {
     try {
       final result = await _checkoutService.validatePromo(code, subtotal);
       _promoCode = result['code'];
-      _discountAmount = (result['discount_amount'] as num).toDouble();
+      _discountAmount = double.parse(result['discount_amount'].toString());
       _isLoading = false;
       notifyListeners();
       return true;

@@ -118,11 +118,11 @@ class CheckoutController extends BaseController
             Config::$is3ds = config('services.midtrans.is_3ds');
 
             $invoiceNumber = 'INV-' . str_pad($transaction->id, 6, '0', STR_PAD_LEFT);
-            $transaction->update(['invoice_number' => $invoiceNumber]); // Save invoice number temporarily if needed, though we generate on fly usually. Wait, in Transaction.php there is invoice_number? Let's check later. Actually, the prompt says "Gunakan invoice_number sebagai order_id". I will use INV-{transaction_id}.
+            $transaction->update(['invoice_number' => $invoiceNumber]); 
 
             $params = [
                 'transaction_details' => [
-                    'order_id' => 'INV-' . $transaction->id . '-' . time(), // add time to avoid duplicate order_id if retrying
+                    'order_id' => $invoiceNumber,
                     'gross_amount' => $finalAmount,
                 ],
                 'customer_details' => [
