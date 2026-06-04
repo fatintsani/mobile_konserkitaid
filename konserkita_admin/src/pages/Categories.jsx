@@ -11,7 +11,8 @@ const Categories = () => {
   
   const [formData, setFormData] = useState({
     name: '',
-    icon: '',
+    icon_file: null,
+    icon_preview: '',
     description: '',
     status: 'active'
   });
@@ -41,9 +42,20 @@ const Categories = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ 
+        ...formData, 
+        icon_file: file,
+        icon_preview: URL.createObjectURL(file) 
+      });
+    }
+  };
+
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ name: '', icon: '', description: '', status: 'active' });
+    setFormData({ name: '', icon_file: null, icon_preview: '', description: '', status: 'active' });
     setShowModal(true);
   };
 
@@ -51,7 +63,8 @@ const Categories = () => {
     setEditingId(category.id);
     setFormData({
       name: category.name,
-      icon: category.icon || '',
+      icon_file: null,
+      icon_preview: category.icon || '',
       description: category.description || '',
       status: category.status
     });
@@ -71,10 +84,24 @@ const Categories = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('status', formData.status);
+      if (formData.description) data.append('description', formData.description);
+      
+      if (formData.icon_file) {
+        data.append('icon', formData.icon_file);
+      }
+
       if (editingId) {
-        await api.put(`/admin/event-categories/${editingId}`, formData);
+        data.append('_method', 'PUT');
+        await api.post(`/admin/event-categories/${editingId}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        await api.post(`/admin/event-categories`, formData);
+        await api.post(`/admin/event-categories`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       setShowModal(false);
       fetchCategories();
@@ -205,8 +232,9 @@ const Categories = () => {
                   <input type="text" name="description" value={formData.description} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Icon URL (Optional)</label>
-                  <input type="url" name="icon" value={formData.icon} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                  <label className="block text-sm font-medium text-gray-700">Icon (Optional)</label>
+                  <input type="file" name="icon" accept="image/*" onChange={handleFileChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                  {formData.icon_preview && <img src={formData.icon_preview} alt="Preview" className="mt-2 h-12 w-12 object-cover rounded" />}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Status</label>

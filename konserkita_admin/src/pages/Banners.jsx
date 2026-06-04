@@ -11,7 +11,8 @@ const Banners = () => {
   
   const [formData, setFormData] = useState({
     title: '',
-    image_url: '',
+    image_file: null,
+    image_preview: '',
     link_url: '',
     status: 'active',
     start_date: '',
@@ -43,9 +44,20 @@ const Banners = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({ 
+        ...formData, 
+        image_file: file,
+        image_preview: URL.createObjectURL(file) 
+      });
+    }
+  };
+
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ title: '', image_url: '', link_url: '', status: 'active', start_date: '', end_date: '' });
+    setFormData({ title: '', image_file: null, image_preview: '', link_url: '', status: 'active', start_date: '', end_date: '' });
     setShowModal(true);
   };
 
@@ -53,7 +65,8 @@ const Banners = () => {
     setEditingId(banner.id);
     setFormData({
       title: banner.title,
-      image_url: banner.image_url,
+      image_file: null,
+      image_preview: banner.image_url,
       link_url: banner.link_url || '',
       status: banner.status,
       start_date: banner.start_date ? banner.start_date.split(' ')[0] : '',
@@ -75,14 +88,29 @@ const Banners = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let payload = { ...formData };
-      if (!payload.start_date) delete payload.start_date;
-      if (!payload.end_date) delete payload.end_date;
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('status', formData.status);
+      if (formData.link_url) data.append('link_url', formData.link_url);
+      if (formData.start_date) data.append('start_date', formData.start_date);
+      if (formData.end_date) data.append('end_date', formData.end_date);
+      
+      if (formData.image_file) {
+        data.append('image', formData.image_file);
+      } else if (!editingId) {
+        alert('Please select an image.');
+        return;
+      }
 
       if (editingId) {
-        await api.put(`/admin/banners/${editingId}`, payload);
+        data.append('_method', 'PUT');
+        await api.post(`/admin/banners/${editingId}`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        await api.post(`/admin/banners`, payload);
+        await api.post(`/admin/banners`, data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       setShowModal(false);
       fetchBanners();
@@ -210,9 +238,9 @@ const Banners = () => {
                   <input type="text" name="title" required value={formData.title} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Image URL</label>
-                  <input type="url" name="image_url" required value={formData.image_url} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
-                  {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-20 object-cover rounded" />}
+                  <label className="block text-sm font-medium text-gray-700">Image</label>
+                  <input type="file" name="image" accept="image/*" onChange={handleFileChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                  {formData.image_preview && <img src={formData.image_preview} alt="Preview" className="mt-2 h-20 object-cover rounded" />}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Link URL (Optional)</label>
