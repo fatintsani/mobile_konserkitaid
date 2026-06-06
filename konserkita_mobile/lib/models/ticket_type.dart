@@ -8,6 +8,7 @@ class TicketType {
   final double price;
   final int stock;
   final int maxBuy;
+  final bool requiresSeat;
   final Event? event;
 
   TicketType({
@@ -18,6 +19,7 @@ class TicketType {
     required this.price,
     required this.stock,
     required this.maxBuy,
+    this.requiresSeat = false,
     this.event,
   });
 
@@ -30,6 +32,7 @@ class TicketType {
       price: double.parse(json['price'].toString()),
       stock: json['stock'],
       maxBuy: json['max_buy_per_transaction'] ?? 5,
+      requiresSeat: json['requires_seat'] == 1 || json['requires_seat'] == true,
       event: json['event'] != null ? Event.fromJson(json['event']) : null,
     );
   }

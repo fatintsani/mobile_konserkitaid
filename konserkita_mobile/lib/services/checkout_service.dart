@@ -4,11 +4,13 @@ import 'api_service.dart';
 class CheckoutService {
   final ApiService _apiService = ApiService();
 
-  Future<Map<String, dynamic>> createCheckout(int eventId, List<Map<String, dynamic>> items, {String? promoCode}) async {
+  Future<Map<String, dynamic>> createCheckout(int eventId, List<Map<String, dynamic>> items, {String? promoCode, List<int>? seatIds}) async {
     try {
       final response = await _apiService.dio.post('/checkout', data: {
+        'event_id': eventId,
         'tickets': items,
-        'promo_code': ?promoCode,
+        'promo_code': promoCode,
+        if (seatIds != null && seatIds.isNotEmpty) 'seat_ids': seatIds,
       });
       
       if (response.data['success']) {

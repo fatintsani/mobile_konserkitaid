@@ -17,4 +17,11 @@ class Banner extends Model
         'start_date',
         'end_date',
     ];
+
+    protected function imageUrl(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => $value ? $value : url('default_img.png'),
+        );
+    }
 }

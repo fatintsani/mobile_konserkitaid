@@ -135,13 +135,17 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            context.push('/event/${event.id}/tickets');
+            if (event.isNumberedSeating) {
+              context.push('/event/${event.id}/seat-map');
+            } else {
+              context.push('/event/${event.id}/tickets');
+            }
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppConstants.primaryColor,
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
-          child: const Text('Buy Ticket', style: TextStyle(fontSize: 18, color: Colors.white)),
+          child: Text(event.isNumberedSeating ? 'Pilih Kursi' : 'Buy Ticket', style: const TextStyle(fontSize: 18, color: Colors.white)),
         ),
       ) : null,
     );

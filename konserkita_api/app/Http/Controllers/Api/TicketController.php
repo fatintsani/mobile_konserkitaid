@@ -9,7 +9,7 @@ class TicketController extends BaseController
 {
     public function myTickets(Request $request)
     {
-        $tickets = Ticket::with(['ticketType.event', 'transaction'])
+        $tickets = Ticket::with(['ticketType.event', 'transaction', 'seat'])
             ->where('user_id', $request->user()->id)
             ->latest()
             ->get();
@@ -19,7 +19,7 @@ class TicketController extends BaseController
 
     public function showQR($ticket_code)
     {
-        $ticket = Ticket::with(['ticketType.event.organizer', 'user'])
+        $ticket = Ticket::with(['ticketType.event.organizer', 'user', 'seat'])
             ->where('ticket_code', $ticket_code)
             ->first();
 

@@ -83,14 +83,34 @@ class PaymentController extends BaseController
         // Prevent double generation
         if ($transaction->tickets()->count() > 0) return;
 
+        $seatReservations = \App\Models\SeatReservation::where('transaction_id', $transaction->id)->get();
+        $seatReservationsByTicketType = [];
+
+        // If we have seat reservations, we need to map them. Wait, seat_reservations do not have ticket_type_id.
+        // But the user bought X tickets of Type A (requires seat) and Y tickets of Type B (no seat).
+        // The total number of seat_reservations should equal the total number of requires_seat tickets.
+        $seatIndex = 0;
+
         foreach ($transaction->items as $item) {
+            $ticketType = \App\Models\TicketType::find($item->ticket_type_id);
+
             for ($i = 0; $i < $item->quantity; $i++) {
+                $seatId = null;
+                if ($ticketType && $ticketType->requires_seat && isset($seatReservations[$seatIndex])) {
+                    $seatId = $seatReservations[$seatIndex]->seat_id;
+                    
+                    // Mark the seat as sold
+                    $seatReservations[$seatIndex]->update(['status' => 'sold']);
+                    $seatIndex++;
+                }
+
                 Ticket::create([
                     'transaction_id' => $transaction->id,
                     'ticket_type_id' => $item->ticket_type_id,
                     'user_id' => $transaction->user_id,
-                    'ticket_code' => 'TKT-' . Str::upper(Str::random(12)), // Unique QR Code content
+                    'ticket_code' => 'TKT-' . Str::upper(Str::random(12)),
                     'is_used' => false,
+                    'seat_id' => $seatId,
                 ]);
             }
         }
@@ -113,6 +133,14 @@ class PaymentController extends BaseController
         foreach ($transaction->items as $item) {
             $item->ticketType->increment('stock', $item->quantity);
         }
+
+        // Release seats
+        \App\Models\SeatReservation::where('transaction_id', $transaction->id)
+            ->update([
+                'status' => 'available',
+                'hold_expires_at' => null,
+                'transaction_id' => null
+            ]);
     }
 
     public function status(Request $request, $id)

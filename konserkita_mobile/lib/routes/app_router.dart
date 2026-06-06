@@ -38,6 +38,7 @@ import '../screens/organizer_payout_history_screen.dart';
 import '../screens/organizer_payout_detail_screen.dart';
 import '../models/event.dart';
 import '../models/transaction.dart';
+import '../screens/seat_map_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -94,6 +95,13 @@ class AppRouter {
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return TicketSelectionScreen(eventId: id);
+        },
+      ),
+      GoRoute(
+        path: '/event/:id/seat-map',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return SeatMapScreen(eventId: id);
         },
       ),
       GoRoute(

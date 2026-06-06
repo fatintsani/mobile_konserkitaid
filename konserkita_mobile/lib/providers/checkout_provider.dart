@@ -96,7 +96,7 @@ class CheckoutProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> checkout(int eventId) async {
+  Future<bool> checkout(int eventId, {List<int>? seatIds}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -110,7 +110,7 @@ class CheckoutProvider with ChangeNotifier {
         });
       });
 
-      _transactionResult = await _checkoutService.createCheckout(eventId, items, promoCode: _promoCode);
+      _transactionResult = await _checkoutService.createCheckout(eventId, items, promoCode: _promoCode, seatIds: seatIds);
       _isLoading = false;
       notifyListeners();
       return true;

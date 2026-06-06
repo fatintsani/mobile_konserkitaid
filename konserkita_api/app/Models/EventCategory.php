@@ -22,4 +22,11 @@ class EventCategory extends Model
     {
         return $this->hasMany(Event::class, 'category_id');
     }
+
+    protected function icon(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => $value ? $value : url('default_img.png'),
+        );
+    }
 }

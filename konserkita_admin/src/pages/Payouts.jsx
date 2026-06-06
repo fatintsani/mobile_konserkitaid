@@ -1,11 +1,7 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import DataTable from 'react-data-table-component';
+import React, { useState, useEffect } from 'react';
+import api from '../api/axios';
 import { RefreshCcw, Check, X, CreditCard, Search, X as XIcon } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { format } from 'date-fns';
-
-const API_URL = import.meta.env.VITE_API_URL;
 
 const Payouts = () => {
   const [payouts, setPayouts] = useState([]);
@@ -13,19 +9,21 @@ const Payouts = () => {
   const [filterText, setFilterText] = useState('');
   const [selectedPayout, setSelectedPayout] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalAction, setModalAction] = useState(null); // 'approve', 'reject', 'paid'
+  const [modalAction, setModalAction] = useState(null);
   const [adminNote, setAdminNote] = useState('');
 
   const fetchPayouts = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_URL}/admin/payouts`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setPayouts(response.data.data);
+      const response = await api.get('/admin/payouts');
+      if (response.data && response.data.data) {
+        setPayouts(Array.isArray(response.data.data) ? response.data.data : []);
+      } else {
+        setPayouts([]);
+      }
     } catch (error) {
       toast.error('Failed to fetch payouts');
       console.error('Error fetching payouts:', error);
+      setPayouts([]);
     } finally {
       setLoading(false);
     }
@@ -42,17 +40,14 @@ const Payouts = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const endpoint = `${API_URL}/admin/payouts/${selectedPayout.id}/${modalAction === 'paid' ? 'mark-paid' : modalAction}`;
+      const endpoint = `/admin/payouts/${selectedPayout?.id}/${modalAction === 'paid' ? 'mark-paid' : modalAction}`;
       
       const payload = {};
       if (modalAction === 'reject' || modalAction === 'paid') {
         payload.admin_note = adminNote;
       }
 
-      await axios.put(endpoint, payload, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await api.put(endpoint, payload);
 
       toast.success(`Payout successfully marked as ${modalAction}`);
       setIsModalOpen(false);
@@ -69,98 +64,21 @@ const Payouts = () => {
     setIsModalOpen(true);
   };
 
-  const columns = [
-    {
-      name: 'ID',
-      selector: row => row.id,
-      sortable: true,
-      width: '80px',
-    },
-    {
-      name: 'Organizer',
-      selector: row => row.organizer?.user?.name || 'Unknown',
-      sortable: true,
-    },
-    {
-      name: 'Amount',
-      selector: row => row.amount,
-      sortable: true,
-      format: row => `Rp ${new Intl.NumberFormat('id-ID').format(row.amount)}`,
-    },
-    {
-      name: 'Bank Info',
-      selector: row => `${row.bank_name} - ${row.bank_account_number}`,
-      sortable: false,
-    },
-    {
-      name: 'Status',
-      selector: row => row.status,
-      sortable: true,
-      cell: row => {
-        let bgColor = 'bg-gray-100';
-        let textColor = 'text-gray-800';
-        if (row.status === 'paid') {
-          bgColor = 'bg-green-100'; textColor = 'text-green-800';
-        } else if (row.status === 'approved') {
-          bgColor = 'bg-blue-100'; textColor = 'text-blue-800';
-        } else if (row.status === 'rejected') {
-          bgColor = 'bg-red-100'; textColor = 'text-red-800';
-        } else {
-          bgColor = 'bg-orange-100'; textColor = 'text-orange-800';
-        }
-        return (
-          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${bgColor} ${textColor}`}>
-            {row.status.toUpperCase()}
-          </span>
-        );
-      }
-    },
-    {
-      name: 'Date',
-      selector: row => row.requested_at,
-      sortable: true,
-      format: row => format(new Date(row.requested_at), 'dd MMM yyyy, HH:mm'),
-    },
-    {
-      name: 'Actions',
-      cell: row => (
-        <div className="flex space-x-2">
-          {row.status === 'pending' && (
-            <>
-              <button
-                onClick={() => openModal(row, 'approve')}
-                className="p-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
-                title="Approve"
-              >
-                <Check size={16} />
-              </button>
-              <button
-                onClick={() => openModal(row, 'reject')}
-                className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
-                title="Reject"
-              >
-                <X size={16} />
-              </button>
-            </>
-          )}
-          {row.status === 'approved' && (
-            <button
-              onClick={() => openModal(row, 'paid')}
-              className="p-1 bg-green-100 text-green-600 rounded hover:bg-green-200 flex items-center gap-1"
-              title="Mark Paid"
-            >
-              <CreditCard size={16} /> Paid
-            </button>
-          )}
-        </div>
-      ),
-    },
-  ];
 
-  const filteredItems = payouts.filter(item => {
-    return (item.organizer?.user?.name && item.organizer.user.name.toLowerCase().includes(filterText.toLowerCase())) ||
-           item.status.toLowerCase().includes(filterText.toLowerCase()) ||
-           item.bank_name.toLowerCase().includes(filterText.toLowerCase());
+
+  const filteredItems = (Array.isArray(payouts) ? payouts : []).filter(item => {
+    if (!item) return false;
+    const orgName = item.organizer?.user?.name || '';
+    const status = item.status || '';
+    const bankName = item.bank_name || '';
+    const bankAccount = item.bank_account_number || '';
+    
+    const search = filterText ? filterText.toLowerCase() : '';
+    
+    return orgName.toLowerCase().includes(search) ||
+           status.toLowerCase().includes(search) ||
+           bankName.toLowerCase().includes(search) ||
+           bankAccount.toLowerCase().includes(search);
   });
 
   return (
@@ -183,7 +101,7 @@ const Payouts = () => {
               placeholder="Search by name, bank, status..."
               value={filterText}
               onChange={e => setFilterText(e.target.value)}
-              className="pl-10 w-full p-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="pl-10 w-full p-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#6C2BD9] focus:border-[#6C2BD9] outline-none transition-all"
             />
           </div>
           <button
@@ -195,33 +113,101 @@ const Payouts = () => {
           </button>
         </div>
 
-        <DataTable
-          columns={columns}
-          data={filteredItems}
-          pagination
-          progressPending={loading}
-          customStyles={{
-            headRow: {
-              style: {
-                backgroundColor: '#f8fafc',
-                borderBottomColor: '#e2e8f0',
-              },
-            },
-            headCells: {
-              style: {
-                fontSize: '0.875rem',
-                fontWeight: '600',
-                color: '#475569',
-              },
-            },
-            cells: {
-              style: {
-                fontSize: '0.875rem',
-                color: '#334155',
-              },
-            },
-          }}
-        />
+        {loading ? (
+          <div className="p-8 flex justify-center"><RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} /></div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organizer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bank Info</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredItems.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-8 text-center text-gray-500">No payouts found.</td>
+                  </tr>
+                ) : (
+                  filteredItems.map((row) => (
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        #{row.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {row.organizer?.user?.name || 'Unknown'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        Rp {new Intl.NumberFormat('id-ID').format(row.amount)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div>{row.bank_name}</div>
+                        <div className="text-xs">{row.bank_account_number}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                          row.status === 'paid' ? 'bg-green-100 text-green-800' :
+                          row.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                          row.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                          'bg-orange-100 text-orange-800'
+                        }`}>
+                          {row.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {row.requested_at ? (() => {
+                          try {
+                            return new Date(row.requested_at).toLocaleString('id-ID', {
+                              day: '2-digit', month: 'short', year: 'numeric',
+                              hour: '2-digit', minute: '2-digit'
+                            });
+                          } catch(e) { return '-'; }
+                        })() : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div className="flex justify-end space-x-2">
+                          {row.status === 'pending' && (
+                            <>
+                              <button
+                                onClick={() => openModal(row, 'approve')}
+                                className="p-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                                title="Approve"
+                              >
+                                <Check size={16} />
+                              </button>
+                              <button
+                                onClick={() => openModal(row, 'reject')}
+                                className="p-1 bg-red-100 text-red-600 rounded hover:bg-red-200"
+                                title="Reject"
+                              >
+                                <X size={16} />
+                              </button>
+                            </>
+                          )}
+                          {row.status === 'approved' && (
+                            <button
+                              onClick={() => openModal(row, 'paid')}
+                              className="px-2 py-1 bg-green-100 text-green-600 rounded hover:bg-green-200 flex items-center gap-1"
+                              title="Mark Paid"
+                            >
+                              <CreditCard size={14} /> Paid
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Action Modal */}
