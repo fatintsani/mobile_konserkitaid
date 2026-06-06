@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
+import '../providers/auth_provider.dart';
+import '../providers/wishlist_provider.dart';
 import '../utils/constants.dart';
 
 class EventDetailScreen extends StatefulWidget {
@@ -20,9 +23,32 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     });
   }
 
+  void _handleWishlistToggle(BuildContext context, int eventId) {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isAuthenticated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Silakan login untuk menambahkan ke wishlist')),
+      );
+      context.push('/login');
+      return;
+    }
+    
+    context.read<WishlistProvider>().toggleWishlist(eventId).then((success) {
+      if (!success) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Gagal mengubah wishlist')),
+          );
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
+    final wishlistProvider = context.watch<WishlistProvider>();
+    final isWishlisted = wishlistProvider.isInWishlist(widget.eventId);
     final event = eventProvider.selectedEvent;
 
     return Scaffold(
@@ -30,6 +56,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         title: const Text('Event Detail'),
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
+        actions: [
+          if (event != null)
+            IconButton(
+              icon: Icon(
+                isWishlisted ? Icons.favorite : Icons.favorite_border,
+                color: isWishlisted ? AppConstants.secondaryColor : Colors.white,
+              ),
+              onPressed: () => _handleWishlistToggle(context, widget.eventId),
+            ),
+        ],
       ),
       body: eventProvider.isLoading || event == null
           ? const Center(child: CircularProgressIndicator())
@@ -42,8 +78,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       Container(
                         height: 200,
                         width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.image, size: 80, color: Colors.grey),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          image: event.bannerImage != null
+                              ? DecorationImage(
+                                  image: NetworkImage(AppConstants.getImageUrl(event.bannerImage!)),
+                                  fit: BoxFit.cover,
+                                )
+                              : null,
+                        ),
+                        child: event.bannerImage == null ? const Icon(Icons.image, size: 80, color: Colors.grey) : null,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -80,7 +124,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 subtitle: Text('Stock: ${ticket.stock}'),
                                 trailing: Text('Rp ${ticket.price.toStringAsFixed(0)}', style: const TextStyle(color: AppConstants.primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
                               ),
-                            )).toList(),
+                            )),
                           ],
                         ),
                       ),
@@ -91,8 +135,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         padding: const EdgeInsets.all(16.0),
         child: ElevatedButton(
           onPressed: () {
-            // TODO: Navigate to checkout screen
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Checkout feature coming soon')));
+            context.push('/event/${event.id}/tickets');
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppConstants.primaryColor,

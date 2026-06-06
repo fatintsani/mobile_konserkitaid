@@ -13,6 +13,9 @@ class EventCategory extends Model
     protected $fillable = [
         'name',
         'icon',
+        'slug',
+        'description',
+        'status',
     ];
 
     public function events(): HasMany

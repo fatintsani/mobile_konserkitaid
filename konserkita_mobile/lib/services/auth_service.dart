@@ -61,6 +61,18 @@ class AuthService {
     }
   }
 
+  Future<User> updateProfile(Map<String, dynamic> data) async {
+    try {
+      final response = await _apiService.dio.put('/profile', data: data);
+      if (response.data['success']) {
+        return User.fromJson(response.data['data']);
+      }
+      throw Exception(response.data['message']);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to update profile');
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _apiService.dio.post('/logout');

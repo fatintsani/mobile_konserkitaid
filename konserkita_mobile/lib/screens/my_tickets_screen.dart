@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/ticket.dart';
 import '../services/ticket_service.dart';
+import '../services/local_notification_service.dart';
 import '../utils/constants.dart';
 
 class MyTicketsScreen extends StatefulWidget {
@@ -29,6 +31,21 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         _tickets = tickets;
         _isLoading = false;
       });
+
+      // Schedule reminders for active tickets
+      for (var ticket in tickets) {
+        if (!ticket.isUsed && ticket.ticketType?.event != null) {
+          final event = ticket.ticketType!.event!;
+          // Untuk simulasi tahap awal, jadwalkan reminder 10 detik dari sekarang saat membuka halaman
+          // Di production, ini seharusnya di-schedule (H-1) dari event.date & event.time
+          LocalNotificationService.scheduleEventReminder(
+            id: ticket.id,
+            title: 'Reminder: ${event.title}',
+            body: 'Konser kamu akan dimulai besok di ${event.location}!',
+            scheduledDate: DateTime.now().add(const Duration(seconds: 10)),
+          );
+        }
+      }
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -62,48 +79,53 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                           
                           return Card(
                             margin: const EdgeInsets.only(bottom: 16),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          event?.title ?? 'Unknown Event',
-                                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            elevation: 2,
+                            child: InkWell(
+                              onTap: () => context.push('/my-tickets/${ticket.ticketCode}'),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            event?.title ?? 'Unknown Event',
+                                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppConstants.primaryColor),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
                                         ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: ticket.isUsed ? Colors.red : Colors.green,
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          ticket.isUsed ? 'USED' : 'ACTIVE',
-                                          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text('Type: ${ticket.ticketType?.name ?? 'Unknown'}', style: const TextStyle(color: Colors.grey)),
-                                  const SizedBox(height: 4),
-                                  Text('Code: ${ticket.ticketCode}', style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
-                                  const SizedBox(height: 16),
-                                  Center(
-                                    child: Container(
-                                      padding: const EdgeInsets.all(16),
-                                      color: Colors.grey[200],
-                                      child: const Icon(Icons.qr_code_2, size: 100), // Placeholder for actual QR code
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                          decoration: BoxDecoration(
+                                            color: ticket.isUsed ? Colors.red : Colors.green,
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Text(
+                                            ticket.isUsed ? 'USED' : 'ACTIVE',
+                                            style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                                          ),
+                                        )
+                                      ],
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 8),
+                                    Text('Type: ${ticket.ticketType?.name ?? 'Unknown'}', style: const TextStyle(color: Colors.grey)),
+                                    const SizedBox(height: 4),
+                                    Text('Code: ${ticket.ticketCode}', style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2)),
+                                    const SizedBox(height: 8),
+                                    const Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text('Tampilkan Tiket', style: TextStyle(color: AppConstants.secondaryColor, fontWeight: FontWeight.bold)),
+                                        Icon(Icons.arrow_forward_ios, size: 14, color: AppConstants.secondaryColor),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           );

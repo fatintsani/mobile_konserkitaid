@@ -2,15 +2,35 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/event_provider.dart';
+import 'providers/checkout_provider.dart';
+import 'providers/ticket_provider.dart';
+import 'providers/ticket_validation_provider.dart';
+import 'providers/transaction_provider.dart';
+import 'providers/wishlist_provider.dart';
+import 'providers/notification_provider.dart';
+import 'providers/organizer_provider.dart';
+import 'providers/content_provider.dart';
+import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalNotificationService.init();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => EventProvider()),
+        ChangeNotifierProvider(create: (_) => CheckoutProvider()),
+        ChangeNotifierProvider(create: (_) => TicketProvider()),
+        ChangeNotifierProvider(create: (_) => TicketValidationProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => OrganizerProvider()),
+        ChangeNotifierProvider(create: (_) => ContentProvider()),
       ],
       child: const KonserKitaApp(),
     ),

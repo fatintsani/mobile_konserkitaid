@@ -17,15 +17,8 @@ class WishlistController extends BaseController
         return $this->sendResponse($wishlists, 'Wishlist retrieved successfully.');
     }
 
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Wishlist\StoreWishlistRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'event_id' => 'required|exists:events,id',
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
-        }
 
         $wishlist = Wishlist::firstOrCreate([
             'user_id' => $request->user()->id,
@@ -35,9 +28,9 @@ class WishlistController extends BaseController
         return $this->sendResponse($wishlist, 'Event added to wishlist.');
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $event_id)
     {
-        $wishlist = Wishlist::where('id', $id)
+        $wishlist = Wishlist::where('event_id', $event_id)
             ->where('user_id', $request->user()->id)
             ->first();
 

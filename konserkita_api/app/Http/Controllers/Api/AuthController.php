@@ -10,20 +10,9 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends BaseController
 {
-    public function register(Request $request)
+    public function register(\App\Http\Requests\Auth\RegisterRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'role' => 'nullable|in:customer,organizer',
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
-        }
-
-        $input = $request->all();
+        $input = $request->validated();
         $input['password'] = Hash::make($input['password']);
         $input['role'] = $input['role'] ?? 'customer';
         
@@ -41,16 +30,8 @@ class AuthController extends BaseController
         return $this->sendResponse($success, 'User register successfully.');
     }
 
-    public function login(Request $request)
+    public function login(\App\Http\Requests\Auth\LoginRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
-        }
 
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
@@ -76,6 +57,26 @@ class AuthController extends BaseController
             $user->load('organizer');
         }
         return $this->sendResponse($user, 'Profile retrieved successfully.');
+    }
+
+    public function updateProfile(\App\Http\Requests\Auth\UpdateProfileRequest $request)
+    {
+        $user = $request->user();
+
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('phone')) {
+            $user->phone = $request->phone;
+        }
+
+        $user->save();
+
+        if ($user->role === 'organizer') {
+            $user->load('organizer');
+        }
+
+        return $this->sendResponse($user, 'Profile updated successfully.');
     }
 
     public function logout(Request $request)

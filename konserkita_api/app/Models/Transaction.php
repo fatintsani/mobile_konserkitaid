@@ -14,9 +14,13 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
+        'subtotal',
+        'discount_amount',
         'total_amount',
         'payment_status',
         'snap_token',
+        'payment_url',
+        'promo_code_id',
     ];
 
     public function user(): BelongsTo
@@ -37,5 +41,10 @@ class Transaction extends Model
     public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function promoCode(): BelongsTo
+    {
+        return $this->belongsTo(PromoCode::class);
     }
 }

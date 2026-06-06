@@ -1,3 +1,5 @@
+import 'event.dart';
+
 class TicketType {
   final int id;
   final int eventId;
@@ -6,6 +8,7 @@ class TicketType {
   final double price;
   final int stock;
   final int maxBuy;
+  final Event? event;
 
   TicketType({
     required this.id,
@@ -15,6 +18,7 @@ class TicketType {
     required this.price,
     required this.stock,
     required this.maxBuy,
+    this.event,
   });
 
   factory TicketType.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,7 @@ class TicketType {
       price: double.parse(json['price'].toString()),
       stock: json['stock'],
       maxBuy: json['max_buy_per_transaction'] ?? 5,
+      event: json['event'] != null ? Event.fromJson(json['event']) : null,
     );
   }
 }
