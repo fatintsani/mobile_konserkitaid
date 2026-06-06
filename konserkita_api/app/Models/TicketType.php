@@ -17,6 +17,7 @@ class TicketType extends Model
         'price',
         'stock',
         'max_buy_per_transaction',
+        'requires_seat',
     ];
 
     protected $appends = ['quota', 'status'];

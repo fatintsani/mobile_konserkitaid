@@ -24,6 +24,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'show']);
+Route::get('/events/{event}/seat-map', [\App\Http\Controllers\Api\EventSeatController::class, 'getSeatMap']);
 
 // Midtrans Webhook Notification
 Route::post('/payments/midtrans/callback', [PaymentController::class, 'notificationHandler']);
@@ -119,12 +120,20 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('banners', \App\Http\Controllers\Api\Admin\AdminBannerController::class);
         Route::apiResource('promos', \App\Http\Controllers\Api\Admin\AdminPromoController::class);
         Route::apiResource('event-categories', \App\Http\Controllers\Api\Admin\AdminCategoryController::class);
+
+        // Venues & Seats
+        Route::apiResource('venues', \App\Http\Controllers\Api\Admin\AdminVenueController::class);
+        Route::post('/venues/{id}/sections', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'storeSection']);
+        Route::post('/sections/{id}/generate-seats', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'generateSeats']);
+        Route::post('/events/{id}/seat-map', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'assignSeatMap']);
     });
 
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
 
     // Checkout
     Route::post('/checkout', [CheckoutController::class, 'process']);
+    Route::post('/events/{event}/seats/hold', [\App\Http\Controllers\Api\EventSeatController::class, 'holdSeats']);
+    Route::post('/events/{event}/seats/release', [\App\Http\Controllers\Api\EventSeatController::class, 'releaseSeats']);
 
     // Tickets
     Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);

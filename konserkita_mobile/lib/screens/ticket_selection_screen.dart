@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
 import '../providers/checkout_provider.dart';
+import '../providers/seat_provider.dart';
 import '../utils/constants.dart';
 
 class TicketSelectionScreen extends StatelessWidget {
@@ -13,6 +14,7 @@ class TicketSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final eventProvider = context.watch<EventProvider>();
     final checkoutProvider = context.watch<CheckoutProvider>();
+    final seatProvider = context.watch<SeatProvider>();
     final event = eventProvider.selectedEvent;
 
     if (event == null || event.id != eventId) {
@@ -95,7 +97,23 @@ class TicketSelectionScreen extends StatelessWidget {
               ],
             ),
             ElevatedButton(
-              onPressed: () => context.push('/checkout'),
+              onPressed: () {
+                int requiredSeats = 0;
+                checkoutProvider.selectedTickets.forEach((ticket, qty) {
+                  if (ticket.requiresSeat) {
+                    requiredSeats += qty;
+                  }
+                });
+                
+                if (requiredSeats > 0 && requiredSeats != seatProvider.selectedSeatIds.length) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Jumlah tiket yang dipilih ($requiredSeats) tidak sesuai dengan jumlah kursi yang direservasi (${seatProvider.selectedSeatIds.length}).')),
+                  );
+                  return;
+                }
+                
+                context.push('/checkout');
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppConstants.primaryColor,
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),

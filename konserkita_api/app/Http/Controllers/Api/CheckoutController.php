@@ -22,6 +22,7 @@ class CheckoutController extends BaseController
             $user = $request->user();
             $totalAmount = 0;
             $itemsToInsert = [];
+            $totalRequiredSeats = 0;
 
             // 1. Calculate total and check stock
             foreach ($request->tickets as $ticketData) {
@@ -45,9 +46,31 @@ class CheckoutController extends BaseController
                     'subtotal' => $subtotal,
                 ];
 
+                if ($ticketType->requires_seat) {
+                    $totalRequiredSeats += $ticketData['quantity'];
+                }
+
                 // Reduce stock
                 $ticketType->stock -= $ticketData['quantity'];
                 $ticketType->save();
+            }
+
+            if ($totalRequiredSeats > 0) {
+                if (!$request->has('seat_ids') || !is_array($request->seat_ids) || count($request->seat_ids) !== $totalRequiredSeats) {
+                    throw new \Exception("Please select exactly $totalRequiredSeats seats.");
+                }
+
+                $heldSeats = \App\Models\SeatReservation::where('event_id', $request->event_id)
+                    ->whereIn('seat_id', $request->seat_ids)
+                    ->where('user_id', $user->id)
+                    ->where('status', 'held')
+                    ->where('hold_expires_at', '>', now())
+                    ->lockForUpdate()
+                    ->get();
+
+                if ($heldSeats->count() !== $totalRequiredSeats) {
+                    throw new \Exception("Some selected seats are no longer held by you or have expired. Please re-select.");
+                }
             }
 
             // Promo validation logic
@@ -99,6 +122,13 @@ class CheckoutController extends BaseController
                 TransactionItem::create(array_merge($item, [
                     'transaction_id' => $transaction->id,
                 ]));
+            }
+
+            // 4. Update Seat Reservations
+            if ($totalRequiredSeats > 0) {
+                \App\Models\SeatReservation::where('event_id', $request->event_id)
+                    ->whereIn('seat_id', $request->seat_ids)
+                    ->update(['transaction_id' => $transaction->id]);
             }
 
             // Configure Midtrans

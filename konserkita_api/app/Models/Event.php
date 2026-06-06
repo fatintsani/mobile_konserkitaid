@@ -23,6 +23,7 @@ class Event extends Model
         'map_link',
         'banner_image',
         'status',
+        'is_numbered_seating',
     ];
 
     public function organizer(): BelongsTo
@@ -38,5 +39,12 @@ class Event extends Model
     public function ticketTypes(): HasMany
     {
         return $this->hasMany(TicketType::class);
+    }
+
+    protected function bannerImage(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => $value ? $value : url('default_img.png'),
+        );
     }
 }

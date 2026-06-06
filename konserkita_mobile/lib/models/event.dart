@@ -11,6 +11,7 @@ class Event {
   final String location;
   final String? bannerImage;
   final String status;
+  final bool isNumberedSeating;
   final List<TicketType> ticketTypes;
   final EventCategory? category;
 
@@ -24,6 +25,7 @@ class Event {
     required this.location,
     this.bannerImage,
     required this.status,
+    this.isNumberedSeating = false,
     required this.ticketTypes,
     this.category,
   });
@@ -42,6 +44,7 @@ class Event {
       location: json['location'],
       bannerImage: json['banner_image'],
       status: json['status'],
+      isNumberedSeating: json['is_numbered_seating'] == 1 || json['is_numbered_seating'] == true,
       ticketTypes: ticketTypesList,
       category: json['category'] != null ? EventCategory.fromJson(json['category']) : null,
     );

@@ -8,6 +8,7 @@ class Ticket {
   final String ticketCode;
   final bool isUsed;
   final String? usedAt;
+  final String? seatCode;
   final TicketType? ticketType;
 
   Ticket({
@@ -18,6 +19,7 @@ class Ticket {
     required this.ticketCode,
     required this.isUsed,
     this.usedAt,
+    this.seatCode,
     this.ticketType,
   });
 
@@ -30,6 +32,7 @@ class Ticket {
       ticketCode: json['ticket_code'],
       isUsed: json['is_used'] == 1 || json['is_used'] == true,
       usedAt: json['used_at'],
+      seatCode: json['seat'] != null ? json['seat']['seat_code'] : null,
       ticketType: json['ticket_type'] != null ? TicketType.fromJson(json['ticket_type']) : null,
     );
   }

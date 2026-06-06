@@ -60,6 +60,14 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                                 'Type: ${ticket.ticketType?.name ?? '-'}',
                                 style: const TextStyle(fontSize: 16, color: Colors.grey),
                               ),
+                              if (ticket.seatCode != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    'Seat: ${ticket.seatCode}',
+                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppConstants.secondaryColor),
+                                  ),
+                                ),
                               const SizedBox(height: 16),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

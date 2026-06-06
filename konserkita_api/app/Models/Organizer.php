@@ -22,4 +22,11 @@ class Organizer extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected function logo(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn ($value) => $value ? $value : url('default_img.png'),
+        );
+    }
 }

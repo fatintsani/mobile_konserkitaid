@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/checkout_provider.dart';
 import '../providers/event_provider.dart';
+import '../providers/seat_provider.dart';
 import '../utils/constants.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -197,7 +198,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5))]),
         child: ElevatedButton(
           onPressed: checkoutProvider.isLoading ? null : () async {
-            bool success = await context.read<CheckoutProvider>().checkout(event.id);
+            final seatProvider = context.read<SeatProvider>();
+            final seatIds = seatProvider.selectedSeatIds;
+            
+            bool success = await context.read<CheckoutProvider>().checkout(event.id, seatIds: seatIds);
             if (success && context.mounted) {
               final result = context.read<CheckoutProvider>().transactionResult;
               if (result != null && result['payment_url'] != null) {
