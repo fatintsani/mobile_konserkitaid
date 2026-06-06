@@ -16,6 +16,7 @@ import Banners from './pages/Banners';
 import PromoCodes from './pages/PromoCodes';
 import Categories from './pages/Categories';
 import Refunds from './pages/Refunds';
+import Payouts from './pages/Payouts';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
               <Route path="/promos" element={<PromoCodes />} />
               <Route path="/categories" element={<Categories />} />
               <Route path="/refunds" element={<Refunds />} />
+              <Route path="/payouts" element={<Payouts />} />
             </Route>
           </Route>
           

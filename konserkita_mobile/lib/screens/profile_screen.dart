@@ -104,6 +104,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'My Refunds',
+              icon: Icons.refresh,
+              onTap: () => context.push('/my-refunds'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'My Tickets',
               icon: Icons.confirmation_number_outlined,
               onTap: () => context.push('/my-tickets'),

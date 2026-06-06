@@ -6,7 +6,7 @@ import '../models/transaction.dart';
 import '../utils/constants.dart';
 
 class RefundRequestScreen extends StatefulWidget {
-  final TransactionModel transaction;
+  final Transaction transaction;
 
   const RefundRequestScreen({super.key, required this.transaction});
 
@@ -27,7 +27,7 @@ class _RefundRequestScreenState extends State<RefundRequestScreen> {
     if (mounted) {
       if (refund != null) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Refund request submitted successfully.')));
-        context.go('/my-refunds');
+        context.pushReplacement('/my-refunds');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(provider.error ?? 'Failed to submit.')));
       }

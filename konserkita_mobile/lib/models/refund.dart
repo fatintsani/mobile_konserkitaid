@@ -11,7 +11,7 @@ class Refund {
   final DateTime? requestedAt;
   final DateTime? approvedAt;
   final DateTime? processedAt;
-  final TransactionModel? transaction;
+  final Transaction? transaction;
 
   Refund({
     required this.id,
@@ -39,7 +39,7 @@ class Refund {
       requestedAt: json['requested_at'] != null ? DateTime.parse(json['requested_at']) : null,
       approvedAt: json['approved_at'] != null ? DateTime.parse(json['approved_at']) : null,
       processedAt: json['processed_at'] != null ? DateTime.parse(json['processed_at']) : null,
-      transaction: json['transaction'] != null ? TransactionModel.fromJson(json['transaction']) : null,
+      transaction: json['transaction'] != null ? Transaction.fromJson(json['transaction']) : null,
     );
   }
 }
