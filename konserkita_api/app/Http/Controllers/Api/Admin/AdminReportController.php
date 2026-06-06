@@ -14,6 +14,18 @@ class AdminReportController extends BaseController
     {
         $totalRevenue = Transaction::where('payment_status', 'success')->sum('total_amount');
         
+        $totalGrossRevenue = DB::table('transactions')
+            ->join('transaction_items', 'transactions.id', '=', 'transaction_items.transaction_id')
+            ->where('transactions.payment_status', 'success')
+            ->sum('transaction_items.subtotal');
+
+        $platformFeePercentage = config('platform.platform_fee_percentage', 10);
+        $totalPlatformFee = $totalGrossRevenue * ($platformFeePercentage / 100);
+        $totalOrganizerNetRevenue = $totalGrossRevenue - $totalPlatformFee;
+
+        $totalPaidOut = \App\Models\OrganizerPayout::where('status', 'paid')->sum('amount');
+        $totalPendingPayout = \App\Models\OrganizerPayout::whereIn('status', ['pending', 'approved'])->sum('amount');
+        
         $revenuePerEvent = DB::table('transactions')
             ->join('transaction_items', 'transactions.id', '=', 'transaction_items.transaction_id')
             ->join('ticket_types', 'transaction_items.ticket_type_id', '=', 'ticket_types.id')
@@ -26,6 +38,11 @@ class AdminReportController extends BaseController
 
         return $this->sendResponse([
             'total_revenue' => $totalRevenue,
+            'total_gross_revenue' => $totalGrossRevenue,
+            'total_platform_fee' => $totalPlatformFee,
+            'total_organizer_net_revenue' => $totalOrganizerNetRevenue,
+            'total_paid_out' => $totalPaidOut,
+            'total_pending_payout' => $totalPendingPayout,
             'revenue_per_event' => $revenuePerEvent,
         ], 'Sales reports retrieved successfully.');
     }

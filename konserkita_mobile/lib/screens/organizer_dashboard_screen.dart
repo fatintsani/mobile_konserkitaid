@@ -93,6 +93,13 @@ class _OrganizerDashboardScreenState extends State<OrganizerDashboardScreen> {
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                                   onTap: () => context.push('/scanner'),
                                 ),
+                                const Divider(height: 1),
+                                ListTile(
+                                  leading: const Icon(Icons.account_balance_wallet, color: Colors.teal),
+                                  title: const Text('Payouts & Settlement'),
+                                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                                  onTap: () => context.push('/organizer/payouts/balance'),
+                                ),
                               ],
                             ),
                           ),

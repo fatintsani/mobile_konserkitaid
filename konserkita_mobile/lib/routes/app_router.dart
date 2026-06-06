@@ -32,6 +32,10 @@ import '../screens/organizer_ticket_type_manage_screen.dart';
 import '../screens/refund_request_screen.dart';
 import '../screens/my_refunds_screen.dart';
 import '../screens/refund_detail_screen.dart';
+import '../screens/organizer_payout_balance_screen.dart';
+import '../screens/organizer_payout_request_screen.dart';
+import '../screens/organizer_payout_history_screen.dart';
+import '../screens/organizer_payout_detail_screen.dart';
 import '../models/event.dart';
 import '../models/transaction.dart';
 
@@ -147,7 +151,7 @@ class AppRouter {
       GoRoute(
         path: '/refund-request',
         builder: (context, state) {
-          final transaction = state.extra as TransactionModel;
+          final transaction = state.extra as Transaction;
           return RefundRequestScreen(transaction: transaction);
         },
       ),
@@ -214,6 +218,29 @@ class AppRouter {
         builder: (context, state) {
           final id = int.parse(state.pathParameters['id']!);
           return OrganizerAttendeesScreen(eventId: id);
+        },
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/payouts/balance',
+        builder: (context, state) => const OrganizerPayoutBalanceScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/payouts/request',
+        builder: (context, state) => const OrganizerPayoutRequestScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/payouts/history',
+        builder: (context, state) => const OrganizerPayoutHistoryScreen(),
+        redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/organizer/payouts/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerPayoutDetailScreen(payoutId: id);
         },
         redirect: _organizerGuard,
       ),

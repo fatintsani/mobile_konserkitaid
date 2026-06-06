@@ -150,10 +150,20 @@ class OrganizerController extends BaseController
             $q->where('event_id', $eventId);
         })->count();
 
-        $totalRevenue = Transaction::where('payment_status', 'success')
-            ->whereHas('items.ticketType', function ($q) use ($eventId) {
-                $q->where('event_id', $eventId);
-            })->sum('total_amount');
+        // Calculate gross revenue properly based on items
+        $grossRevenue = \App\Models\TransactionItem::whereHas('transaction', function($q) {
+            $q->where('payment_status', 'success');
+        })->whereHas('ticketType', function($q) use ($eventId) {
+            $q->where('event_id', $eventId);
+        })->sum('subtotal');
+
+        $platformFeePercentage = config('platform.platform_fee_percentage', 10);
+        $platformFee = $grossRevenue * ($platformFeePercentage / 100);
+        $netRevenue = $grossRevenue - $platformFee;
+
+        // Payout status for this event
+        $paidOut = \App\Models\OrganizerPayout::where('event_id', $eventId)->where('status', 'paid')->sum('amount');
+        $pendingPayout = \App\Models\OrganizerPayout::where('event_id', $eventId)->whereIn('status', ['pending', 'approved'])->sum('amount');
 
         $ticketsByType = DB::table('tickets')
             ->join('ticket_types', 'tickets.ticket_type_id', '=', 'ticket_types.id')
@@ -167,7 +177,11 @@ class OrganizerController extends BaseController
             'event_title' => $event->title,
             'total_transactions' => $totalTransactions,
             'total_tickets_sold' => $totalTicketsSold,
-            'total_revenue' => $totalRevenue,
+            'gross_revenue' => (float) $grossRevenue,
+            'platform_fee' => (float) $platformFee,
+            'net_revenue' => (float) $netRevenue,
+            'paid_out' => (float) $paidOut,
+            'pending_payout' => (float) $pendingPayout,
             'tickets_by_type' => $ticketsByType,
         ], 'Sales data retrieved successfully.');
     }
