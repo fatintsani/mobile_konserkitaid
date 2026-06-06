@@ -65,6 +65,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/events/{id}/ticket-types', [\App\Http\Controllers\Api\OrganizerController::class, 'storeTicketType']);
         Route::put('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'updateTicketType']);
         Route::delete('/ticket-types/{id}', [\App\Http\Controllers\Api\OrganizerController::class, 'destroyTicketType']);
+        
+        // Payouts
+        Route::get('/payouts/balance', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'balance']);
+        Route::get('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'index']);
+        Route::post('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'store']);
+        Route::get('/payouts/{id}', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'show']);
     });
 
     // Promo route
@@ -101,6 +107,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/refunds/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'approve']);
         Route::put('/refunds/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'reject']);
         Route::put('/refunds/{id}/process', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'process']);
+
+        // Payouts
+        Route::get('/payouts', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'index']);
+        Route::get('/payouts/{id}', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'show']);
+        Route::put('/payouts/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'approve']);
+        Route::put('/payouts/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'reject']);
+        Route::put('/payouts/{id}/mark-paid', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'markPaid']);
 
         // Content Management
         Route::apiResource('banners', \App\Http\Controllers\Api\Admin\AdminBannerController::class);
