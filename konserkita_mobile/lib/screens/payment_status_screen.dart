@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/checkout_provider.dart';
 import '../utils/constants.dart';
+import 'dart:async';
 
 class PaymentStatusScreen extends StatefulWidget {
   final int? transactionId;
@@ -14,11 +15,39 @@ class PaymentStatusScreen extends StatefulWidget {
 
 class _PaymentStatusScreenState extends State<PaymentStatusScreen> {
   String _status = 'pending';
+  Timer? _timer;
+  Duration _timeLeft = Duration.zero;
 
   @override
   void initState() {
     super.initState();
     _checkStatus();
+    _startTimer();
+  }
+
+  void _startTimer() {
+    final now = DateTime.now();
+    final endOfDay = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    _timeLeft = endOfDay.difference(now);
+    
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        final now = DateTime.now();
+        _timeLeft = endOfDay.difference(now);
+        if (_timeLeft.isNegative) {
+          _timeLeft = Duration.zero;
+          _timer?.cancel();
+          if (_status == 'pending') _checkStatus();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _checkStatus() async {
@@ -52,6 +81,14 @@ class _PaymentStatusScreenState extends State<PaymentStatusScreen> {
       statusColor = Colors.green;
       statusTitle = 'Payment Successful';
       statusMessage = 'Your tickets have been issued.';
+    } else if (_status == 'pending') {
+      statusIcon = Icons.access_time;
+      statusColor = Colors.orange;
+      statusTitle = 'Transaction Pending';
+      final hours = _timeLeft.inHours.toString().padLeft(2, '0');
+      final minutes = (_timeLeft.inMinutes % 60).toString().padLeft(2, '0');
+      final seconds = (_timeLeft.inSeconds % 60).toString().padLeft(2, '0');
+      statusMessage = 'Please complete your payment before 23:59.\nTime remaining: $hours:$minutes:$seconds';
     } else if (_status == 'expired' || _status == 'failed') {
       statusIcon = Icons.error;
       statusColor = Colors.red;
@@ -121,13 +158,32 @@ class _PaymentStatusScreenState extends State<PaymentStatusScreen> {
                   child: const Text('View My Tickets', style: TextStyle(color: Colors.white)),
                 )
               else if (_status == 'pending')
-                ElevatedButton(
-                  onPressed: _checkStatus,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  ),
-                  child: const Text('Check Status Again', style: TextStyle(color: Colors.white)),
+                Column(
+                  children: [
+                    if (transaction != null && transaction['payment_url'] != null)
+                      ElevatedButton(
+                        onPressed: () {
+                          context.go('/payment-webview', extra: {
+                            'paymentUrl': transaction['payment_url'],
+                            'transactionId': tId,
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppConstants.secondaryColor,
+                          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                        ),
+                        child: const Text('Pay Now', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      onPressed: _checkStatus,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text('Check Status Again', style: TextStyle(color: Colors.white)),
+                    ),
+                  ]
                 ),
                 
               const SizedBox(height: 16),

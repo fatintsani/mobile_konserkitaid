@@ -128,8 +128,13 @@ class CheckoutController extends BaseController
                 'customer_details' => [
                     'first_name' => $user->name,
                     'email' => $user->email,
-                    'phone' => '08123456789', // Default if phone not available
+                    'phone' => $user->phone ?? '08123456789', // Default if phone not available
                 ],
+                'custom_expiry' => [
+                    'start_time' => \Carbon\Carbon::now()->format('Y-m-d H:i:s O'),
+                    'unit' => 'minute',
+                    'duration' => \Carbon\Carbon::now()->diffInMinutes(\Carbon\Carbon::now()->endOfDay()),
+                ]
             ];
 
             $snapToken = Snap::getSnapToken($params);
