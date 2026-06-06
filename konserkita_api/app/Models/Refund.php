@@ -6,34 +6,31 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Ticket extends Model
+class Refund extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'transaction_id',
-        'ticket_type_id',
         'user_id',
-        'ticket_code',
-        'is_used',
-        'used_at',
-        'is_cancelled',
+        'reason',
+        'status',
+        'refund_amount',
+        'admin_note',
+        'requested_at',
+        'approved_at',
+        'processed_at',
     ];
 
     protected $casts = [
-        'is_used' => 'boolean',
-        'is_cancelled' => 'boolean',
-        'used_at' => 'datetime',
+        'requested_at' => 'datetime',
+        'approved_at' => 'datetime',
+        'processed_at' => 'datetime',
     ];
 
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
-    }
-
-    public function ticketType(): BelongsTo
-    {
-        return $this->belongsTo(TicketType::class);
     }
 
     public function user(): BelongsTo

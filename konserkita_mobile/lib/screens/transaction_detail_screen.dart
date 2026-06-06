@@ -178,6 +178,26 @@ class TransactionDetailScreen extends StatelessWidget {
                     ),
                   ),
                 
+                if (transaction.paymentStatus == 'success')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 24.0),
+                    child: OutlinedButton(
+                      onPressed: () {
+                        context.push('/refund-request', extra: transaction);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: const Text(
+                        'Ajukan Refund',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                
               ],
             ),
           );

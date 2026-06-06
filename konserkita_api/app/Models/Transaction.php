@@ -47,4 +47,9 @@ class Transaction extends Model
     {
         return $this->belongsTo(PromoCode::class);
     }
+
+    public function refund(): HasOne
+    {
+        return $this->hasOne(Refund::class);
+    }
 }

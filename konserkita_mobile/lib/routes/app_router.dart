@@ -29,7 +29,11 @@ import '../screens/organizer_sales_screen.dart';
 import '../screens/organizer_attendees_screen.dart';
 import '../screens/organizer_event_form_screen.dart';
 import '../screens/organizer_ticket_type_manage_screen.dart';
+import '../screens/refund_request_screen.dart';
+import '../screens/my_refunds_screen.dart';
+import '../screens/refund_detail_screen.dart';
 import '../models/event.dart';
+import '../models/transaction.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -139,6 +143,24 @@ class AppRouter {
       GoRoute(
         path: '/notifications',
         builder: (context, state) => const NotificationScreen(),
+      ),
+      GoRoute(
+        path: '/refund-request',
+        builder: (context, state) {
+          final transaction = state.extra as TransactionModel;
+          return RefundRequestScreen(transaction: transaction);
+        },
+      ),
+      GoRoute(
+        path: '/my-refunds',
+        builder: (context, state) => const MyRefundsScreen(),
+      ),
+      GoRoute(
+        path: '/my-refunds/:id',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return RefundDetailScreen(refundId: id);
+        },
       ),
       GoRoute(
         path: '/organizer',
