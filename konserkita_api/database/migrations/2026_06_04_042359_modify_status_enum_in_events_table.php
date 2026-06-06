@@ -7,11 +7,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE events MODIFY COLUMN status ENUM('draft', 'pending', 'published', 'cancelled', 'completed') DEFAULT 'pending'");
+        try {
+            DB::statement("ALTER TABLE events MODIFY COLUMN status ENUM('draft', 'pending', 'published', 'cancelled', 'completed') DEFAULT 'pending'");
+        } catch (\Exception $e) {
+            // Ignore for SQLite
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE events MODIFY COLUMN status ENUM('draft', 'published', 'cancelled', 'completed') DEFAULT 'draft'");
+        try {
+            DB::statement("ALTER TABLE events MODIFY COLUMN status ENUM('draft', 'published', 'cancelled', 'completed') DEFAULT 'draft'");
+        } catch (\Exception $e) {
+            // Ignore
+        }
     }
 };

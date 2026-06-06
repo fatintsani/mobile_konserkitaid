@@ -13,7 +13,8 @@ import {
   Menu,
   Image,
   Tag,
-  FolderTree
+  FolderTree,
+  RefreshCcw
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -31,6 +32,7 @@ const AdminLayout = () => {
     { name: 'Organizers', path: '/organizers', icon: <Briefcase size={20} /> },
     { name: 'Users', path: '/users', icon: <Users size={20} /> },
     { name: 'Transactions', path: '/transactions', icon: <CreditCard size={20} /> },
+    { name: 'Refunds', path: '/refunds', icon: <RefreshCcw size={20} /> },
     { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
   ];
 

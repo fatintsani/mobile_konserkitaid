@@ -46,9 +46,14 @@ class User extends Authenticatable
         return $this->hasMany(Ticket::class);
     }
 
-    public function wishlists()
+    public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
     }
 
     public function notifications()

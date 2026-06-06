@@ -15,6 +15,7 @@ import Reports from './pages/Reports';
 import Banners from './pages/Banners';
 import PromoCodes from './pages/PromoCodes';
 import Categories from './pages/Categories';
+import Refunds from './pages/Refunds';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
               <Route path="/banners" element={<Banners />} />
               <Route path="/promos" element={<PromoCodes />} />
               <Route path="/categories" element={<Categories />} />
+              <Route path="/refunds" element={<Refunds />} />
             </Route>
           </Route>
           

@@ -95,6 +95,13 @@ Route::middleware('auth:sanctum')->group(function () {
         
         Route::get('/reports/sales', [\App\Http\Controllers\Api\Admin\AdminReportController::class, 'sales']);
 
+        // Refunds
+        Route::get('/refunds', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'index']);
+        Route::get('/refunds/{id}', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'show']);
+        Route::put('/refunds/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'approve']);
+        Route::put('/refunds/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'reject']);
+        Route::put('/refunds/{id}/process', [\App\Http\Controllers\Api\Admin\AdminRefundController::class, 'process']);
+
         // Content Management
         Route::apiResource('banners', \App\Http\Controllers\Api\Admin\AdminBannerController::class);
         Route::apiResource('promos', \App\Http\Controllers\Api\Admin\AdminPromoController::class);
@@ -110,4 +117,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);
     Route::get('/tickets', [TicketController::class, 'myTickets']);
     Route::get('/tickets/{ticket_code}', [TicketController::class, 'showQR']);
+
+    // Refunds
+    Route::post('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'store']);
+    Route::get('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'index']);
+    Route::get('/refunds/{id}', [\App\Http\Controllers\Api\RefundController::class, 'show']);
 });
