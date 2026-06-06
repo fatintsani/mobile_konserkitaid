@@ -28,14 +28,15 @@ class PaymentController extends BaseController
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? null;
 
-        $transaction = Transaction::with('items')->find($transactionId);
-
-        if (!$transaction) {
-            return $this->sendError('Transaction not found.', [], 404);
-        }
-
         DB::beginTransaction();
         try {
+            $transaction = Transaction::with('items')->lockForUpdate()->find($transactionId);
+
+            if (!$transaction) {
+                DB::rollBack();
+                return $this->sendError('Transaction not found.', [], 404);
+            }
+
             // 2. Insert into payments table
             Payment::create([
                 'transaction_id' => $transaction->id,

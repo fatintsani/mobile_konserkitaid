@@ -36,11 +36,8 @@ class TicketController extends BaseController
         return $this->sendResponse($ticket, 'Ticket details retrieved successfully.');
     }
 
-    public function scanTicket(Request $request)
+    public function scanTicket(\App\Http\Requests\Ticket\ScanTicketRequest $request)
     {
-        $request->validate([
-            'ticket_code' => 'required|string',
-        ]);
 
         $user = auth('sanctum')->user();
         if (!in_array($user->role, ['organizer', 'admin', 'super_admin'])) {

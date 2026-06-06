@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
+import '../routes/app_router.dart';
 
 class ApiService {
   late Dio dio;
@@ -23,8 +24,12 @@ class ApiService {
         }
         return handler.next(options);
       },
-      onError: (DioException e, handler) {
-        // Handle global errors here if needed
+      onError: (DioException e, handler) async {
+        if (e.response?.statusCode == 401) {
+          await _storage.delete(key: 'auth_token');
+          await _storage.delete(key: 'user_data');
+          AppRouter.router.go('/login');
+        }
         return handler.next(e);
       }
     ));

@@ -53,7 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
 
     // Organizer Dashboard
-    Route::prefix('organizer')->group(function () {
+    Route::prefix('organizer')->middleware(\App\Http\Middleware\OrganizerMiddleware::class)->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Api\OrganizerController::class, 'dashboard']);
         Route::get('/events', [\App\Http\Controllers\Api\OrganizerController::class, 'events']);
         Route::post('/events', [\App\Http\Controllers\Api\OrganizerController::class, 'storeEvent']);

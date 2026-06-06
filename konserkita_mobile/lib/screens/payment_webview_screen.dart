@@ -39,13 +39,19 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
             });
           },
           onNavigationRequest: (NavigationRequest request) {
-            // Usually Midtrans redirects to a finish URL or app scheme when done
-            // Here we just monitor for typical callback patterns or user can close manually
             if (request.url.contains('example.com') || request.url.contains('callback') || request.url.contains('finish')) {
               _finishPayment();
               return NavigationDecision.prevent;
             }
             return NavigationDecision.navigate;
+          },
+          onWebResourceError: (WebResourceError error) {
+            setState(() {
+              _isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to load payment page: ${error.description}')),
+            );
           },
         ),
       )

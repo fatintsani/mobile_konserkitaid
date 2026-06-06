@@ -14,18 +14,8 @@ use Midtrans\Snap;
 
 class CheckoutController extends BaseController
 {
-    public function process(Request $request)
+    public function process(\App\Http\Requests\Checkout\ProcessCheckoutRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'tickets' => 'required|array',
-            'tickets.*.ticket_type_id' => 'required|exists:ticket_types,id',
-            'tickets.*.quantity' => 'required|integer|min:1',
-            'promo_code' => 'nullable|string',
-        ]);
-
-        if($validator->fails()){
-            return $this->sendError('Validation Error.', $validator->errors(), 422);       
-        }
 
         DB::beginTransaction();
         try {
@@ -64,7 +54,7 @@ class CheckoutController extends BaseController
             $discountAmount = 0;
             $promoCodeId = null;
             if ($request->filled('promo_code')) {
-                $promo = \App\Models\PromoCode::where('code', $request->promo_code)->where('status', 'active')->first();
+                $promo = \App\Models\PromoCode::where('code', $request->promo_code)->where('status', 'active')->lockForUpdate()->first();
                 if (!$promo) {
                     throw new \Exception("Promo code not found or inactive.");
                 }

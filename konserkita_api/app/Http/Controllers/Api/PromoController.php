@@ -9,16 +9,8 @@ use Carbon\Carbon;
 
 class PromoController extends BaseController
 {
-    public function validateCode(Request $request)
+    public function validateCode(\App\Http\Requests\Promo\ValidatePromoRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'promo_code' => 'required|string',
-            'subtotal' => 'required|numeric|min:0',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->sendError('Validation Error.', $validator->errors(), 422);
-        }
 
         $promo = PromoCode::where('code', $request->promo_code)
             ->where('status', 'active')

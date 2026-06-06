@@ -56,6 +56,19 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
+            errorBuilder: (context, error, child) {
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error, color: Colors.red, size: 50),
+                    const SizedBox(height: 16),
+                    Text('Camera Error: ${error.errorCode.name}', style: const TextStyle(color: Colors.white)),
+                    const Text('Please ensure camera permission is granted.', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              );
+            },
           ),
           CustomPaint(
             size: MediaQuery.of(context).size,
