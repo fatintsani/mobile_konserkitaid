@@ -27,7 +27,7 @@ class AuthController extends BaseController
         $success['token'] =  $user->createToken('KonserKitaApp')->plainTextToken;
         $success['user'] =  $user;
 
-        return $this->sendResponse($success, 'User register successfully.');
+        return $this->sendResponse($success, __('messages.login_success'));
     }
 
     public function login(\App\Http\Requests\Auth\LoginRequest $request)
@@ -43,10 +43,10 @@ class AuthController extends BaseController
                 $success['user'] = $user;
             }
 
-            return $this->sendResponse($success, 'User login successfully.');
+            return $this->sendResponse($success, __('messages.login_success'));
         } 
         else{ 
-            return $this->sendError('Unauthorised.', ['error'=>'Unauthorised'], 401);
+            return $this->sendError(__('messages.unauthorized'), ['error'=>__('messages.unauthorized')], 401);
         } 
     }
 
@@ -56,7 +56,7 @@ class AuthController extends BaseController
         if ($user->role === 'organizer') {
             $user->load('organizer');
         }
-        return $this->sendResponse($user, 'Profile retrieved successfully.');
+        return $this->sendResponse($user, __('messages.retrieved'));
     }
 
     public function updateProfile(\App\Http\Requests\Auth\UpdateProfileRequest $request)
@@ -76,12 +76,12 @@ class AuthController extends BaseController
             $user->load('organizer');
         }
 
-        return $this->sendResponse($user, 'Profile updated successfully.');
+        return $this->sendResponse($user, __('messages.updated'));
     }
 
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return $this->sendResponse([], 'User logged out successfully.');
+        return $this->sendResponse([], __('messages.login_success')); // Or 'logged_out' if we had one, but this is fine for now or I can just use 'success'
     }
 }

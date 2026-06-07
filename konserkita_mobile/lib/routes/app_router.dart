@@ -42,6 +42,7 @@ import '../screens/seat_map_screen.dart';
 import '../screens/review_form_screen.dart';
 import '../screens/event_reviews_screen.dart';
 import '../screens/my_reviews_screen.dart';
+import '../screens/language_settings_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -153,6 +154,10 @@ class AppRouter {
       GoRoute(
         path: '/edit-profile',
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: '/language',
+        builder: (context, state) => const LanguageSettingsScreen(),
       ),
       GoRoute(
         path: '/transactions',

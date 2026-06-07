@@ -1,0 +1,37 @@
+{
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "events": "Events",
+    "venues": "Venues",
+    "categories": "Categories",
+    "banners": "Banners",
+    "ticket_types": "Ticket Types",
+    "seat_maps": "Seat Maps",
+    "transactions": "Transactions",
+    "refunds": "Refunds",
+    "payouts": "Payouts",
+    "reviews": "Reviews",
+    "broadcast": "Broadcast Notification"
+  },
+  "topbar": {
+    "language": "Language",
+    "logout": "Logout"
+  },
+  "common": {
+    "add_new": "Add New",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "actions": "Actions",
+    "status": "Status"
+  },
+  "forms": {
+    "title_id": "Title (ID)",
+    "title_en": "Title (EN)",
+    "description_id": "Description (ID)",
+    "description_en": "Description (EN)",
+    "name_id": "Name (ID)",
+    "name_en": "Name (EN)"
+  }
+}

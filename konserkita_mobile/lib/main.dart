@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:konserkita_mobile/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -17,6 +19,7 @@ import 'providers/refund_provider.dart';
 import 'providers/payout_provider.dart';
 import 'providers/seat_provider.dart';
 import 'providers/review_provider.dart';
+import 'providers/locale_provider.dart';
 import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
@@ -51,6 +54,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PayoutProvider()),
         ChangeNotifierProvider(create: (_) => SeatProvider()),
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const KonserKitaApp(),
     ),
@@ -77,6 +81,7 @@ class _KonserKitaAppState extends State<KonserKitaApp> {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final localeProvider = context.watch<LocaleProvider>();
 
     if (authProvider.isCheckingAuth) {
       return const MaterialApp(
@@ -92,6 +97,17 @@ class _KonserKitaAppState extends State<KonserKitaApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: AppConstants.primaryColor),
         useMaterial3: true,
       ),
+      locale: localeProvider.locale,
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('id'),
+        Locale('en'),
+      ],
       routerConfig: AppRouter.router,
       debugShowCheckedModeBanner: false,
     );

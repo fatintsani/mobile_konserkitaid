@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:konserkita_mobile/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../utils/constants.dart';
 
@@ -18,9 +19,11 @@ class ProfileScreen extends StatelessWidget {
       );
     }
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l10n.profile),
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
       ),
@@ -122,14 +125,20 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
-              title: 'Logout',
+              title: l10n.language,
+              icon: Icons.language,
+              onTap: () => context.push('/language'),
+            ),
+            _buildMenuCard(
+              context,
+              title: l10n.logout,
               icon: Icons.logout,
               isDestructive: true,
               onTap: () {
                 showDialog(
                   context: context,
                   builder: (ctx) => AlertDialog(
-                    title: const Text('Logout'),
+                    title: Text(l10n.logout),
                     content: const Text('Are you sure you want to logout?'),
                     actions: [
                       TextButton(

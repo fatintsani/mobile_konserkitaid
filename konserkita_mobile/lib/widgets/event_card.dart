@@ -5,6 +5,7 @@ import '../models/event.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wishlist_provider.dart';
 import '../utils/constants.dart';
+import '../utils/locale_helper.dart';
 
 class EventCard extends StatelessWidget {
   final Event event;
@@ -104,12 +105,12 @@ class EventCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        event.category!.name,
+                        LocaleHelper.getLocalizedText(context, event.category!.nameEn, event.category!.name),
                         style: const TextStyle(color: AppConstants.primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
                       ),
                     ),
                   Text(
-                    event.title,
+                    LocaleHelper.getLocalizedText(context, event.titleEn, event.title),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

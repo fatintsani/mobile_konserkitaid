@@ -1,5 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   LayoutDashboard, 
@@ -24,6 +25,11 @@ import {
 const AdminLayout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (e) => {
+    i18n.changeLanguage(e.target.value);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -31,23 +37,21 @@ const AdminLayout = () => {
   };
 
   const navItems = [
-    { name: 'Dashboard', path: '/', icon: <LayoutDashboard size={20} /> },
-    { name: 'Events', path: '/events', icon: <CalendarDays size={20} /> },
-    { name: 'Organizers', path: '/organizers', icon: <Briefcase size={20} /> },
-    { name: 'Users', path: '/users', icon: <Users size={20} /> },
-    { name: 'Transactions', path: '/transactions', icon: <CreditCard size={20} /> },
-    { name: 'Refunds', path: '/refunds', icon: <RefreshCcw size={20} /> },
-    { name: 'Reviews', path: '/reviews', icon: <Star size={20} /> },
-    { name: 'Payouts', path: '/payouts', icon: <Wallet size={20} /> },
-    { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
-    { name: 'Broadcast', path: '/broadcast', icon: <Radio size={20} /> },
+    { name: t('sidebar.dashboard'), path: '/', icon: <LayoutDashboard size={20} /> },
+    { name: t('sidebar.events'), path: '/events', icon: <CalendarDays size={20} /> },
+    { name: t('sidebar.organizers'), path: '/organizers', icon: <Briefcase size={20} /> },
+    { name: t('sidebar.users'), path: '/users', icon: <Users size={20} /> },
+    { name: t('sidebar.transactions'), path: '/transactions', icon: <CreditCard size={20} /> },
+    { name: t('sidebar.refunds'), path: '/refunds', icon: <RefreshCcw size={20} /> },
+    { name: t('sidebar.reviews'), path: '/reviews', icon: <Star size={20} /> },
+    { name: t('sidebar.payouts'), path: '/payouts', icon: <Wallet size={20} /> },
+    { name: t('sidebar.broadcast'), path: '/broadcast', icon: <Radio size={20} /> },
   ];
 
   const contentItems = [
-    { name: 'Venues', path: '/venues', icon: <MapPin size={20} /> },
-    { name: 'Banners', path: '/banners', icon: <Image size={20} /> },
-    { name: 'Promo Codes', path: '/promos', icon: <Tag size={20} /> },
-    { name: 'Categories', path: '/categories', icon: <FolderTree size={20} /> },
+    { name: t('sidebar.venues'), path: '/venues', icon: <MapPin size={20} /> },
+    { name: t('sidebar.banners'), path: '/banners', icon: <Image size={20} /> },
+    { name: t('sidebar.categories'), path: '/categories', icon: <FolderTree size={20} /> },
   ];
 
   return (
@@ -106,7 +110,7 @@ const AdminLayout = () => {
             className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
           >
             <LogOut size={20} className="mr-3" />
-            Logout
+            {t('topbar.logout')}
           </button>
         </div>
       </aside>
@@ -122,7 +126,15 @@ const AdminLayout = () => {
             <span className="ml-3 text-xl font-bold text-[#6C2BD9]">KonserKita</span>
           </div>
           <div className="hidden md:block"></div>
-          <div className="flex items-center">
+          <div className="flex items-center space-x-6">
+            <select
+              onChange={changeLanguage}
+              defaultValue={i18n.language}
+              className="text-sm border-gray-300 rounded-md focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
+            >
+              <option value="id">Indonesia</option>
+              <option value="en">English</option>
+            </select>
             <div className="flex items-center space-x-3">
               <div className="flex flex-col text-right">
                 <span className="text-sm font-medium">{user?.name}</span>

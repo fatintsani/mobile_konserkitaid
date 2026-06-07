@@ -1,0 +1,23 @@
+{
+    "@@locale": "en",
+    "appTitle": "KonserKita",
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "home": "Home",
+    "explore": "Explore",
+    "tickets": "Tickets",
+    "profile": "Profile",
+    "searchEvents": "Search Events...",
+    "popularEvents": "Popular Events",
+    "allEvents": "All Events",
+    "settings": "Settings",
+    "language": "Language",
+    "logout": "Logout",
+    "buyTicket": "Buy Ticket",
+    "myTickets": "My Tickets",
+    "refund": "Refund",
+    "payouts": "Payouts",
+    "reviews": "Reviews"
+}

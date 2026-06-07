@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { Plus, Edit2, Trash2, RefreshCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Banners = () => {
+  const { t } = useTranslation();
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
@@ -11,6 +13,7 @@ const Banners = () => {
   
   const [formData, setFormData] = useState({
     title: '',
+    title_en: '',
     image_file: null,
     image_preview: '',
     link_url: '',
@@ -57,7 +60,7 @@ const Banners = () => {
 
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ title: '', image_file: null, image_preview: '', link_url: '', status: 'active', start_date: '', end_date: '' });
+    setFormData({ title: '', title_en: '', image_file: null, image_preview: '', link_url: '', status: 'active', start_date: '', end_date: '' });
     setShowModal(true);
   };
 
@@ -65,6 +68,7 @@ const Banners = () => {
     setEditingId(banner.id);
     setFormData({
       title: banner.title,
+      title_en: banner.title_en || '',
       image_file: null,
       image_preview: banner.image_url,
       link_url: banner.link_url || '',
@@ -90,6 +94,7 @@ const Banners = () => {
     try {
       const data = new FormData();
       data.append('title', formData.title);
+      data.append('title_en', formData.title_en);
       data.append('status', formData.status);
       if (formData.link_url) data.append('link_url', formData.link_url);
       if (formData.start_date) data.append('start_date', formData.start_date);
@@ -234,8 +239,12 @@ const Banners = () => {
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Title</label>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.title_id')}</label>
                   <input type="text" name="title" required value={formData.title} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.title_en')}</label>
+                  <input type="text" name="title_en" value={formData.title_en} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Image</label>

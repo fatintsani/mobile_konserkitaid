@@ -7,6 +7,8 @@ import '../providers/notification_provider.dart';
 import '../providers/content_provider.dart';
 import '../widgets/event_card.dart';
 import '../utils/constants.dart';
+import 'package:konserkita_mobile/l10n/app_localizations.dart';
+import '../utils/locale_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -36,10 +38,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final contentProvider = context.watch<ContentProvider>();
     final user = authProvider.user;
     final isOrganizerOrAdmin = user?.role == 'organizer' || user?.role == 'admin' || user?.role == 'super_admin';
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('KonserKita'),
+        title: Text(l10n.appTitle),
         backgroundColor: AppConstants.primaryColor,
         foregroundColor: Colors.white,
         actions: [
@@ -134,9 +137,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Categories',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      Text(
+                        l10n.explore,
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
                       SingleChildScrollView(
@@ -147,8 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               padding: const EdgeInsets.only(right: 12),
                               child: Chip(
                                 avatar: category['icon'] != null ? CircleAvatar(backgroundImage: NetworkImage(AppConstants.getImageUrl(category['icon']))) : null,
-                                label: Text(category['name']),
-                                backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                                label: Text(LocaleHelper.getLocalizedText(context, category['name_en'], category['name'])),
+                                backgroundColor: AppConstants.primaryColor.withValues(alpha: 0.1),
                               ),
                             );
                           }).toList(),
@@ -158,11 +161,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
                 child: Text(
-                  'Upcoming Events',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  l10n.popularEvents,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
 

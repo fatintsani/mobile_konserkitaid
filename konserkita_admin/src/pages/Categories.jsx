@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
 import { Plus, Edit2, Trash2, RefreshCcw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Categories = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   
-  const [formData, setFormData] = useState({
     name: '',
+    name_en: '',
     icon_file: null,
     icon_preview: '',
     description: '',
+    description_en: '',
     status: 'active'
   });
 
@@ -55,7 +58,7 @@ const Categories = () => {
 
   const handleCreate = () => {
     setEditingId(null);
-    setFormData({ name: '', icon_file: null, icon_preview: '', description: '', status: 'active' });
+    setFormData({ name: '', name_en: '', icon_file: null, icon_preview: '', description: '', description_en: '', status: 'active' });
     setShowModal(true);
   };
 
@@ -63,9 +66,11 @@ const Categories = () => {
     setEditingId(category.id);
     setFormData({
       name: category.name,
+      name_en: category.name_en || '',
       icon_file: null,
       icon_preview: category.icon || '',
       description: category.description || '',
+      description_en: category.description_en || '',
       status: category.status
     });
     setShowModal(true);
@@ -86,8 +91,10 @@ const Categories = () => {
     try {
       const data = new FormData();
       data.append('name', formData.name);
+      data.append('name_en', formData.name_en);
       data.append('status', formData.status);
       if (formData.description) data.append('description', formData.description);
+      if (formData.description_en) data.append('description_en', formData.description_en);
       
       if (formData.icon_file) {
         data.append('icon', formData.icon_file);
@@ -224,12 +231,20 @@ const Categories = () => {
               </h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Category Name</label>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.name_id')}</label>
                   <input type="text" name="name" required value={formData.name} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.name_en')}</label>
+                  <input type="text" name="name_en" value={formData.name_en} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.description_id')}</label>
                   <input type="text" name="description" value={formData.description} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('forms.description_en')}</label>
+                  <input type="text" name="description_en" value={formData.description_en} onChange={handleInputChange} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Icon (Optional)</label>
