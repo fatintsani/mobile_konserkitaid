@@ -16,10 +16,12 @@ class CheckoutScreen extends StatefulWidget {
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
   final TextEditingController _promoController = TextEditingController();
+  final TextEditingController _referralController = TextEditingController();
 
   @override
   void dispose() {
     _promoController.dispose();
+    _referralController.dispose();
     super.dispose();
   }
 
@@ -149,6 +151,70 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     const Icon(Icons.check_circle, color: Colors.green, size: 16),
                     const SizedBox(width: 4),
                     Text('Promo applied! Discount Rp ${checkoutProvider.discountAmount.toStringAsFixed(0)}', style: const TextStyle(color: Colors.green)),
+                  ],
+                ),
+              ),
+
+            const SizedBox(height: 24),
+            const Text('Referral Code (Optional)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _referralController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter referral code',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                      enabled: checkoutProvider.referralCode == null,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                if (checkoutProvider.referralCode == null)
+                  ElevatedButton(
+                    onPressed: checkoutProvider.isLoading ? null : () async {
+                      if (_referralController.text.isEmpty) return;
+                      bool success = await checkoutProvider.applyReferral(_referralController.text);
+                      if (!success && context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(checkoutProvider.error ?? 'Referral code invalid'), backgroundColor: Colors.red),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppConstants.secondaryColor,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                    ),
+                    child: checkoutProvider.isLoading
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Text('Apply', style: TextStyle(color: Colors.white)),
+                  )
+                else
+                  ElevatedButton(
+                    onPressed: checkoutProvider.isLoading ? null : () {
+                      checkoutProvider.removeReferral();
+                      _referralController.clear();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                    ),
+                    child: const Text('Remove', style: TextStyle(color: Colors.white)),
+                  ),
+              ],
+            ),
+            if (checkoutProvider.referralCode != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: [
+                    const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                    const SizedBox(width: 4),
+                    const Text('Referral code applied!', style: TextStyle(color: Colors.green)),
                   ],
                 ),
               ),

@@ -116,6 +116,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'Affiliate & Referrals',
+              icon: Icons.group_add_outlined,
+              onTap: () => context.push('/referral-dashboard'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'My Tickets',
               icon: Icons.confirmation_number_outlined,
               onTap: () => context.push('/my-tickets'),

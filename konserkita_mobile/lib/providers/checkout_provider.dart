@@ -11,6 +11,7 @@ class CheckoutProvider with ChangeNotifier {
   Map<String, dynamic>? _transactionResult;
   String? _promoCode;
   double _discountAmount = 0;
+  String? _referralCode;
 
   Map<TicketType, int> get selectedTickets => _selectedTickets;
   bool get isLoading => _isLoading;
@@ -18,6 +19,7 @@ class CheckoutProvider with ChangeNotifier {
   Map<String, dynamic>? get transactionResult => _transactionResult;
   String? get promoCode => _promoCode;
   double get discountAmount => _discountAmount;
+  String? get referralCode => _referralCode;
 
   void addTicket(TicketType ticketType) {
     int currentQuantity = _selectedTickets[ticketType] ?? 0;
@@ -44,6 +46,7 @@ class CheckoutProvider with ChangeNotifier {
     _error = null;
     _promoCode = null;
     _discountAmount = 0;
+    _referralCode = null;
     notifyListeners();
   }
 
@@ -96,6 +99,32 @@ class CheckoutProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<bool> applyReferral(String code) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _checkoutService.validateReferral(code);
+      _referralCode = result['code'];
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = e.toString().replaceAll('Exception: ', '');
+      _referralCode = null;
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  void removeReferral() {
+    _referralCode = null;
+    _error = null;
+    notifyListeners();
+  }
+
   Future<bool> checkout(int eventId, {List<int>? seatIds}) async {
     _isLoading = true;
     _error = null;
@@ -110,7 +139,13 @@ class CheckoutProvider with ChangeNotifier {
         });
       });
 
-      _transactionResult = await _checkoutService.createCheckout(eventId, items, promoCode: _promoCode, seatIds: seatIds);
+      _transactionResult = await _checkoutService.createCheckout(
+        eventId, 
+        items, 
+        promoCode: _promoCode, 
+        referralCode: _referralCode,
+        seatIds: seatIds
+      );
       _isLoading = false;
       notifyListeners();
       return true;
