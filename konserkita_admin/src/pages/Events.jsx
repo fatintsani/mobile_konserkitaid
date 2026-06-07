@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
-import { CheckCircle, XCircle, Trash2, RefreshCcw } from 'lucide-react';
+import { CheckCircle, XCircle, Trash2, RefreshCcw, MapPin } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -8,6 +9,12 @@ const Events = () => {
   const [statusFilter, setStatusFilter] = useState('');
 
   const [pagination, setPagination] = useState({});
+  
+  // Venue Assignment State
+  const [isVenueModalOpen, setIsVenueModalOpen] = useState(false);
+  const [currentEventForVenue, setCurrentEventForVenue] = useState(null);
+  const [venuesList, setVenuesList] = useState([]);
+  const [selectedVenueId, setSelectedVenueId] = useState('');
 
   const fetchEvents = async (pageUrl = null) => {
     setLoading(true);
@@ -31,6 +38,40 @@ const Events = () => {
     fetchEvents(`/admin/events?page=1${statusFilter ? `&status=${statusFilter}` : ''}`);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [statusFilter]);
+
+  const fetchVenuesList = async () => {
+    try {
+      const response = await api.get('/admin/venues');
+      if (response.data.success) {
+        setVenuesList(response.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch venues', error);
+    }
+  };
+
+  const openVenueModal = (event) => {
+    setCurrentEventForVenue(event);
+    setSelectedVenueId(event.seatMap?.venue_id || '');
+    if (venuesList.length === 0) fetchVenuesList();
+    setIsVenueModalOpen(true);
+  };
+
+  const handleAssignVenue = async (e) => {
+    e.preventDefault();
+    if (!selectedVenueId) return toast.error('Please select a venue');
+    
+    try {
+      await api.post(`/admin/events/${currentEventForVenue.id}/seat-map`, {
+        venue_id: selectedVenueId
+      });
+      toast.success('Venue assigned successfully');
+      setIsVenueModalOpen(false);
+      fetchEvents();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to assign venue');
+    }
+  };
 
   const handleApprove = async (id) => {
     try {
@@ -137,6 +178,9 @@ const Events = () => {
                               </button>
                             </>
                           )}
+                          <button onClick={() => openVenueModal(event)} className="text-purple-600 hover:text-purple-900 bg-purple-50 p-1.5 rounded-md" title={event.seatMap ? "Change Venue" : "Assign Venue"}>
+                            <MapPin size={18} />
+                          </button>
                           <button onClick={() => handleDelete(event.id)} className="text-red-600 hover:text-red-900 bg-red-50 p-1.5 rounded-md" title="Delete">
                             <Trash2 size={18} />
                           </button>
@@ -179,6 +223,47 @@ const Events = () => {
                 </button>
               </nav>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Assign Venue Modal */}
+      {isVenueModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900 bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+            <form onSubmit={handleAssignVenue} className="flex flex-col">
+              <div className="px-6 py-4 border-b border-gray-100 flex-shrink-0">
+                <h3 className="text-lg font-bold text-gray-900">Assign Venue to Event</h3>
+                <p className="text-sm text-gray-500">{currentEventForVenue?.title}</p>
+              </div>
+              <div className="px-6 py-6 flex-1">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select Master Venue</label>
+                <select 
+                  value={selectedVenueId} 
+                  onChange={(e) => setSelectedVenueId(e.target.value)} 
+                  className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
+                  required
+                >
+                  <option value="" disabled>-- Select a Venue --</option>
+                  {venuesList.map(v => (
+                    <option key={v.id} value={v.id}>{v.name} ({v.city})</option>
+                  ))}
+                </select>
+                {currentEventForVenue?.seatMap && (
+                  <p className="mt-2 text-sm text-green-600 flex items-center">
+                    <CheckCircle size={14} className="mr-1" /> Currently assigned
+                  </p>
+                )}
+              </div>
+              <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end space-x-3 flex-shrink-0">
+                <button type="button" onClick={() => setIsVenueModalOpen(false)} className="px-4 py-2 bg-white border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50 transition">
+                  Cancel
+                </button>
+                <button type="submit" className="px-4 py-2 bg-[#6C2BD9] text-white rounded-md font-medium hover:bg-purple-700 transition">
+                  Save Assignment
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

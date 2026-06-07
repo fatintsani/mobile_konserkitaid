@@ -15,7 +15,8 @@ import {
   Tag,
   FolderTree,
   RefreshCcw,
-  Wallet
+  Wallet,
+  MapPin
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -39,6 +40,7 @@ const AdminLayout = () => {
   ];
 
   const contentItems = [
+    { name: 'Venues', path: '/venues', icon: <MapPin size={20} /> },
     { name: 'Banners', path: '/banners', icon: <Image size={20} /> },
     { name: 'Promo Codes', path: '/promos', icon: <Tag size={20} /> },
     { name: 'Categories', path: '/categories', icon: <FolderTree size={20} /> },

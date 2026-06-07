@@ -17,6 +17,8 @@ import PromoCodes from './pages/PromoCodes';
 import Categories from './pages/Categories';
 import Refunds from './pages/Refunds';
 import Payouts from './pages/Payouts';
+import Venues from './pages/Venues';
+import VenueDetail from './pages/VenueDetail';
 
 function App() {
   return (
@@ -38,6 +40,8 @@ function App() {
               <Route path="/categories" element={<Categories />} />
               <Route path="/refunds" element={<Refunds />} />
               <Route path="/payouts" element={<Payouts />} />
+              <Route path="/venues" element={<Venues />} />
+              <Route path="/venues/:id" element={<VenueDetail />} />
             </Route>
           </Route>
           
