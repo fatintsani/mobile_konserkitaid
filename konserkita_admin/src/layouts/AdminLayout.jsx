@@ -17,7 +17,8 @@ import {
   RefreshCcw,
   Wallet,
   MapPin,
-  Star
+  Star,
+  Radio
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -39,6 +40,7 @@ const AdminLayout = () => {
     { name: 'Reviews', path: '/reviews', icon: <Star size={20} /> },
     { name: 'Payouts', path: '/payouts', icon: <Wallet size={20} /> },
     { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
+    { name: 'Broadcast', path: '/broadcast', icon: <Radio size={20} /> },
   ];
 
   const contentItems = [

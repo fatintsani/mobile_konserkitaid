@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/auth_service.dart';
+import '../services/fcm_service.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -21,6 +22,9 @@ class AuthProvider with ChangeNotifier {
     
     try {
       _user = await _authService.getProfile();
+      if (_user != null) {
+        FCMService().registerToken();
+      }
     } catch (e) {
       _user = null;
     } finally {
@@ -54,6 +58,9 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _authService.login(email, password);
+      if (_user != null) {
+        FCMService().registerToken();
+      }
     } finally {
       _setLoading(false);
     }
@@ -63,6 +70,9 @@ class AuthProvider with ChangeNotifier {
     _setLoading(true);
     try {
       _user = await _authService.register(name, email, password, passwordConfirmation);
+      if (_user != null) {
+        FCMService().registerToken();
+      }
     } finally {
       _setLoading(false);
     }
@@ -70,6 +80,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     _setLoading(true);
+    await FCMService().unregisterToken();
     await _authService.logout();
     _user = null;
     _setLoading(false);

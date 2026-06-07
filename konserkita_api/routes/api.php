@@ -36,6 +36,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // Device Tokens
+    Route::post('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'store']);
+    Route::delete('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'destroy']);
+
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
     Route::get('/transactions/{id}', [App\Http\Controllers\Api\TransactionController::class, 'show']);
@@ -133,6 +137,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/reviews/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'approve']);
         Route::put('/reviews/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'reject']);
         Route::delete('/reviews/{id}', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'destroy']);
+
+        // Notifications
+        Route::post('/notifications/broadcast', [\App\Http\Controllers\Api\Admin\AdminNotificationController::class, 'broadcast']);
     });
 
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);

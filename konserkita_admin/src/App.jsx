@@ -20,6 +20,7 @@ import Payouts from './pages/Payouts';
 import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
 import Reviews from './pages/Reviews';
+import BroadcastNotification from './pages/BroadcastNotification';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
               <Route path="/venues" element={<Venues />} />
               <Route path="/venues/:id" element={<VenueDetail />} />
               <Route path="/reviews" element={<Reviews />} />
+              <Route path="/broadcast" element={<BroadcastNotification />} />
             </Route>
           </Route>
           
