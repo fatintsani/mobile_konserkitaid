@@ -33,7 +33,7 @@ class GenerateRecommendations extends Command
         $this->info('Starting recommendation generation...');
 
         $users = User::all();
-        $events = Event::with('category')->where('status', 'published')
+        $events = Event::with(['category', 'organizer'])->where('status', 'published')
             ->whereDate('date', '>=', now())
             ->get();
 
@@ -95,6 +95,9 @@ class GenerateRecommendations extends Command
             }
         }
 
+        // Get followed organizers
+        $followedOrganizerIds = $user->followedOrganizers()->pluck('organizers.id')->toArray();
+
         $recommendations = [];
 
         // 3. Score all available events
@@ -128,6 +131,22 @@ class GenerateRecommendations extends Command
             if ($score == 0) {
                 $score = rand(1, 5); // Add small random base score to ensure some recommendations
                 $reasons[] = 'Rekomendasi Populer';
+            }
+
+            // Organizer Marketplace integration
+            if ($event->organizer) {
+                $org = $event->organizer;
+                if (in_array($org->id, $followedOrganizerIds)) {
+                    $score += 15;
+                    $reasons[] = 'Organizer Diikuti';
+                }
+                if ($org->verification_badge) {
+                    $score += 5;
+                    $reasons[] = 'Organizer Terverifikasi';
+                }
+                if ($org->rating_average > 0) {
+                    $score += ($org->rating_average * 2);
+                }
             }
 
             $recommendations[] = [

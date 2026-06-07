@@ -46,6 +46,7 @@ const AdminLayout = () => {
     { name: t('sidebar.transactions'), path: '/transactions', icon: <CreditCard size={20} /> },
     { name: t('sidebar.refunds'), path: '/refunds', icon: <RefreshCcw size={20} /> },
     { name: t('sidebar.reviews'), path: '/reviews', icon: <Star size={20} /> },
+    { name: 'Organizer Reviews', path: '/organizer-reviews', icon: <Star size={20} /> },
     { name: t('sidebar.payouts'), path: '/payouts', icon: <Wallet size={20} /> },
     { name: t('sidebar.reports'), path: '/reports', icon: <BarChart3 size={20} /> },
     { name: t('sidebar.broadcast'), path: '/broadcast', icon: <Radio size={20} /> },

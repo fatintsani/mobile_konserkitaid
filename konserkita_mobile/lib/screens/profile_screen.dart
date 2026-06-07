@@ -131,6 +131,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'Followed Organizers',
+              icon: Icons.storefront,
+              onTap: () => context.push('/followed-organizers'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'My Tickets',
               icon: Icons.confirmation_number_outlined,
               onTap: () => context.push('/my-tickets'),

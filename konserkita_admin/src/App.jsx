@@ -13,6 +13,7 @@ import Organizers from './pages/Organizers';
 import Transactions from './pages/Transactions';
 import Referrals from "./pages/Referrals";
 import Recommendations from "./pages/Recommendations";
+import OrganizerReviews from "./pages/OrganizerReviews";
 import Reports from './pages/Reports';
 import Banners from './pages/Banners';
 import PromoCodes from './pages/PromoCodes';
@@ -38,6 +39,7 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="recommendations" element={<Recommendations />} />
               <Route path="/organizers" element={<Organizers />} />
+              <Route path="/organizer-reviews" element={<OrganizerReviews />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/reports" element={<Reports />} />
               <Route path="/banners" element={<Banners />} />

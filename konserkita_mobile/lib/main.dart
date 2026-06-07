@@ -22,6 +22,7 @@ import 'providers/review_provider.dart';
 import 'providers/recommendation_provider.dart';
 import 'providers/referral_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/public_organizer_provider.dart';
 import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
@@ -58,6 +59,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ReviewProvider()),
         ChangeNotifierProvider(create: (_) => RecommendationProvider()),
         ChangeNotifierProvider(create: (_) => ReferralProvider()),
+        ChangeNotifierProvider(create: (_) => PublicOrganizerProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const KonserKitaApp(),

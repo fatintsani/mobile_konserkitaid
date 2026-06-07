@@ -1,5 +1,6 @@
 import 'ticket_type.dart';
 import 'event_category.dart';
+import 'organizer.dart';
 
 class Event {
   final int id;
@@ -16,6 +17,7 @@ class Event {
   final bool isNumberedSeating;
   final List<TicketType> ticketTypes;
   final EventCategory? category;
+  final Organizer? organizer;
   final String? recommendationReason;
 
   Event({
@@ -33,6 +35,7 @@ class Event {
     this.isNumberedSeating = false,
     required this.ticketTypes,
     this.category,
+    this.organizer,
     this.recommendationReason,
   });
 
@@ -55,6 +58,7 @@ class Event {
       isNumberedSeating: json['is_numbered_seating'] == 1 || json['is_numbered_seating'] == true,
       ticketTypes: ticketTypesList,
       category: json['category'] != null ? EventCategory.fromJson(json['category']) : null,
+      organizer: json['organizer'] != null ? Organizer.fromJson(json['organizer']) : null,
       recommendationReason: json['recommendation_reason'],
     );
   }

@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 #[Fillable(['name', 'email', 'password', 'role', 'phone', 'avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -56,9 +57,19 @@ class User extends Authenticatable
         return $this->hasMany(Refund::class);
     }
 
-    public function notifications()
+    public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function followedOrganizers(): BelongsToMany
+    {
+        return $this->belongsToMany(Organizer::class, 'organizer_followers', 'user_id', 'organizer_id')->withTimestamps();
+    }
+
+    public function organizerReviews(): HasMany
+    {
+        return $this->hasMany(OrganizerReview::class);
     }
 
     protected function avatar(): \Illuminate\Database\Eloquent\Casts\Attribute

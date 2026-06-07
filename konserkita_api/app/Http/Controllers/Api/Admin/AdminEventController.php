@@ -46,6 +46,22 @@ class AdminEventController extends BaseController
         $event->status = 'published';
         $event->save();
 
+        // Increment organizer's total events
+        if ($event->organizer) {
+            $event->organizer->increment('total_events');
+            
+            // Notify followers
+            $followers = $event->organizer->followers;
+            foreach ($followers as $follower) {
+                \App\Models\Notification::create([
+                    'user_id' => $follower->id,
+                    'title' => 'New Event from ' . $event->organizer->public_name,
+                    'message' => $event->organizer->public_name . ' has published a new event: ' . $event->title . '! Check it out now.',
+                    'type' => 'organizer_new_event',
+                ]);
+            }
+        }
+
         return $this->sendResponse($event, 'Event approved and published.');
     }
 

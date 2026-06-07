@@ -117,6 +117,59 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 Text(event.location, style: const TextStyle(fontSize: 16)),
                               ],
                             ),
+                            const SizedBox(height: 16),
+                            if (event.organizer != null)
+                              GestureDetector(
+                                onTap: () {
+                                  if (event.organizer!.slug != null) {
+                                    context.push('/organizers/${event.organizer!.slug}');
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.grey[300]!),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 20,
+                                        backgroundImage: event.organizer!.logo != null ? NetworkImage(AppConstants.getImageUrl(event.organizer!.logo!)) : null,
+                                        child: event.organizer!.logo == null ? const Icon(Icons.business) : null,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('Organized by', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                                            Row(
+                                              children: [
+                                                Flexible(
+                                                  child: Text(
+                                                    event.organizer!.publicName ?? event.organizer!.companyName,
+                                                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                if (event.organizer!.verificationBadge)
+                                                  const Padding(
+                                                    padding: EdgeInsets.only(left: 4),
+                                                    child: Icon(Icons.verified, color: Colors.blue, size: 16),
+                                                  ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const Icon(Icons.chevron_right, color: Colors.grey),
+                                    ],
+                                  ),
+                                ),
+                              ),
                             const SizedBox(height: 24),
                             // Rating Section
                             Consumer<ReviewProvider>(

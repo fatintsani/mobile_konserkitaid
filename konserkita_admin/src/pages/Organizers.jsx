@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
-import { CheckCircle, XCircle, RefreshCcw } from 'lucide-react';
+import { CheckCircle, XCircle, RefreshCcw, ShieldAlert, BadgeCheck } from 'lucide-react';
 
 const Organizers = () => {
   const [organizers, setOrganizers] = useState([]);
@@ -47,6 +47,17 @@ const Organizers = () => {
     }
   };
 
+  const handleSuspend = async (id) => {
+    if (window.confirm('Are you sure you want to suspend this organizer?')) {
+      try {
+        const response = await api.put(`/admin/organizers/${id}/suspend`);
+        if (response.data.success) fetchOrganizers();
+      } catch (error) {
+        alert('Failed to suspend organizer');
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -66,7 +77,7 @@ const Organizers = () => {
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization Name</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact Phone</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stats</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -80,32 +91,45 @@ const Organizers = () => {
                   organizers.map((org) => (
                     <tr key={org.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{org.organization_name}</div>
-                        <div className="text-xs text-gray-500 line-clamp-1 w-48" title={org.description}>{org.description}</div>
+                        <div className="text-sm font-medium text-gray-900 flex items-center">
+                          {org.company_name}
+                          {org.verification_badge && <BadgeCheck className="w-4 h-4 text-blue-500 ml-1" />}
+                        </div>
+                        <div className="text-xs text-gray-500">{org.public_name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">{org.user?.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{org.contact_phone}</div>
+                        <div className="text-xs text-gray-500">{org.events_count || 0} Events</div>
+                        <div className="text-xs text-gray-500">{org.followers_count || 0} Followers</div>
+                        <div className="text-xs text-gray-500">{org.reviews_count || 0} Reviews</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          org.is_verified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                          org.status === 'verified' ? 'bg-green-100 text-green-800' : 
+                          org.status === 'rejected' ? 'bg-orange-100 text-orange-800' :
+                          org.status === 'suspended' ? 'bg-red-100 text-red-800' :
+                          'bg-yellow-100 text-yellow-800'
                         }`}>
-                          {org.is_verified ? 'Verified' : 'Unverified'}
+                          {org.status?.toUpperCase() || 'PENDING'}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
-                          {!org.is_verified && (
+                          {org.status !== 'verified' && (
                             <button onClick={() => handleVerify(org.id)} className="text-green-600 hover:text-green-900 bg-green-50 p-1.5 rounded-md" title="Verify">
                               <CheckCircle size={18} />
                             </button>
                           )}
-                          {org.is_verified && (
-                            <button onClick={() => handleReject(org.id)} className="text-orange-600 hover:text-orange-900 bg-orange-50 p-1.5 rounded-md" title="Revoke Verification">
+                          {org.status !== 'rejected' && (
+                            <button onClick={() => handleReject(org.id)} className="text-orange-600 hover:text-orange-900 bg-orange-50 p-1.5 rounded-md" title="Reject">
                               <XCircle size={18} />
+                            </button>
+                          )}
+                          {org.status !== 'suspended' && (
+                            <button onClick={() => handleSuspend(org.id)} className="text-red-600 hover:text-red-900 bg-red-50 p-1.5 rounded-md" title="Suspend">
+                              <ShieldAlert size={18} />
                             </button>
                           )}
                         </div>

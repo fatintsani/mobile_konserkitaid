@@ -45,6 +45,10 @@ import '../screens/review_form_screen.dart';
 import '../screens/event_reviews_screen.dart';
 import '../screens/my_reviews_screen.dart';
 import '../screens/language_settings_screen.dart';
+import '../screens/organizer_list_screen.dart';
+import '../screens/organizer_public_profile_screen.dart';
+import '../screens/organizer_review_form_screen.dart';
+import '../screens/followed_organizers_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -168,6 +172,28 @@ class AppRouter {
       GoRoute(
         path: '/language',
         builder: (context, state) => const LanguageSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/organizers/list',
+        builder: (context, state) => const OrganizerListScreen(),
+      ),
+      GoRoute(
+        path: '/organizers/:slug',
+        builder: (context, state) {
+          final slug = state.pathParameters['slug']!;
+          return OrganizerPublicProfileScreen(slug: slug);
+        },
+      ),
+      GoRoute(
+        path: '/organizers/:id/review',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizerReviewFormScreen(organizerId: id);
+        },
+      ),
+      GoRoute(
+        path: '/followed-organizers',
+        builder: (context, state) => const FollowedOrganizersScreen(),
       ),
       GoRoute(
         path: '/transactions',

@@ -6,6 +6,7 @@ import '../providers/event_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/content_provider.dart';
 import '../providers/recommendation_provider.dart';
+import '../providers/public_organizer_provider.dart';
 import '../widgets/event_card.dart';
 import '../utils/constants.dart';
 import 'package:konserkita_mobile/l10n/app_localizations.dart';
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventProvider>().fetchEvents();
       context.read<ContentProvider>().fetchContent();
+      context.read<PublicOrganizerProvider>().fetchOrganizers(popular: true);
       if (context.read<AuthProvider>().isAuthenticated) {
         context.read<NotificationProvider>().fetchNotifications();
         context.read<RecommendationProvider>().fetchRecommendations();
@@ -210,6 +212,81 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ],
+                  );
+                },
+              ),
+
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Verified Organizers',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    TextButton(
+                      onPressed: () => context.push('/organizers/list'),
+                      child: const Text('See All'),
+                    ),
+                  ],
+                ),
+              ),
+              Consumer<PublicOrganizerProvider>(
+                builder: (context, orgProvider, child) {
+                  if (orgProvider.isLoading) return const SizedBox.shrink();
+                  if (orgProvider.organizers.isEmpty) return const SizedBox.shrink();
+
+                  return SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: orgProvider.organizers.length > 5 ? 5 : orgProvider.organizers.length,
+                      itemBuilder: (context, index) {
+                        final org = orgProvider.organizers[index];
+                        return GestureDetector(
+                          onTap: () => context.push('/organizers/${org['slug']}'),
+                          child: Container(
+                            width: 80,
+                            margin: const EdgeInsets.only(right: 16),
+                            child: Column(
+                              children: [
+                                Stack(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: NetworkImage(org['logo'] ?? ''),
+                                      onBackgroundImageError: (_, __) => const Icon(Icons.business),
+                                    ),
+                                    if (org['verification_badge'] == true)
+                                      Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: Container(
+                                          decoration: const BoxDecoration(
+                                            color: Colors.white,
+                                            shape: BoxShape.circle,
+                                          ),
+                                          child: const Icon(Icons.verified, color: Colors.blue, size: 16),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  org['public_name'] ?? org['company_name'] ?? 'Organizer',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
                   );
                 },
               ),

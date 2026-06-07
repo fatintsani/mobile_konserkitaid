@@ -38,6 +38,12 @@ Route::post('/payments/midtrans/callback', [PaymentController::class, 'notificat
 // Referral Clicks (Public)
 Route::post('/referrals/track-click', [\App\Http\Controllers\Api\ReferralController::class, 'trackClick']);
 
+// Organizer Marketplace (Public)
+Route::get('/organizers', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'index']);
+Route::get('/organizers/{slug}', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'show']);
+Route::get('/organizers/{slug}/events', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'events']);
+Route::get('/organizers/{slug}/reviews', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'reviews']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
@@ -106,7 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/organizers', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'index']);
         Route::get('/organizers/{id}', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'show']);
         Route::put('/organizers/{id}/verify', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'verify']);
-        Route::post('/organizers/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reject']);
+        Route::put('/organizers/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reject']);
+        Route::put('/organizers/{id}/suspend', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'suspend']);
+        Route::get('/organizer-reviews', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reviews']);
+        Route::put('/organizer-reviews/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'approveReview']);
+        Route::put('/organizer-reviews/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'rejectReview']);
 
         // Admin Referrals
         Route::get('/referrals/stats', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'stats']);
@@ -203,4 +213,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/events/{event}/reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'store']);
     Route::put('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'destroy']);
+
+    // Organizer Follow & Reviews (Protected)
+    Route::get('/organizers/following', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'following']);
+    Route::post('/organizers/{id}/follow', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'follow']);
+    Route::delete('/organizers/{id}/follow', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'unfollow']);
+    Route::post('/organizers/{id}/reviews', [\App\Http\Controllers\Api\PublicOrganizerController::class, 'storeReview']);
 });
