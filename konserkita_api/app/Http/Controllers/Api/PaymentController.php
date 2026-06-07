@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Payment;
 use App\Models\Ticket;
 use App\Models\Transaction;
+use App\Models\UserEventInteraction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -120,6 +121,14 @@ class PaymentController extends BaseController
             'title' => 'Pembayaran Berhasil',
             'message' => 'Tiket Anda telah berhasil diterbitkan. Silakan cek menu My Tickets.',
             'type' => 'payment_success',
+        ]);
+
+        // Log purchase for recommendation system
+        UserEventInteraction::create([
+            'user_id' => $transaction->user_id,
+            'event_id' => $transaction->event_id,
+            'interaction_type' => 'purchase',
+            'weight' => 10,
         ]);
     }
 

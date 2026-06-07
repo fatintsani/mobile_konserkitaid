@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../providers/event_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/content_provider.dart';
+import '../providers/recommendation_provider.dart';
 import '../widgets/event_card.dart';
 import '../utils/constants.dart';
 
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
       context.read<ContentProvider>().fetchContent();
       if (context.read<AuthProvider>().isAuthenticated) {
         context.read<NotificationProvider>().fetchNotifications();
+        context.read<RecommendationProvider>().fetchRecommendations();
       }
     });
   }
@@ -157,6 +159,57 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
+
+              Consumer<RecommendationProvider>(
+                builder: (context, recProvider, child) {
+                  if (recProvider.isLoading) return const SizedBox.shrink();
+                  if (recProvider.recommendations.isEmpty) return const SizedBox.shrink();
+                  
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
+                        child: Text(
+                          'Rekomendasi Untukmu',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 280,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          itemCount: recProvider.recommendations.length,
+                          itemBuilder: (context, index) {
+                            final event = recProvider.recommendations[index];
+                            return Container(
+                              width: 250,
+                              margin: const EdgeInsets.only(right: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(child: EventCard(event: event)),
+                                  if (event.recommendationReason != null)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 4, left: 4),
+                                      child: Text(
+                                        event.recommendationReason!,
+                                        style: const TextStyle(fontSize: 12, color: Colors.blue, fontStyle: FontStyle.italic),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
 
               const Padding(
                 padding: EdgeInsets.fromLTRB(16, 24, 16, 8),

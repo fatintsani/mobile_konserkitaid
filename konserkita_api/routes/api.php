@@ -8,6 +8,11 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\WishlistController;
+use App\Http\Controllers\Api\ReferralController;
+use App\Http\Controllers\Api\RecommendationController;
+use App\Http\Controllers\Api\Admin\AdminController;
+use App\Http\Controllers\Api\Admin\AdminReferralController;
+use App\Http\Controllers\Api\Admin\AdminRecommendationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -84,7 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin Dashboard
     Route::prefix('admin')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
-        Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\AdminController::class, 'dashboard']);
+        Route::get('/dashboard', [AdminController::class, 'dashboard']);
         
         Route::get('/events', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'index']);
         Route::get('/events/{id}', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'show']);
@@ -121,6 +126,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/payouts/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'reject']);
         Route::put('/payouts/{id}/mark-paid', [\App\Http\Controllers\Api\Admin\AdminPayoutController::class, 'markPaid']);
 
+        // Referrals
+        Route::get('/referrals/stats', [AdminReferralController::class, 'stats']);
+        Route::get('/referrals/rewards', [AdminReferralController::class, 'rewards']);
+        Route::get('/referrals/codes', [AdminReferralController::class, 'codes']);
+        Route::get('/referrals/conversions', [AdminReferralController::class, 'conversions']);
+        Route::post('/referrals/rewards/{reward}/approve', [AdminReferralController::class, 'approveReward']);
+        Route::post('/referrals/rewards/{reward}/reject', [AdminReferralController::class, 'rejectReward']);
+        Route::post('/referrals/rewards/{reward}/pay', [AdminReferralController::class, 'payReward']);
+
+        // Recommendations
+        Route::get('/recommendations/analytics', [AdminRecommendationController::class, 'analytics']);
+
         // Content Management
         Route::apiResource('banners', \App\Http\Controllers\Api\Admin\AdminBannerController::class);
         Route::apiResource('promos', \App\Http\Controllers\Api\Admin\AdminPromoController::class);
@@ -153,6 +170,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);
     Route::get('/tickets', [TicketController::class, 'myTickets']);
     Route::get('/tickets/{ticket_code}', [TicketController::class, 'showQR']);
+
+    // Recommendations & Interactions
+    Route::get('/recommendations', [RecommendationController::class, 'getRecommendations']);
+    Route::post('/interactions', [RecommendationController::class, 'recordInteraction']);
+    Route::get('/preferences', [RecommendationController::class, 'getPreferences']);
+    Route::put('/preferences', [RecommendationController::class, 'updatePreferences']);
 
     // Refunds
     Route::post('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'store']);

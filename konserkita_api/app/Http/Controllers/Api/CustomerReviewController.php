@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Event;
 use App\Models\Review;
 use App\Models\Ticket;
+use App\Models\UserEventInteraction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -69,6 +70,13 @@ class CustomerReviewController extends BaseController
             'title' => 'Review Submitted',
             'message' => 'Your review for ' . $event->title . ' has been submitted and is awaiting moderation.',
             'type' => 'review'
+        ]);
+
+        UserEventInteraction::create([
+            'user_id' => $user->id,
+            'event_id' => $eventId,
+            'interaction_type' => 'review',
+            'weight' => 4,
         ]);
 
         return $this->sendResponse($review, 'Review submitted successfully and is waiting for moderation.', 201);

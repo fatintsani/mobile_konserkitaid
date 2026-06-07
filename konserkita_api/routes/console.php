@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 use Illuminate\Support\Facades\Schedule;
 Schedule::command('seats:release-expired')->everyMinute();
 Schedule::command('notifications:event-reminders')->dailyAt('09:00');
+Schedule::command('recommendations:generate')->dailyAt('02:00');

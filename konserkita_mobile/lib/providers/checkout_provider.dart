@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../services/checkout_service.dart';
+import '../services/recommendation_service.dart';
 import '../models/ticket_type.dart';
 
 class CheckoutProvider with ChangeNotifier {
   final CheckoutService _checkoutService = CheckoutService();
+  final RecommendationService _recommendationService = RecommendationService();
   
   final Map<TicketType, int> _selectedTickets = {};
   bool _isLoading = false;
@@ -113,6 +115,7 @@ class CheckoutProvider with ChangeNotifier {
       _transactionResult = await _checkoutService.createCheckout(eventId, items, promoCode: _promoCode, seatIds: seatIds);
       _isLoading = false;
       notifyListeners();
+      _recommendationService.recordInteraction(eventId, 'checkout');
       return true;
     } catch (e) {
       _error = e.toString();

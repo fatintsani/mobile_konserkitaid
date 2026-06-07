@@ -5,6 +5,7 @@ import '../providers/event_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wishlist_provider.dart';
 import '../providers/review_provider.dart';
+import '../providers/recommendation_provider.dart';
 import '../utils/constants.dart';
 
 class EventDetailScreen extends StatefulWidget {
@@ -22,6 +23,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventProvider>().fetchEventDetail(widget.eventId);
       context.read<ReviewProvider>().fetchRatingSummary(widget.eventId);
+      if (context.read<AuthProvider>().isAuthenticated) {
+        context.read<RecommendationProvider>().logInteraction(widget.eventId, 'view');
+      }
     });
   }
 

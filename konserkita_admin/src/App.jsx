@@ -11,6 +11,8 @@ import Events from './pages/Events';
 import Users from './pages/Users';
 import Organizers from './pages/Organizers';
 import Transactions from './pages/Transactions';
+import Referrals from "./pages/Referrals";
+import Recommendations from "./pages/Recommendations";
 import Reports from './pages/Reports';
 import Banners from './pages/Banners';
 import PromoCodes from './pages/PromoCodes';
@@ -33,7 +35,9 @@ function App() {
             <Route element={<AdminLayout />}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/events" element={<Events />} />
-              <Route path="/users" element={<Users />} />
+              <Route path="users" element={<Users />} />
+              <Route path="referrals" element={<Referrals />} />
+              <Route path="recommendations" element={<Recommendations />} />
               <Route path="/organizers" element={<Organizers />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/reports" element={<Reports />} />

@@ -14,6 +14,7 @@ class Event {
   final bool isNumberedSeating;
   final List<TicketType> ticketTypes;
   final EventCategory? category;
+  final String? recommendationReason;
 
   Event({
     required this.id,
@@ -28,6 +29,7 @@ class Event {
     this.isNumberedSeating = false,
     required this.ticketTypes,
     this.category,
+    this.recommendationReason,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class Event {
       isNumberedSeating: json['is_numbered_seating'] == 1 || json['is_numbered_seating'] == true,
       ticketTypes: ticketTypesList,
       category: json['category'] != null ? EventCategory.fromJson(json['category']) : null,
+      recommendationReason: json['recommendation_reason'],
     );
   }
 }

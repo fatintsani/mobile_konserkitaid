@@ -18,7 +18,9 @@ import {
   Wallet,
   MapPin,
   Star,
-  Radio
+  Radio,
+  Share2,
+  Sparkles
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -41,6 +43,7 @@ const AdminLayout = () => {
     { name: 'Payouts', path: '/payouts', icon: <Wallet size={20} /> },
     { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
     { name: 'Broadcast', path: '/broadcast', icon: <Radio size={20} /> },
+    { name: 'Recommendations', path: '/recommendations', icon: <Sparkles size={20} /> },
   ];
 
   const contentItems = [

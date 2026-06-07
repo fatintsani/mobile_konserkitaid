@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/event.dart';
 import '../services/wishlist_service.dart';
+import '../services/recommendation_service.dart';
 
 class WishlistProvider with ChangeNotifier {
   final WishlistService _service = WishlistService();
+  final RecommendationService _recommendationService = RecommendationService();
   
   List<Event> _wishlists = [];
   bool _isLoading = false;
@@ -50,6 +52,7 @@ class WishlistProvider with ChangeNotifier {
       success = await _service.addToWishlist(eventId);
       if (success) {
         fetchWishlists();
+        _recommendationService.recordInteraction(eventId, 'wishlist');
       }
     }
     
