@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'services/fcm_service.dart';
 import 'providers/auth_provider.dart';
 import 'providers/event_provider.dart';
@@ -25,9 +26,9 @@ void main() async {
   await LocalNotificationService.init();
 
   try {
-    // TODO: You must run `flutterfire configure` to generate firebase_options.dart
-    // and provide `options: DefaultFirebaseOptions.currentPlatform` here.
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     await FCMService().init();
   } catch (e) {
     debugPrint('Firebase initialization failed: $e');
