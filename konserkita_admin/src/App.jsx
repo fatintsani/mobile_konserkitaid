@@ -23,7 +23,6 @@ import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
 import Reviews from './pages/Reviews';
 import BroadcastNotification from './pages/BroadcastNotification';
-import Referrals from './pages/Referrals';
 
 function App() {
   return (
