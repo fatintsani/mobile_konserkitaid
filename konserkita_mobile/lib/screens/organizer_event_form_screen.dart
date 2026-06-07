@@ -29,6 +29,7 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   String? _selectedStatus;
+  bool _isNumberedSeating = false;
   
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
@@ -52,6 +53,7 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
       _selectedTime = TimeOfDay(hour: int.parse(timeParts[0]), minute: int.parse(timeParts[1]));
       
       _selectedStatus = widget.event!.status;
+      _isNumberedSeating = widget.event!.isNumberedSeating ?? false;
     }
   }
 
@@ -145,6 +147,7 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
         'location': _locationController.text,
         'date': dateStr,
         'time': timeStr,
+        'is_numbered_seating': _isNumberedSeating ? 1 : 0,
       };
 
       final authProvider = context.read<AuthProvider>();
@@ -300,6 +303,19 @@ class _OrganizerEventFormScreenState extends State<OrganizerEventFormScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  SwitchListTile(
+                    title: const Text('Numbered Seating', style: TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: const Text('Enable seat selection for this event'),
+                    value: _isNumberedSeating,
+                    activeColor: AppConstants.primaryColor,
+                    contentPadding: EdgeInsets.zero,
+                    onChanged: (bool value) {
+                      setState(() {
+                        _isNumberedSeating = value;
+                      });
+                    },
                   ),
                   const SizedBox(height: 16),
                   

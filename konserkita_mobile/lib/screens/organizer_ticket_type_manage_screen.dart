@@ -28,6 +28,7 @@ class _OrganizerTicketTypeManageScreenState extends State<OrganizerTicketTypeMan
     final priceController = TextEditingController(text: ticketType != null ? ticketType['price'].toString() : '');
     final quotaController = TextEditingController(text: ticketType != null ? ticketType['quota'].toString() : '');
     String status = ticketType != null ? ticketType['status'] ?? 'available' : 'available';
+    bool requiresSeat = ticketType != null ? (ticketType['requires_seat'] == 1 || ticketType['requires_seat'] == true) : false;
 
     showDialog(
       context: context,
@@ -73,6 +74,19 @@ class _OrganizerTicketTypeManageScreenState extends State<OrganizerTicketTypeMan
                           });
                         },
                       ),
+                      const SizedBox(height: 16),
+                      SwitchListTile(
+                        title: const Text('Requires Seat', style: TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: const Text('Buyer must choose a seat for this ticket type.'),
+                        value: requiresSeat,
+                        activeColor: AppConstants.primaryColor,
+                        contentPadding: EdgeInsets.zero,
+                        onChanged: (bool value) {
+                          setState(() {
+                            requiresSeat = value;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -92,6 +106,7 @@ class _OrganizerTicketTypeManageScreenState extends State<OrganizerTicketTypeMan
                               'price': priceController.text,
                               'quota': quotaController.text,
                               'status': status,
+                              'requires_seat': requiresSeat ? 1 : 0,
                             };
                             bool success;
                             if (ticketType == null) {
@@ -184,7 +199,7 @@ class _OrganizerTicketTypeManageScreenState extends State<OrganizerTicketTypeMan
                       child: ListTile(
                         title: Text(tt['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
                         subtitle: Text(
-                          'Price: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(num.tryParse(tt['price']?.toString() ?? '0') ?? 0)}\nQuota: ${tt['quota']} | Status: ${tt['status']}',
+                          'Price: ${NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0).format(num.tryParse(tt['price']?.toString() ?? '0') ?? 0)}\nQuota: ${tt['quota']} | Status: ${tt['status']}\nRequires Seat: ${tt['requires_seat'] == 1 ? 'Yes' : 'No'}',
                         ),
                         isThreeLine: true,
                         trailing: Row(

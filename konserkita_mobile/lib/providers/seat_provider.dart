@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 
 class SeatProvider with ChangeNotifier {
@@ -20,13 +21,15 @@ class SeatProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.get('/events/$eventId/seat-map');
-      if (response['success']) {
-        _seatMapData = response['data'];
+      final response = await _apiService.dio.get('/events/$eventId/seat-map');
+      if (response.data['success']) {
+        _seatMapData = response.data['data'];
         _selectedSeatIds = []; // clear selection on fetch
       } else {
-        _error = response['message'] ?? 'Failed to load seat map';
+        _error = response.data['message'] ?? 'Failed to load seat map';
       }
+    } on DioException catch (e) {
+      _error = e.response?.data['message'] ?? e.toString();
     } catch (e) {
       _error = e.toString();
     } finally {
@@ -53,13 +56,18 @@ class SeatProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      final response = await _apiService.post('/events/$eventId/seats/hold', {
+      final response = await _apiService.dio.post('/events/$eventId/seats/hold', data: {
         'seat_ids': _selectedSeatIds,
       });
       
       _isLoading = false;
       notifyListeners();
-      return response['success'];
+      return response.data['success'];
+    } on DioException catch (e) {
+      _error = e.response?.data['message'] ?? e.toString();
+      _isLoading = false;
+      notifyListeners();
+      return false;
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
@@ -72,7 +80,7 @@ class SeatProvider with ChangeNotifier {
     if (_selectedSeatIds.isEmpty) return;
     
     try {
-      await _apiService.post('/events/$eventId/seats/release', {
+      await _apiService.dio.post('/events/$eventId/seats/release', data: {
         'seat_ids': _selectedSeatIds,
       });
       _selectedSeatIds = [];
