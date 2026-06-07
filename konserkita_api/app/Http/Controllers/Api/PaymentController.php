@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Models\Payment;
 use App\Models\Ticket;
 use App\Models\Transaction;
+use App\Models\ReferralCode;
+use App\Models\ReferralConversion;
+use App\Models\ReferralReward;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -112,6 +115,50 @@ class PaymentController extends BaseController
                     'is_used' => false,
                     'seat_id' => $seatId,
                 ]);
+            }
+        }
+
+        // Handle Referral Logic
+        if ($transaction->referral_code_id) {
+            $refCode = ReferralCode::lockForUpdate()->find($transaction->referral_code_id);
+            if ($refCode && $transaction->user_id !== $refCode->user_id) {
+                // Determine commission amount
+                $commission = 0;
+                if ($refCode->commission_type === 'percentage') {
+                    $commission = ($refCode->commission_value / 100) * $transaction->total_amount;
+                } else {
+                    $commission = $refCode->commission_value;
+                }
+
+                if ($refCode->max_reward && $commission > $refCode->max_reward) {
+                    $commission = $refCode->max_reward;
+                }
+
+                if ($commission > 0) {
+                    $conversion = ReferralConversion::create([
+                        'referral_code_id' => $refCode->id,
+                        'referred_user_id' => $transaction->user_id,
+                        'transaction_id' => $transaction->id,
+                        'commission_amount' => $commission,
+                        'status' => 'pending', // Waiting admin approval
+                    ]);
+
+                    ReferralReward::create([
+                        'user_id' => $refCode->user_id,
+                        'referral_conversion_id' => $conversion->id,
+                        'amount' => $commission,
+                        'status' => 'pending',
+                    ]);
+
+                    $refCode->increment('used_count');
+
+                    \App\Models\Notification::create([
+                        'user_id' => $refCode->user_id,
+                        'title' => 'Reward Referral Pending',
+                        'message' => 'Seseorang baru saja menggunakan kode referral Anda! Komisi sedang diproses.',
+                        'type' => 'referral_pending',
+                    ]);
+                }
             }
         }
 

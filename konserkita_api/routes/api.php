@@ -30,6 +30,9 @@ Route::get('/events/{event}/rating-summary', [\App\Http\Controllers\Api\EventRev
 // Midtrans Webhook Notification
 Route::post('/payments/midtrans/callback', [PaymentController::class, 'notificationHandler']);
 
+// Referral Clicks (Public)
+Route::post('/referrals/track-click', [\App\Http\Controllers\Api\ReferralController::class, 'trackClick']);
+
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
@@ -75,8 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
         // Payouts
         Route::get('/payouts/balance', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'balance']);
         Route::get('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'index']);
-        Route::post('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'store']);
-        Route::get('/payouts/{id}', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'show']);
     });
 
     // Promo route
@@ -100,7 +101,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/organizers', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'index']);
         Route::get('/organizers/{id}', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'show']);
         Route::put('/organizers/{id}/verify', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'verify']);
-        Route::put('/organizers/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reject']);
+        Route::post('/organizers/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminOrganizerController::class, 'reject']);
+
+        // Admin Referrals
+        Route::get('/referrals/stats', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'stats']);
+        Route::get('/referrals/codes', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'codes']);
+        Route::get('/referrals/conversions', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'conversions']);
+        Route::get('/referrals/rewards', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'rewards']);
+        Route::post('/referrals/rewards/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'approveReward']);
+        Route::post('/referrals/rewards/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'rejectReward']);
+        Route::post('/referrals/rewards/{id}/mark-paid', [\App\Http\Controllers\Api\Admin\AdminReferralController::class, 'markPaid']);
         
         Route::get('/transactions', [\App\Http\Controllers\Api\Admin\AdminTransactionController::class, 'index']);
         Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Admin\AdminTransactionController::class, 'show']);
@@ -148,6 +158,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'process']);
     Route::post('/events/{event}/seats/hold', [\App\Http\Controllers\Api\EventSeatController::class, 'holdSeats']);
     Route::post('/events/{event}/seats/release', [\App\Http\Controllers\Api\EventSeatController::class, 'releaseSeats']);
+
+    // Referrals (Customer)
+    Route::get('/referrals/my-code', [\App\Http\Controllers\Api\ReferralController::class, 'myCode']);
+    Route::get('/referrals/rewards', [\App\Http\Controllers\Api\ReferralController::class, 'rewards']);
+    Route::get('/referrals/conversions', [\App\Http\Controllers\Api\ReferralController::class, 'conversions']);
+    Route::post('/referrals/apply', [\App\Http\Controllers\Api\ReferralController::class, 'apply']);
 
     // Tickets
     Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);
