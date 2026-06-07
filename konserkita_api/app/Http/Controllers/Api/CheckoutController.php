@@ -105,6 +105,27 @@ class CheckoutController extends BaseController
                 $promo->increment('used');
             }
 
+            // Referral validation logic
+            $referralCodeId = null;
+            if ($request->filled('referral_code')) {
+                $refCode = \App\Models\ReferralCode::where('code', $request->referral_code)->where('status', 'active')->first();
+                if (!$refCode) {
+                    throw new \Exception("Referral code not found or inactive.");
+                }
+                
+                if ($refCode->expired_at && $refCode->expired_at->isPast()) {
+                    throw new \Exception("Referral code has expired.");
+                }
+                if ($refCode->usage_limit && $refCode->used_count >= $refCode->usage_limit) {
+                    throw new \Exception("Referral code usage limit reached.");
+                }
+                if ($refCode->user_id === $user->id) {
+                    throw new \Exception("You cannot use your own referral code.");
+                }
+
+                $referralCodeId = $refCode->id;
+            }
+
             $finalAmount = $totalAmount - $discountAmount;
 
             // 2. Create Transaction
@@ -115,6 +136,7 @@ class CheckoutController extends BaseController
                 'total_amount' => $finalAmount,
                 'payment_status' => 'pending',
                 'promo_code_id' => $promoCodeId,
+                'referral_code_id' => $referralCodeId,
             ]);
 
             // 3. Create Transaction Items

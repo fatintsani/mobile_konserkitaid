@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Refund;
 use App\Models\Notification;
 use App\Models\Transaction;
+use App\Models\ReferralConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -118,6 +119,22 @@ class AdminRefundController extends Controller
             $transaction->tickets()->update([
                 'is_cancelled' => true
             ]);
+
+            // Handle referral conversions
+            $conversion = ReferralConversion::where('transaction_id', $transaction->id)->first();
+            if ($conversion && $conversion->status !== 'rejected') {
+                $conversion->update(['status' => 'rejected']);
+                if ($conversion->reward) {
+                    $conversion->reward->update(['status' => 'rejected']);
+                    
+                    Notification::create([
+                        'user_id' => $conversion->reward->user_id,
+                        'title' => 'Reward Referral Dibatalkan',
+                        'message' => 'Reward dari kode referral Anda dibatalkan karena transaksi terkait telah di-refund.',
+                        'type' => 'referral_rejected',
+                    ]);
+                }
+            }
 
             Notification::create([
                 'user_id' => $refund->user_id,

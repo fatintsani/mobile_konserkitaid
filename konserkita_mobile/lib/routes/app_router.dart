@@ -6,13 +6,15 @@ import '../providers/auth_provider.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
-import '../screens/event_detail_screen.dart';
-import '../screens/my_tickets_screen.dart';
+import '../screens/refund_detail_screen.dart';
+import '../screens/referral_dashboard_screen.dart';
 import '../screens/ticket_selection_screen.dart';
 import '../screens/checkout_screen.dart';
 import '../screens/payment_webview_screen.dart';
 import '../screens/payment_status_screen.dart';
 import '../screens/ticket_detail_screen.dart';
+import '../screens/event_detail_screen.dart';
+import '../screens/my_tickets_screen.dart';
 import '../screens/qr_scanner_screen.dart';
 import '../screens/scan_result_screen.dart';
 import '../screens/profile_screen.dart';
@@ -32,7 +34,6 @@ import '../screens/organizer_event_form_screen.dart';
 import '../screens/organizer_ticket_type_manage_screen.dart';
 import '../screens/refund_request_screen.dart';
 import '../screens/my_refunds_screen.dart';
-import '../screens/refund_detail_screen.dart';
 import '../screens/organizer_payout_balance_screen.dart';
 import '../screens/organizer_payout_request_screen.dart';
 import '../screens/organizer_payout_history_screen.dart';
@@ -154,6 +155,10 @@ class AppRouter {
       GoRoute(
         path: '/my-reviews',
         builder: (context, state) => const MyReviewsScreen(),
+      ),
+      GoRoute(
+        path: '/referral-dashboard',
+        builder: (context, state) => const ReferralDashboardScreen(),
       ),
       GoRoute(
         path: '/edit-profile',

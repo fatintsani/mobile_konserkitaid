@@ -21,6 +21,7 @@ class Transaction extends Model
         'snap_token',
         'payment_url',
         'promo_code_id',
+        'referral_code_id',
     ];
 
     public function user(): BelongsTo
@@ -51,5 +52,10 @@ class Transaction extends Model
     public function refund(): HasOne
     {
         return $this->hasOne(Refund::class);
+    }
+
+    public function referralCode(): BelongsTo
+    {
+        return $this->belongsTo(ReferralCode::class);
     }
 }
