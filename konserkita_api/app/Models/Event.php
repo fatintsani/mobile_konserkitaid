@@ -41,6 +41,11 @@ class Event extends Model
         return $this->hasMany(TicketType::class);
     }
 
+    public function seatMap(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(EventSeatMap::class);
+    }
+
     protected function bannerImage(): \Illuminate\Database\Eloquent\Casts\Attribute
     {
         return \Illuminate\Database\Eloquent\Casts\Attribute::make(

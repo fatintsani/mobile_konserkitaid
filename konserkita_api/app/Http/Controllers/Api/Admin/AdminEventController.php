@@ -12,7 +12,7 @@ class AdminEventController extends BaseController
     {
         $status = $request->query('status');
 
-        $query = Event::with('organizer.user');
+        $query = Event::with(['organizer.user', 'seatMap.venue']);
 
         if ($status) {
             $query->where('status', $status);
@@ -26,7 +26,7 @@ class AdminEventController extends BaseController
 
     public function show($id)
     {
-        $event = Event::with(['organizer.user', 'category', 'ticketTypes'])->find($id);
+        $event = Event::with(['organizer.user', 'category', 'ticketTypes', 'seatMap.venue'])->find($id);
 
         if (!$event) {
             return $this->sendError('Event not found.', [], 404);

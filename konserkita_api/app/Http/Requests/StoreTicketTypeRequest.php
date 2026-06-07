@@ -18,6 +18,7 @@ class StoreTicketTypeRequest extends FormRequest
             'price' => 'required|numeric|min:0',
             'quota' => 'required|integer|min:1',
             'status' => 'nullable|string|in:available,sold_out',
+            'requires_seat' => 'nullable|boolean',
         ];
     }
 }

@@ -22,6 +22,7 @@ class StoreEventRequest extends FormRequest
             'location' => 'required|string|max:255',
             'banner_image' => 'nullable|image|max:2048',
             'status' => 'nullable|string|in:draft,pending,published,cancelled,completed',
+            'is_numbered_seating' => 'nullable|boolean',
         ];
     }
 }

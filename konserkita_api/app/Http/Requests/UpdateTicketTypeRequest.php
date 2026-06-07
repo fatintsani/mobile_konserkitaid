@@ -18,6 +18,7 @@ class UpdateTicketTypeRequest extends FormRequest
             'price' => 'sometimes|required|numeric|min:0',
             'quota' => 'sometimes|required|integer|min:1',
             'status' => 'sometimes|required|string|in:available,sold_out',
+            'requires_seat' => 'nullable|boolean',
         ];
     }
 }

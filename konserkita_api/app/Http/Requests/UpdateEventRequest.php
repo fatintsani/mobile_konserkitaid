@@ -22,6 +22,7 @@ class UpdateEventRequest extends FormRequest
             'location' => 'sometimes|required|string|max:255',
             'banner_image' => 'nullable|image|max:2048',
             'status' => 'sometimes|required|string|in:draft,pending,published,cancelled,completed',
+            'is_numbered_seating' => 'nullable|boolean',
         ];
     }
 }
