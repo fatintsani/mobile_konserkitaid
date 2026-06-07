@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../utils/constants.dart';
 import '../routes/app_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   late Dio dio;
@@ -22,6 +23,9 @@ class ApiService {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
+        final prefs = await SharedPreferences.getInstance();
+        final lang = prefs.getString('languageCode') ?? 'id';
+        options.headers['Accept-Language'] = lang;
         return handler.next(options);
       },
       onError: (DioException e, handler) async {

@@ -1,0 +1,37 @@
+{
+  "sidebar": {
+    "dashboard": "Dasbor",
+    "events": "Acara",
+    "venues": "Tempat",
+    "categories": "Kategori",
+    "banners": "Spanduk",
+    "ticket_types": "Tipe Tiket",
+    "seat_maps": "Peta Kursi",
+    "transactions": "Transaksi",
+    "refunds": "Pengembalian Dana",
+    "payouts": "Penarikan Dana",
+    "reviews": "Ulasan",
+    "broadcast": "Notifikasi Siaran"
+  },
+  "topbar": {
+    "language": "Bahasa",
+    "logout": "Keluar"
+  },
+  "common": {
+    "add_new": "Tambah Baru",
+    "save": "Simpan",
+    "cancel": "Batal",
+    "edit": "Edit",
+    "delete": "Hapus",
+    "actions": "Aksi",
+    "status": "Status"
+  },
+  "forms": {
+    "title_id": "Judul (ID)",
+    "title_en": "Judul (EN)",
+    "description_id": "Deskripsi (ID)",
+    "description_en": "Deskripsi (EN)",
+    "name_id": "Nama (ID)",
+    "name_en": "Nama (EN)"
+  }
+}

@@ -1,0 +1,23 @@
+{
+    "@@locale": "id",
+    "appTitle": "KonserKita",
+    "login": "Masuk",
+    "register": "Daftar",
+    "email": "Email",
+    "password": "Kata Sandi",
+    "home": "Beranda",
+    "explore": "Eksplorasi",
+    "tickets": "Tiket",
+    "profile": "Profil",
+    "searchEvents": "Cari Acara...",
+    "popularEvents": "Acara Populer",
+    "allEvents": "Semua Acara",
+    "settings": "Pengaturan",
+    "language": "Bahasa",
+    "logout": "Keluar",
+    "buyTicket": "Beli Tiket",
+    "myTickets": "Tiket Saya",
+    "refund": "Pengembalian Dana",
+    "payouts": "Penarikan Dana",
+    "reviews": "Ulasan"
+}

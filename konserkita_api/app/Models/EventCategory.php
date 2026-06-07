@@ -12,9 +12,11 @@ class EventCategory extends Model
 
     protected $fillable = [
         'name',
+        'name_en',
         'icon',
         'slug',
         'description',
+        'description_en',
         'status',
     ];
 

@@ -4,8 +4,10 @@ import 'event_category.dart';
 class Event {
   final int id;
   final String title;
+  final String? titleEn;
   final String slug;
   final String description;
+  final String? descriptionEn;
   final String date;
   final String time;
   final String location;
@@ -19,8 +21,10 @@ class Event {
   Event({
     required this.id,
     required this.title,
+    this.titleEn,
     required this.slug,
     required this.description,
+    this.descriptionEn,
     required this.date,
     required this.time,
     required this.location,
@@ -39,8 +43,10 @@ class Event {
     return Event(
       id: json['id'],
       title: json['title'],
+      titleEn: json['title_en'],
       slug: json['slug'],
       description: json['description'],
+      descriptionEn: json['description_en'],
       date: json['date'],
       time: json['time'],
       location: json['location'],
