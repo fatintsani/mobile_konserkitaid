@@ -10,7 +10,7 @@ const Categories = () => {
   const [pagination, setPagination] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  
+  const [formData, setFormData] = useState({
     name: '',
     name_en: '',
     icon_file: null,
