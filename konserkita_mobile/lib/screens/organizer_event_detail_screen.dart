@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../providers/organizer_provider.dart';
+import '../providers/review_provider.dart';
 import '../utils/constants.dart';
 
 class OrganizerEventDetailScreen extends StatefulWidget {
@@ -19,6 +20,7 @@ class _OrganizerEventDetailScreenState extends State<OrganizerEventDetailScreen>
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<OrganizerProvider>().fetchEventDetail(widget.eventId);
+      context.read<ReviewProvider>().fetchRatingSummary(widget.eventId);
     });
   }
 
@@ -128,6 +130,48 @@ class _OrganizerEventDetailScreenState extends State<OrganizerEventDetailScreen>
                                 ),
                               ),
                             ],
+                          ),
+                          const SizedBox(height: 16),
+                          // Rating Summary
+                          Consumer<ReviewProvider>(
+                            builder: (context, reviewProvider, child) {
+                              final summary = reviewProvider.ratingSummary;
+                              if (summary == null || summary['total_reviews'] == 0) return const SizedBox.shrink();
+                              return Card(
+                                color: Colors.amber.shade50,
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.amber.shade200)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text('Rating Event', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            children: [
+                                              const Icon(Icons.star, color: Colors.amber, size: 20),
+                                              const SizedBox(width: 4),
+                                              Text('${summary['average_rating'].toStringAsFixed(1)} / 5.0', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        children: [
+                                          const Text('Total Reviews', style: TextStyle(color: Colors.black54, fontSize: 12)),
+                                          Text('${summary['total_reviews']} users', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 24),
                           const Text(

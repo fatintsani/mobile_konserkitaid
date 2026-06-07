@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../providers/ticket_provider.dart';
@@ -103,25 +104,39 @@ class _TicketDetailScreenState extends State<TicketDetailScreen> {
                       Card(
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                         elevation: 4,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Event Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              const Divider(),
-                              ListTile(
-                                leading: const Icon(Icons.calendar_today, color: AppConstants.secondaryColor),
-                                title: Text(ticket.ticketType?.event?.date ?? '-'),
-                                subtitle: Text(ticket.ticketType?.event?.time ?? '-'),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                              ListTile(
-                                leading: const Icon(Icons.location_on, color: AppConstants.secondaryColor),
-                                title: Text(ticket.ticketType?.event?.location ?? '-'),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ],
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            if (ticket.ticketType?.event?.id != null) {
+                              context.push('/event/${ticket.ticketType!.event!.id}');
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text('Event Details', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                    const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                                  ],
+                                ),
+                                const Divider(),
+                                ListTile(
+                                  leading: const Icon(Icons.calendar_today, color: AppConstants.secondaryColor),
+                                  title: Text(ticket.ticketType?.event?.date ?? '-'),
+                                  subtitle: Text(ticket.ticketType?.event?.time ?? '-'),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.location_on, color: AppConstants.secondaryColor),
+                                  title: Text(ticket.ticketType?.event?.location ?? '-'),
+                                  contentPadding: EdgeInsets.zero,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

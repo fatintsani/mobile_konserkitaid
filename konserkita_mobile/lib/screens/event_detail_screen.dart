@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/event_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/wishlist_provider.dart';
+import '../providers/review_provider.dart';
 import '../utils/constants.dart';
 
 class EventDetailScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventProvider>().fetchEventDetail(widget.eventId);
+      context.read<ReviewProvider>().fetchRatingSummary(widget.eventId);
     });
   }
 
@@ -112,9 +114,56 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               ],
                             ),
                             const SizedBox(height: 24),
+                            // Rating Section
+                            Consumer<ReviewProvider>(
+                              builder: (context, reviewProvider, child) {
+                                final summary = reviewProvider.ratingSummary;
+                                if (summary == null || summary['total_reviews'] == 0) return const SizedBox.shrink();
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(Icons.star, color: Colors.amber, size: 24),
+                                            const SizedBox(width: 8),
+                                            Text('${summary['average_rating'].toStringAsFixed(1)} / 5.0', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                            const SizedBox(width: 8),
+                                            Text('(${summary['total_reviews']} reviews)', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                                          ],
+                                        ),
+                                        TextButton(
+                                          onPressed: () => context.push('/event/${widget.eventId}/reviews'),
+                                          child: const Text('See All', style: TextStyle(color: AppConstants.primaryColor)),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                  ],
+                                );
+                              },
+                            ),
                             const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
                             Text(event.description, style: const TextStyle(fontSize: 16)),
+                            const SizedBox(height: 24),
+                            // Review Button
+                            if (event.status == 'completed' || DateTime.parse('${event.date} ${event.time}').isBefore(DateTime.now()))
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  icon: const Icon(Icons.rate_review),
+                                  label: const Text('Tulis Review'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppConstants.primaryColor,
+                                    side: const BorderSide(color: AppConstants.primaryColor),
+                                    padding: const EdgeInsets.symmetric(vertical: 12),
+                                  ),
+                                  onPressed: () => context.push('/event/${widget.eventId}/write-review'),
+                                ),
+                              ),
                             const SizedBox(height: 24),
                             const Text('Tickets', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),

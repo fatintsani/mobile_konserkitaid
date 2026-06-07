@@ -72,18 +72,32 @@ class TransactionDetailScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Card(
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Event', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                        const Divider(),
-                        const SizedBox(height: 8),
-                        Text(transaction.event?.title ?? '-', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 4),
-                        Text(transaction.event?.location ?? '-', style: const TextStyle(color: Colors.grey)),
-                      ],
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      if (transaction.event?.id != null) {
+                        context.push('/event/${transaction.event!.id}');
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Event', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                            ],
+                          ),
+                          const Divider(),
+                          const SizedBox(height: 8),
+                          Text(transaction.event?.title ?? '-', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text(transaction.event?.location ?? '-', style: const TextStyle(color: Colors.grey)),
+                        ],
+                      ),
                     ),
                   ),
                 ),

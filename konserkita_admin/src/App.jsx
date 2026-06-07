@@ -19,6 +19,7 @@ import Refunds from './pages/Refunds';
 import Payouts from './pages/Payouts';
 import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
+import Reviews from './pages/Reviews';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
               <Route path="/payouts" element={<Payouts />} />
               <Route path="/venues" element={<Venues />} />
               <Route path="/venues/:id" element={<VenueDetail />} />
+              <Route path="/reviews" element={<Reviews />} />
             </Route>
           </Route>
           

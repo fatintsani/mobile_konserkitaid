@@ -39,6 +39,9 @@ import '../screens/organizer_payout_detail_screen.dart';
 import '../models/event.dart';
 import '../models/transaction.dart';
 import '../screens/seat_map_screen.dart';
+import '../screens/review_form_screen.dart';
+import '../screens/event_reviews_screen.dart';
+import '../screens/my_reviews_screen.dart';
 
 class AppRouter {
   static GoRouter router = GoRouter(
@@ -105,6 +108,20 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: '/event/:id/reviews',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return EventReviewsScreen(eventId: id);
+        },
+      ),
+      GoRoute(
+        path: '/event/:id/write-review',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return ReviewFormScreen(eventId: id);
+        },
+      ),
+      GoRoute(
         path: '/checkout',
         builder: (context, state) => const CheckoutScreen(),
       ),
@@ -128,6 +145,10 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/my-reviews',
+        builder: (context, state) => const MyReviewsScreen(),
       ),
       GoRoute(
         path: '/edit-profile',

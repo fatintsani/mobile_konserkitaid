@@ -1,0 +1,19 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+
+class ReviewFeatureTest extends TestCase
+{
+    /**
+     * A basic feature test example.
+     */
+    public function test_api_routes_exist(): void
+    {
+        $response = $this->get('/api/events/1/reviews');
+        $response->assertStatus(200);
+    }
+}

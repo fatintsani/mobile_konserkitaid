@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
 import '../services/api_service.dart';
 
 class SeatProvider with ChangeNotifier {
@@ -20,15 +21,20 @@ class SeatProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.get('/events/$eventId/seat-map');
-      if (response['success']) {
-        _seatMapData = response['data'];
+      final response = await _apiService.dio.get('/events/$eventId/seat-map');
+      if (response.data['success'] == true) {
+        final data = response.data['data'];
+        _seatMapData = data;
         _selectedSeatIds = []; // clear selection on fetch
       } else {
-        _error = response['message'] ?? 'Failed to load seat map';
+        _error = response.data['message'] ?? 'Failed to load seat map';
       }
     } catch (e) {
-      _error = e.toString();
+      if (e is DioException) {
+        _error = e.response?.data['message'] ?? e.message;
+      } else {
+        _error = e.toString();
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -53,15 +59,24 @@ class SeatProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      final response = await _apiService.post('/events/$eventId/seats/hold', {
+      final response = await _apiService.dio.post('/events/$eventId/seats/hold', data: {
         'seat_ids': _selectedSeatIds,
       });
-      
+
+      if (response.data['success'] == true) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
       _isLoading = false;
       notifyListeners();
-      return response['success'];
+      return false;
     } catch (e) {
-      _error = e.toString();
+      if (e is DioException) {
+        _error = e.response?.data['message'] ?? e.message;
+      } else {
+        _error = e.toString();
+      }
       _isLoading = false;
       notifyListeners();
       return false;
@@ -72,7 +87,7 @@ class SeatProvider with ChangeNotifier {
     if (_selectedSeatIds.isEmpty) return;
     
     try {
-      await _apiService.post('/events/$eventId/seats/release', {
+      await _apiService.dio.post('/events/$eventId/seats/release', data: {
         'seat_ids': _selectedSeatIds,
       });
       _selectedSeatIds = [];

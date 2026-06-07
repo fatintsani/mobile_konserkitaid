@@ -25,7 +25,8 @@ Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'inde
 Route::get('/events', [EventController::class, 'index']);
 Route::get('/events/{id}', [EventController::class, 'show']);
 Route::get('/events/{event}/seat-map', [\App\Http\Controllers\Api\EventSeatController::class, 'getSeatMap']);
-
+Route::get('/events/{event}/reviews', [\App\Http\Controllers\Api\EventReviewController::class, 'index']);
+Route::get('/events/{event}/rating-summary', [\App\Http\Controllers\Api\EventReviewController::class, 'ratingSummary']);
 // Midtrans Webhook Notification
 Route::post('/payments/midtrans/callback', [PaymentController::class, 'notificationHandler']);
 
@@ -126,6 +127,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/venues/{id}/sections', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'storeSection']);
         Route::post('/sections/{id}/generate-seats', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'generateSeats']);
         Route::post('/events/{id}/seat-map', [\App\Http\Controllers\Api\Admin\AdminVenueController::class, 'assignSeatMap']);
+
+        // Reviews
+        Route::get('/reviews', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'index']);
+        Route::put('/reviews/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'approve']);
+        Route::put('/reviews/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'reject']);
+        Route::delete('/reviews/{id}', [\App\Http\Controllers\Api\Admin\AdminReviewController::class, 'destroy']);
     });
 
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
@@ -144,4 +151,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'store']);
     Route::get('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'index']);
     Route::get('/refunds/{id}', [\App\Http\Controllers\Api\RefundController::class, 'show']);
+
+    // Reviews
+    Route::get('/my-reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'myReviews']);
+    Route::post('/events/{event}/reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'store']);
+    Route::put('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'update']);
+    Route::delete('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'destroy']);
 });

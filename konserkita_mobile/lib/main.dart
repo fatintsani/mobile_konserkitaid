@@ -13,6 +13,7 @@ import 'providers/content_provider.dart';
 import 'providers/refund_provider.dart';
 import 'providers/payout_provider.dart';
 import 'providers/seat_provider.dart';
+import 'providers/review_provider.dart';
 import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
@@ -37,6 +38,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => RefundProvider()),
         ChangeNotifierProvider(create: (_) => PayoutProvider()),
         ChangeNotifierProvider(create: (_) => SeatProvider()),
+        ChangeNotifierProvider(create: (_) => ReviewProvider()),
       ],
       child: const KonserKitaApp(),
     ),

@@ -180,7 +180,7 @@ class _SeatMapScreenState extends State<SeatMapScreen> {
                         if (success) {
                           if (mounted) {
                             final checkoutProvider = context.read<CheckoutProvider>();
-                            checkoutProvider.clearCart();
+                            checkoutProvider.clearSelection();
                             // Wait, if we select seats here, we need to know what TicketType it maps to!
                             // Or the user can go to TicketSelectionScreen, select tickets, then select seats?
                             // This depends on the flow. 

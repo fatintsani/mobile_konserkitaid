@@ -16,7 +16,8 @@ import {
   FolderTree,
   RefreshCcw,
   Wallet,
-  MapPin
+  MapPin,
+  Star
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -35,6 +36,7 @@ const AdminLayout = () => {
     { name: 'Users', path: '/users', icon: <Users size={20} /> },
     { name: 'Transactions', path: '/transactions', icon: <CreditCard size={20} /> },
     { name: 'Refunds', path: '/refunds', icon: <RefreshCcw size={20} /> },
+    { name: 'Reviews', path: '/reviews', icon: <Star size={20} /> },
     { name: 'Payouts', path: '/payouts', icon: <Wallet size={20} /> },
     { name: 'Reports', path: '/reports', icon: <BarChart3 size={20} /> },
   ];
