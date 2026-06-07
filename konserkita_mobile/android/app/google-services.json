@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "315924639467",
+    "project_id": "appkonserkita",
+    "storage_bucket": "appkonserkita.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:315924639467:android:2a77340d8b48e0057f58ae",
+        "android_client_info": {
+          "package_name": "com.example.konserkita_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfBZrAA7xhHRrXkQK5VlLJgbsO5tgbvdM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
