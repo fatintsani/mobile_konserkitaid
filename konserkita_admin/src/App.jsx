@@ -24,6 +24,7 @@ import Venues from './pages/Venues';
 import VenueDetail from './pages/VenueDetail';
 import Reviews from './pages/Reviews';
 import BroadcastNotification from './pages/BroadcastNotification';
+import SubscriptionPlans from './pages/SubscriptionPlans';
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
               <Route path="/reviews" element={<Reviews />} />
               <Route path="/broadcast" element={<BroadcastNotification />} />
               <Route path="/referrals" element={<Referrals />} />
+              <Route path="/subscription-plans" element={<SubscriptionPlans />} />
             </Route>
           </Route>
           

@@ -28,9 +28,14 @@ class PaymentController extends BaseController
         }
 
         $orderId = $payload['order_id'];
-        $transactionId = (int) str_replace('INV-', '', $orderId);
         $transactionStatus = $payload['transaction_status'];
         $fraudStatus = $payload['fraud_status'] ?? null;
+
+        if (Str::startsWith($orderId, 'SUB-')) {
+            return $this->handleSubscriptionPayment($orderId, $transactionStatus, $fraudStatus);
+        }
+
+        $transactionId = (int) str_replace('INV-', '', $orderId);
 
         DB::beginTransaction();
         try {
@@ -80,6 +85,62 @@ class PaymentController extends BaseController
             DB::rollBack();
             return $this->sendError('Failed to process notification.', ['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function handleSubscriptionPayment($orderId, $transactionStatus, $fraudStatus)
+    {
+        DB::beginTransaction();
+        try {
+            $payment = \App\Models\SubscriptionPayment::where('invoice_number', $orderId)->lockForUpdate()->first();
+            
+            if (!$payment) {
+                DB::rollBack();
+                return $this->sendError('Subscription payment not found.', [], 404);
+            }
+
+            if ($transactionStatus == 'capture') {
+                if ($fraudStatus == 'accept') {
+                    $this->activateSubscription($payment);
+                }
+            } else if ($transactionStatus == 'settlement') {
+                $this->activateSubscription($payment);
+            } else if (in_array($transactionStatus, ['cancel', 'deny', 'expire', 'failure'])) {
+                $payment->update(['payment_status' => 'failed']);
+            }
+
+            DB::commit();
+            return response()->json(['message' => 'Subscription notification processed successfully.']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->sendError('Failed to process subscription notification.', ['error' => $e->getMessage()], 500);
+        }
+    }
+
+    private function activateSubscription($payment)
+    {
+        $payment->update([
+            'payment_status' => 'paid',
+            'paid_at' => now()
+        ]);
+
+        $subscription = $payment->subscription;
+        $plan = $subscription->plan;
+
+        $startsAt = now();
+        $endsAt = $plan->billing_cycle === 'yearly' ? now()->addYear() : now()->addMonth();
+
+        $subscription->update([
+            'status' => 'active',
+            'starts_at' => $startsAt,
+            'ends_at' => $endsAt
+        ]);
+
+        \App\Models\Notification::create([
+            'user_id' => $subscription->organizer->user_id,
+            'title' => 'Subscription Activated',
+            'message' => 'Your ' . $plan->name . ' subscription is now active!',
+            'type' => 'subscription'
+        ]);
     }
 
     private function generateTickets(Transaction $transaction)

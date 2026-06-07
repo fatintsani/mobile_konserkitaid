@@ -28,7 +28,10 @@ import '../screens/notification_screen.dart';
 import '../screens/organizer_dashboard_screen.dart';
 import '../screens/organizer_event_list_screen.dart';
 import '../screens/organizer_event_detail_screen.dart';
-import '../screens/organizer_sales_screen.dart';
+import '../screens/organizer_reviews_screen.dart';
+import '../screens/subscription_plans_screen.dart';
+import '../screens/organizer_subscription_screen.dart';
+import '../screens/subscription_payments_screen.dart';
 import '../screens/organizer_attendees_screen.dart';
 import '../screens/organizer_event_form_screen.dart';
 import '../screens/organizer_ticket_type_manage_screen.dart';
@@ -313,6 +316,18 @@ class AppRouter {
           return OrganizerPayoutDetailScreen(payoutId: id);
         },
         redirect: _organizerGuard,
+      ),
+      GoRoute(
+        path: '/subscription-plans',
+        builder: (context, state) => const SubscriptionPlansScreen(),
+      ),
+      GoRoute(
+        path: '/organizer-subscription',
+        builder: (context, state) => const OrganizerSubscriptionScreen(),
+      ),
+      GoRoute(
+        path: '/subscription-payments',
+        builder: (context, state) => const SubscriptionPaymentsScreen(),
       ),
     ],
     redirect: (context, state) {

@@ -100,6 +100,13 @@ class _OrganizerDashboardScreenState extends State<OrganizerDashboardScreen> {
                                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                                   onTap: () => context.push('/organizer/payouts/balance'),
                                 ),
+                                const Divider(height: 1),
+                                ListTile(
+                                  leading: const Icon(Icons.card_membership, color: Colors.orange),
+                                  title: const Text('My Subscription Plan'),
+                                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                                  onTap: () => context.push('/organizer-subscription'),
+                                ),
                               ],
                             ),
                           ),

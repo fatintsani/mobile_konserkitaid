@@ -19,9 +19,20 @@ class AuthController extends BaseController
         $user = User::create($input);
         
         if ($input['role'] === 'organizer') {
-            $user->organizer()->create([
+            $organizer = $user->organizer()->create([
                 'company_name' => $user->name,
             ]);
+
+            // Assign Trial Plan if exists
+            $trialPlan = \App\Models\SubscriptionPlan::where('slug', 'trial')->first();
+            if ($trialPlan) {
+                $organizer->subscription()->create([
+                    'subscription_plan_id' => $trialPlan->id,
+                    'status' => 'trialing',
+                    'starts_at' => now(),
+                    'trial_ends_at' => now()->addDays(14),
+                ]);
+            }
         }
         
         $success['token'] =  $user->createToken('KonserKitaApp')->plainTextToken;

@@ -52,6 +52,7 @@ const AdminLayout = () => {
     { name: t('sidebar.broadcast'), path: '/broadcast', icon: <Radio size={20} /> },
     { name: 'Recommendations', path: '/recommendations', icon: <Sparkles size={20} /> },
     { name: 'Referrals', path: '/referrals', icon: <Share2 size={20} /> },
+    { name: 'Subscription Plans', path: '/subscription-plans', icon: <CreditCard size={20} /> },
   ];
 
   const contentItems = [

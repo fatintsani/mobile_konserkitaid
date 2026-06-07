@@ -20,7 +20,9 @@ class PayoutController extends BaseController
             $q->where('organizer_id', $organizerId);
         })->sum('subtotal');
 
-        $platformFeePercentage = config('platform.platform_fee_percentage', 10);
+        $organizer = \App\Models\Organizer::find($organizerId);
+        $subscription = $organizer ? $organizer->subscription()->with('plan')->first() : null;
+        $platformFeePercentage = $subscription ? $subscription->plan->platform_fee_percentage : config('platform.platform_fee_percentage', 10);
         $totalPlatformFee = $grossRevenue * ($platformFeePercentage / 100);
         $netRevenue = $grossRevenue - $totalPlatformFee;
 

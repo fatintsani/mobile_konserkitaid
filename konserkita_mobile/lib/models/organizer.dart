@@ -33,7 +33,7 @@ class Organizer {
       coverImage: json['cover_image'],
       verificationBadge: json['verification_badge'] == 1 || json['verification_badge'] == true,
       status: json['status'] ?? 'pending',
-      ratingAverage: (json['rating_average'] ?? 0).toDouble(),
+      ratingAverage: json['rating_average'] != null ? double.tryParse(json['rating_average'].toString()) ?? 0.0 : 0.0,
       totalReviews: json['total_reviews'] ?? 0,
     );
   }

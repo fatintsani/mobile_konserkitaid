@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Organizer extends Model
 {
@@ -54,6 +55,16 @@ class Organizer extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(OrganizerReview::class);
+    }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(OrganizerSubscription::class);
+    }
+
+    public function limits(): HasOne
+    {
+        return $this->hasOne(OrganizerLimit::class);
     }
 
     protected function logo(): \Illuminate\Database\Eloquent\Casts\Attribute

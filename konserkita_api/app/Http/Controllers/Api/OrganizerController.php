@@ -157,7 +157,9 @@ class OrganizerController extends BaseController
             $q->where('event_id', $eventId);
         })->sum('subtotal');
 
-        $platformFeePercentage = config('platform.platform_fee_percentage', 10);
+        $organizer = \App\Models\Organizer::find($event->organizer_id);
+        $subscription = $organizer ? $organizer->subscription()->with('plan')->first() : null;
+        $platformFeePercentage = $subscription ? $subscription->plan->platform_fee_percentage : config('platform.platform_fee_percentage', 10);
         $platformFee = $grossRevenue * ($platformFeePercentage / 100);
         $netRevenue = $grossRevenue - $platformFee;
 
@@ -231,6 +233,19 @@ class OrganizerController extends BaseController
             return $this->sendError('You must have an organizer profile to create events.', [], 403);
         }
 
+        $organizer = \App\Models\Organizer::find($organizerId);
+
+        // SaaS Limit Check
+        $subscription = $organizer->subscription()->with('plan')->first();
+        if (!$subscription || !in_array($subscription->status, ['active', 'trialing'])) {
+            return $this->sendError('You must have an active subscription to create events.', [], 403);
+        }
+
+        $limits = $organizer->limits()->firstOrCreate(['organizer_id' => $organizerId]);
+        if ($limits->current_month_events >= $subscription->plan->max_events) {
+            return $this->sendError('You have reached your maximum event limit for your current subscription plan.', [], 403);
+        }
+
         $data = $request->validated();
         $data['organizer_id'] = $organizerId;
         $data['slug'] = Str::slug($data['title']) . '-' . time();
@@ -254,6 +269,11 @@ class OrganizerController extends BaseController
         }
 
         $event = Event::create($data);
+
+        // Increment usage
+        if ($limits) {
+            $limits->increment('current_month_events');
+        }
 
         return $this->sendResponse($event, 'Event created successfully.');
     }
@@ -340,6 +360,16 @@ class OrganizerController extends BaseController
         $data = $request->validated();
         $data['event_id'] = $event->id;
         
+        $quota = $data['quota'] ?? 0;
+        
+        if ($organizerId) {
+            $organizer = \App\Models\Organizer::find($organizerId);
+            $subscription = $organizer->subscription()->with('plan')->first();
+            if ($subscription && $quota > $subscription->plan->max_tickets_per_event) {
+                return $this->sendError('Ticket quota exceeds your subscription plan limit (' . $subscription->plan->max_tickets_per_event . ').', [], 403);
+            }
+        }
+
         if (isset($data['quota'])) {
             $data['stock'] = $data['quota'];
             unset($data['quota']);

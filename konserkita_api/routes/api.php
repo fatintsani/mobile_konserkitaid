@@ -89,6 +89,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // Payouts
         Route::get('/payouts/balance', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'balance']);
         Route::get('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'index']);
+
+        // Subscriptions
+        Route::prefix('subscription')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'getSubscription']);
+            Route::post('/upgrade', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'upgrade']);
+            Route::post('/cancel', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'cancel']);
+            Route::get('/payments', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'payments']);
+        });
     });
 
     // Promo route
@@ -177,7 +185,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
         // Notifications
         Route::post('/notifications/broadcast', [\App\Http\Controllers\Api\Admin\AdminNotificationController::class, 'broadcast']);
+
+        // SaaS Subscriptions
+        Route::prefix('subscription-plans')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getPlans']);
+            Route::post('/', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'createPlan']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'updatePlan']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'deletePlan']);
+        });
+
+        Route::prefix('subscriptions')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getSubscriptions']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getSubscription']);
+        });
     });
+
+    // Subscription Plans (Read-only for organizer/public)
+    Route::get('/subscription-plans', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getPlans']);
 
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
 
