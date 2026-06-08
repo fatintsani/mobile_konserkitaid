@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../screens/home_screen.dart';
 import '../screens/login_screen.dart';
 import '../screens/register_screen.dart';
+import '../screens/two_factor_challenge_screen.dart';
 import '../screens/refund_detail_screen.dart';
 import '../screens/referral_dashboard_screen.dart';
 import '../screens/ticket_selection_screen.dart';
@@ -81,6 +82,13 @@ class AppRouter {
       GoRoute(
         path: '/preferences',
         builder: (context, state) => const PreferencesScreen(),
+      ),
+      GoRoute(
+        path: '/2fa-challenge',
+        builder: (context, state) {
+          final temporaryToken = state.extra as String;
+          return TwoFactorChallengeScreen(temporaryToken: temporaryToken);
+        },
       ),
       GoRoute(
         path: '/register',
@@ -338,7 +346,7 @@ class AppRouter {
     redirect: (context, state) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final isLoggedIn = authProvider.isAuthenticated;
-      final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/register';
+      final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/register' || state.uri.path == '/2fa-challenge';
 
       if (!isLoggedIn && !isLoggingIn) return '/login';
       if (isLoggedIn && isLoggingIn) return '/';

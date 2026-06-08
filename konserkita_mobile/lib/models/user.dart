@@ -5,6 +5,7 @@ class User {
   final String role;
   final String? phone;
   final String? avatar;
+  final bool? twoFactorEnabled;
 
   User({
     required this.id,
@@ -13,6 +14,7 @@ class User {
     required this.role,
     this.phone,
     this.avatar,
+    this.twoFactorEnabled,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class User {
       role: json['role'] ?? 'customer',
       phone: json['phone'],
       avatar: json['avatar'],
+      twoFactorEnabled: json['two_factor_enabled'] == 1 || json['two_factor_enabled'] == true,
     );
   }
 
@@ -34,6 +37,7 @@ class User {
       'role': role,
       'phone': phone,
       'avatar': avatar,
+      'two_factor_enabled': twoFactorEnabled,
     };
   }
 }

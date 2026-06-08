@@ -10,6 +10,13 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
+  // 2FA states
+  const [is2FAEnabled, setIs2FAEnabled] = useState(user?.two_factor_enabled || false);
+  const [setupData, setSetupData] = useState(null);
+  const [confirmCode, setConfirmCode] = useState('');
+  const [recoveryCodes, setRecoveryCodes] = useState([]);
 
   const fetchPasskeys = async () => {
     try {
@@ -63,6 +70,58 @@ const Profile = () => {
     }
   };
 
+  const handleSetup2FA = async () => {
+    setError('');
+    setSuccessMsg('');
+    try {
+      const response = await api.post('/2fa/setup');
+      setSetupData(response.data);
+    } catch (err) {
+      setError('Failed to setup 2FA');
+    }
+  };
+
+  const handleConfirm2FA = async () => {
+    setError('');
+    setSuccessMsg('');
+    try {
+      const response = await api.post('/2fa/confirm', { code: confirmCode });
+      setIs2FAEnabled(true);
+      setRecoveryCodes(response.data.recovery_codes);
+      setSetupData(null);
+      setSuccessMsg('2FA has been successfully enabled.');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to confirm 2FA code');
+    }
+  };
+
+  const handleDisable2FA = async () => {
+    if (!window.confirm('Are you sure you want to disable Two-Factor Authentication? This will reduce your account security.')) return;
+    setError('');
+    setSuccessMsg('');
+    try {
+      await api.post('/2fa/disable');
+      setIs2FAEnabled(false);
+      setRecoveryCodes([]);
+      setSuccessMsg('2FA has been disabled.');
+    } catch (err) {
+      setError('Failed to disable 2FA');
+    }
+  };
+
+  const handleRegenerateCodes = async () => {
+    if (!window.confirm('Are you sure? Your old recovery codes will no longer work.')) return;
+    setError('');
+    setSuccessMsg('');
+    try {
+      const response = await api.post('/2fa/recovery-codes/regenerate');
+      setRecoveryCodes(response.data.recovery_codes);
+      setSuccessMsg('Recovery codes regenerated successfully. Please save them immediately.');
+    } catch (err) {
+      setError('Failed to regenerate recovery codes');
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
@@ -79,6 +138,11 @@ const Profile = () => {
         {error && (
           <div className="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm">
             {error}
+          </div>
+        )}
+        {successMsg && (
+          <div className="bg-green-50 text-green-700 p-3 rounded mb-4 text-sm">
+            {successMsg}
           </div>
         )}
 
@@ -119,6 +183,97 @@ const Profile = () => {
           <Plus size={18} className="mr-2" />
           {registering ? 'Registering...' : 'Add New Passkey'}
         </button>
+      </div>
+
+      {/* 2FA Settings Section */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <Key className="mr-2" size={20} />
+          Two-Factor Authentication (TOTP)
+        </h2>
+        <p className="text-gray-600 mb-6 text-sm">
+          Add additional security to your account using two-factor authentication.
+        </p>
+
+        {is2FAEnabled ? (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-green-600 font-medium">✓ 2FA is currently enabled</span>
+              <button
+                onClick={handleDisable2FA}
+                className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
+              >
+                Disable 2FA
+              </button>
+            </div>
+            
+            {recoveryCodes.length > 0 ? (
+              <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
+                <h3 className="font-semibold text-gray-800 mb-2">Recovery Codes</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Please save these recovery codes in a secure location. They will not be shown again.
+                </p>
+                <div className="grid grid-cols-2 gap-2 font-mono text-sm">
+                  {recoveryCodes.map((code, index) => (
+                    <div key={index} className="bg-white p-2 border rounded text-center">
+                      {code}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={handleRegenerateCodes}
+                className="mt-4 text-[#6C2BD9] hover:underline text-sm font-medium"
+              >
+                Regenerate Recovery Codes
+              </button>
+            )}
+          </div>
+        ) : (
+          <div>
+            {!setupData ? (
+              <button
+                onClick={handleSetup2FA}
+                className="px-4 py-2 bg-[#6C2BD9] text-white rounded-lg hover:bg-[#5b24b8]"
+              >
+                Enable 2FA
+              </button>
+            ) : (
+              <div className="space-y-4 border p-4 rounded-lg bg-gray-50">
+                <h3 className="font-semibold text-gray-800">Scan this QR Code</h3>
+                <p className="text-sm text-gray-600">
+                  Scan the QR code below using an authenticator app like Google Authenticator or Authy.
+                </p>
+                <div className="flex justify-center bg-white p-4 rounded border inline-block">
+                  <img src={setupData.qr_code_svg} alt="2FA QR Code" className="w-48 h-48" />
+                </div>
+                <p className="text-sm text-gray-600">Or enter this secret manually: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{setupData.secret}</span></p>
+                
+                <div className="pt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Enter the 6-digit code to confirm
+                  </label>
+                  <div className="flex space-x-2">
+                    <input
+                      type="text"
+                      className="border rounded px-3 py-2 focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
+                      placeholder="123456"
+                      value={confirmCode}
+                      onChange={(e) => setConfirmCode(e.target.value)}
+                    />
+                    <button
+                      onClick={handleConfirm2FA}
+                      className="px-4 py-2 bg-[#6C2BD9] text-white rounded hover:bg-[#5b24b8]"
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

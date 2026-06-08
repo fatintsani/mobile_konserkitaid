@@ -64,6 +64,15 @@ class SocialAuthController extends Controller
             }
 
             // Create token for the user
+            if ($user->two_factor_enabled) {
+                $token = $user->createToken('auth_token_2fa', ['2fa_challenge'])->plainTextToken;
+                return response()->json([
+                    'success' => true,
+                    'requires_2fa' => true,
+                    'temporary_token' => $token
+                ], 200);
+            }
+
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([

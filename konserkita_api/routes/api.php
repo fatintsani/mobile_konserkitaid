@@ -26,6 +26,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login']);
 
+// 2FA Public
+Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge']);
+
 // Passkeys Login
 Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:6,1');
 Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:6,1');
@@ -58,6 +61,13 @@ Route::middleware('auth:sanctum')->group(function () {
     // Device Tokens
     Route::post('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'store']);
     Route::delete('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'destroy']);
+
+    // 2FA Management
+    Route::post('/2fa/setup', [\App\Http\Controllers\Api\TwoFactorController::class, 'setup']);
+    Route::post('/2fa/confirm', [\App\Http\Controllers\Api\TwoFactorController::class, 'confirm']);
+    Route::post('/2fa/disable', [\App\Http\Controllers\Api\TwoFactorController::class, 'disable']);
+    Route::get('/2fa/recovery-codes', [\App\Http\Controllers\Api\TwoFactorController::class, 'getRecoveryCodes']);
+    Route::post('/2fa/recovery-codes/regenerate', [\App\Http\Controllers\Api\TwoFactorController::class, 'regenerateRecoveryCodes']);
 
     // Passkeys Management
     Route::post('/passkeys/register/options', [\App\Http\Controllers\Api\PasskeyRegisterController::class, 'options']);

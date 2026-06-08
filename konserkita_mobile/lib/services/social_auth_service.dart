@@ -13,11 +13,11 @@ class SocialAuthService {
   );
   final FlutterAppAuth _appAuth = const FlutterAppAuth();
 
-  Future<User?> loginWithGoogle() async {
+  Future<Map<String, dynamic>> loginWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
-        return null; // User canceled the sign-in
+        return {'success': false}; // User canceled the sign-in
       }
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
@@ -33,7 +33,7 @@ class SocialAuthService {
     }
   }
 
-  Future<User?> loginWithMicrosoft() async {
+  Future<Map<String, dynamic>> loginWithMicrosoft() async {
     try {
       // Configuration for Microsoft OAuth
       const String clientId = 'YOUR_MICROSOFT_CLIENT_ID';
@@ -53,26 +53,33 @@ class SocialAuthService {
         return await _sendTokenToBackend(result!.accessToken!, 'microsoft');
       }
       
-      return null;
+      return {'success': false};
     } catch (e) {
       throw Exception('Microsoft Sign-In failed: $e');
     }
   }
 
-  Future<User?> _sendTokenToBackend(String accessToken, String provider) async {
+  Future<Map<String, dynamic>> _sendTokenToBackend(String accessToken, String provider) async {
     try {
       final response = await _apiService.dio.post('/auth/$provider', data: {
         'access_token': accessToken,
       });
+
+      if (response.data['requires_2fa'] == true) {
+        return {
+          'requires_2fa': true,
+          'temporary_token': response.data['temporary_token']
+        };
+      }
 
       if (response.data['success']) {
         final token = response.data['data']['token'];
         final user = User.fromJson(response.data['data']['user']);
         
         await _storage.write(key: 'auth_token', value: token);
-        return user;
+        return {'success': true, 'user': user};
       }
-      return null;
+      return {'success': false};
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? 'Social login failed on backend');
     }

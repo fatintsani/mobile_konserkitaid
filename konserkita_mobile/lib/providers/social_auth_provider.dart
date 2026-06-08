@@ -13,39 +13,65 @@ class SocialAuthProvider with ChangeNotifier {
   String? get error => _error;
   User? get user => _user;
 
-  Future<bool> loginWithGoogle() async {
+  Future<Map<String, dynamic>> loginWithGoogle() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _user = await _socialAuthService.loginWithGoogle();
+      final result = await _socialAuthService.loginWithGoogle();
+      if (result['requires_2fa'] == true) {
+        _isLoading = false;
+        notifyListeners();
+        return result;
+      }
+      
+      if (result['success'] == true) {
+        _user = result['user'];
+        _isLoading = false;
+        notifyListeners();
+        return {'success': true};
+      }
+      
       _isLoading = false;
       notifyListeners();
-      return _user != null;
+      return {'success': false, 'message': 'Google Sign-In failed or canceled'};
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
-      return false;
+      return {'success': false, 'message': e.toString()};
     }
   }
 
-  Future<bool> loginWithMicrosoft() async {
+  Future<Map<String, dynamic>> loginWithMicrosoft() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      _user = await _socialAuthService.loginWithMicrosoft();
+      final result = await _socialAuthService.loginWithMicrosoft();
+      if (result['requires_2fa'] == true) {
+        _isLoading = false;
+        notifyListeners();
+        return result;
+      }
+      
+      if (result['success'] == true) {
+        _user = result['user'];
+        _isLoading = false;
+        notifyListeners();
+        return {'success': true};
+      }
+      
       _isLoading = false;
       notifyListeners();
-      return _user != null;
+      return {'success': false, 'message': 'Microsoft Sign-In failed or canceled'};
     } catch (e) {
       _error = e.toString();
       _isLoading = false;
       notifyListeners();
-      return false;
+      return {'success': false, 'message': e.toString()};
     }
   }
 }

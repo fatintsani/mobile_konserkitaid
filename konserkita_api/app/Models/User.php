@@ -14,8 +14,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use LaravelWebauthn\WebauthnAuthenticatable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'phone', 'avatar', 'provider', 'provider_id'])]
-#[Hidden(['password', 'remember_token'])]
+#[Fillable(['name', 'email', 'password', 'role', 'phone', 'avatar', 'provider', 'provider_id', 'two_factor_secret', 'two_factor_enabled', 'two_factor_confirmed_at'])]
+#[Hidden(['password', 'remember_token', 'two_factor_secret'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
@@ -31,6 +31,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_enabled' => 'boolean',
+            'two_factor_confirmed_at' => 'datetime',
         ];
     }
 
@@ -72,6 +74,11 @@ class User extends Authenticatable
     public function organizerReviews(): HasMany
     {
         return $this->hasMany(OrganizerReview::class);
+    }
+
+    public function twoFactorRecoveryCodes(): HasMany
+    {
+        return $this->hasMany(TwoFactorRecoveryCode::class);
     }
 
     protected function avatar(): \Illuminate\Database\Eloquent\Casts\Attribute

@@ -14,7 +14,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, socialLogin, passkeyLogin } = useAuth();
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [tempToken, setTempToken] = useState(null);
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const [isRecoveryCode, setIsRecoveryCode] = useState(false);
+
+  const { login, socialLogin, passkeyLogin, verify2FA } = useAuth();
   const navigate = useNavigate();
   const { instance } = useMsal();
 
@@ -22,7 +27,11 @@ const Login = () => {
     setError('');
     setIsLoading(true);
     const result = await socialLogin(accessToken, provider);
-    if (result.success) {
+    if (result.requires2FA) {
+      setRequires2FA(true);
+      setTempToken(result.temporaryToken);
+      setIsLoading(false);
+    } else if (result.success) {
       navigate('/');
     } else {
       setError(result.message);
@@ -55,7 +64,11 @@ const Login = () => {
     
     const result = await login(email, password);
     
-    if (result.success) {
+    if (result.requires2FA) {
+      setRequires2FA(true);
+      setTempToken(result.temporaryToken);
+      setIsLoading(false);
+    } else if (result.success) {
       navigate('/');
     } else {
       setError(result.message);
@@ -77,7 +90,11 @@ const Login = () => {
         email
       });
 
-      if (result.success) {
+      if (result.requires2FA) {
+        setRequires2FA(true);
+        setTempToken(result.temporaryToken);
+        setIsLoading(false);
+      } else if (result.success) {
         navigate('/');
       } else {
         setError(result.message);
@@ -86,6 +103,21 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       setError(err.message || 'Passkey login failed');
+      setIsLoading(false);
+    }
+  };
+
+  const handle2FASubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    const result = await verify2FA(tempToken, twoFactorCode, isRecoveryCode);
+
+    if (result.success) {
+      navigate('/');
+    } else {
+      setError(result.message);
       setIsLoading(false);
     }
   };
@@ -111,6 +143,7 @@ const Login = () => {
           </div>
         )}
 
+        {!requires2FA ? (
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
@@ -207,6 +240,47 @@ const Login = () => {
             </div>
           </div>
         </form>
+        ) : (
+        <form className="mt-8 space-y-6" onSubmit={handle2FASubmit}>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="2fa-code" className="sr-only">
+                {isRecoveryCode ? 'Recovery Code' : 'Authentication Code'}
+              </label>
+              <input
+                id="2fa-code"
+                name="code"
+                type="text"
+                required
+                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
+                placeholder={isRecoveryCode ? "Enter Recovery Code" : "Enter 6-digit code"}
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading || !twoFactorCode}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#6C2BD9] hover:bg-[#5b24b8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6C2BD9] disabled:opacity-70 transition-colors"
+            >
+              {isLoading ? 'Verifying...' : 'Verify Code'}
+            </button>
+          </div>
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => setIsRecoveryCode(!isRecoveryCode)}
+              className="text-sm text-[#6C2BD9] hover:text-[#5b24b8]"
+            >
+              {isRecoveryCode ? 'Use Authenticator App' : 'Use Recovery Code'}
+            </button>
+          </div>
+        </form>
+        )}
       </div>
     </div>
   );

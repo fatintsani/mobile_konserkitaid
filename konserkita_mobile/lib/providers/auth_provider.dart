@@ -54,13 +54,21 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> login(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
     _setLoading(true);
     try {
-      _user = await _authService.login(email, password);
-      if (_user != null) {
-        FCMService().registerToken();
+      final result = await _authService.login(email, password);
+      if (result['requires_2fa'] == true) {
+        return result;
       }
+      if (result['success'] == true) {
+        _user = result['user'];
+        FCMService().registerToken();
+        return {'success': true};
+      }
+      return {'success': false, 'message': 'Login failed'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
     } finally {
       _setLoading(false);
     }
@@ -78,15 +86,21 @@ class AuthProvider with ChangeNotifier {
     await _authService.verifyPasskeyRegistration(responseData);
   }
 
-  Future<bool> verifyPasskeyLogin(Map<String, dynamic> response, String email) async {
+  Future<Map<String, dynamic>> verifyPasskeyLogin(Map<String, dynamic> response, String email) async {
     _setLoading(true);
     try {
-      _user = await _authService.verifyPasskeyLogin(response, email);
-      if (_user != null) {
-        FCMService().registerToken();
-        return true;
+      final result = await _authService.verifyPasskeyLogin(response, email);
+      if (result['requires_2fa'] == true) {
+        return result;
       }
-      return false;
+      if (result['success'] == true) {
+        _user = result['user'];
+        FCMService().registerToken();
+        return {'success': true};
+      }
+      return {'success': false, 'message': 'Passkey login failed'};
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
     } finally {
       _setLoading(false);
     }
@@ -110,6 +124,37 @@ class AuthProvider with ChangeNotifier {
     await _authService.logout();
     _user = null;
     _setLoading(false);
+  }
+
+  // 2FA methods
+  Future<Map<String, dynamic>> setup2FA() async {
+    return await _authService.setup2FA();
+  }
+
+  Future<List<String>> confirm2FA(String code) async {
+    return await _authService.confirm2FA(code);
+  }
+
+  Future<void> disable2FA() async {
+    await _authService.disable2FA();
+  }
+
+  Future<List<String>> regenerateRecoveryCodes() async {
+    return await _authService.regenerateRecoveryCodes();
+  }
+
+  Future<bool> challenge2FA(String temporaryToken, String code, {bool isRecoveryCode = false}) async {
+    _setLoading(true);
+    try {
+      _user = await _authService.challenge2FA(temporaryToken, code, isRecoveryCode: isRecoveryCode);
+      if (_user != null) {
+        FCMService().registerToken();
+        return true;
+      }
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
   void _setLoading(bool value) {

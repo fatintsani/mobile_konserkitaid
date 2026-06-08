@@ -4,6 +4,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import 'package:passkeys/authenticator.dart';
 import 'package:passkeys_platform_interface/types/register_request.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../utils/constants.dart';
 
 class PasskeysScreen extends StatefulWidget {
@@ -18,6 +19,13 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
   bool _isLoading = true;
   bool _isRegistering = false;
   List<dynamic> _passkeys = [];
+
+  // 2FA States
+  bool _is2faEnabled = false;
+  Map<String, dynamic>? _setupData;
+  List<String> _recoveryCodes = [];
+  final _confirmCodeController = TextEditingController();
+  bool _is2faLoading = false;
 
   @override
   void initState() {
@@ -38,6 +46,16 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load passkeys: $e'), backgroundColor: Colors.red),
         );
+      }
+    }
+    
+    // Check 2FA status from profile
+    if (mounted) {
+      final user = context.read<AuthProvider>().user;
+      if (user != null) {
+        setState(() {
+          _is2faEnabled = user.twoFactorEnabled ?? false;
+        });
       }
     }
   }
@@ -113,13 +131,117 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
     }
   }
 
+  Future<void> _setup2FA() async {
+    setState(() => _is2faLoading = true);
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final data = await authProvider.setup2FA();
+      setState(() {
+        _setupData = data;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _is2faLoading = false);
+    }
+  }
+
+  Future<void> _confirm2FA() async {
+    setState(() => _is2faLoading = true);
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final codes = await authProvider.confirm2FA(_confirmCodeController.text);
+      
+      setState(() {
+        _is2faEnabled = true;
+        _recoveryCodes = codes;
+        _setupData = null;
+      });
+      
+      await authProvider.checkAuthStatus(); // refresh user data
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('2FA enabled successfully!'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _is2faLoading = false);
+    }
+  }
+
+  Future<void> _disable2FA() async {
+    setState(() => _is2faLoading = true);
+    try {
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.disable2FA();
+      
+      setState(() {
+        _is2faEnabled = false;
+        _recoveryCodes = [];
+      });
+      
+      await authProvider.checkAuthStatus(); // refresh user data
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('2FA disabled successfully!'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _is2faLoading = false);
+    }
+  }
+
+  Future<void> _regenerateRecoveryCodes() async {
+    setState(() => _is2faLoading = true);
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final codes = await authProvider.regenerateRecoveryCodes();
+      
+      setState(() {
+        _recoveryCodes = codes;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Recovery codes regenerated!'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      setState(() => _is2faLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Passkeys & WebAuthn')),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
+          : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -140,27 +262,119 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
                   const SizedBox(height: 24),
                   const Text('Your Passkeys', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Expanded(
-                    child: _passkeys.isEmpty
-                        ? const Center(child: Text('No passkeys registered yet.', style: TextStyle(color: Colors.grey)))
-                        : ListView.builder(
-                            itemCount: _passkeys.length,
-                            itemBuilder: (context, index) {
-                              final pk = _passkeys[index];
-                              return Card(
-                                child: ListTile(
-                                  leading: const Icon(Icons.key, color: AppConstants.primaryColor),
-                                  title: Text(pk['name']),
-                                  subtitle: Text('Created: ${pk['created_at'].substring(0, 10)}'),
-                                  trailing: IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => _deletePasskey(pk['id']),
-                                  ),
+                  _passkeys.isEmpty
+                      ? const Center(child: Padding(padding: EdgeInsets.symmetric(vertical: 24), child: Text('No passkeys registered yet.', style: TextStyle(color: Colors.grey))))
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: _passkeys.length,
+                          itemBuilder: (context, index) {
+                            final pk = _passkeys[index];
+                            return Card(
+                              child: ListTile(
+                                leading: const Icon(Icons.key, color: AppConstants.primaryColor),
+                                title: Text(pk['name']),
+                                subtitle: Text('Created: ${pk['created_at'].substring(0, 10)}'),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete, color: Colors.red),
+                                  onPressed: () => _deletePasskey(pk['id']),
                                 ),
-                              );
-                            },
+                              ),
+                            );
+                          },
+                        ),
+                  const Divider(height: 32),
+                  const Text('Two-Factor Authentication (TOTP)', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  const Text('Protect your account with 2FA using Google Authenticator or Authy.', style: TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 16),
+                  if (_is2faEnabled) ...[
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('✓ 2FA is Enabled', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                        TextButton(
+                          onPressed: _is2faLoading ? null : _disable2FA,
+                          child: const Text('Disable 2FA', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                    if (_recoveryCodes.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.yellow.shade50,
+                          border: Border.all(color: Colors.yellow.shade400),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Recovery Codes', style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            const Text('Save these codes in a secure location. They will not be shown again.', style: TextStyle(fontSize: 12)),
+                            const SizedBox(height: 8),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: _recoveryCodes.map((c) => Chip(label: Text(c, style: const TextStyle(fontFamily: 'monospace')))).toList(),
+                            ),
+                          ],
+                        ),
+                      )
+                    ] else ...[
+                      TextButton(
+                        onPressed: _is2faLoading ? null : _regenerateRecoveryCodes,
+                        child: const Text('Regenerate Recovery Codes'),
+                      ),
+                    ]
+                  ] else if (_setupData == null) ...[
+                    ElevatedButton(
+                      onPressed: _is2faLoading ? null : _setup2FA,
+                      style: ElevatedButton.styleFrom(backgroundColor: AppConstants.primaryColor, padding: const EdgeInsets.symmetric(vertical: 16)),
+                      child: const Text('Enable 2FA', style: TextStyle(color: Colors.white)),
+                    ),
+                  ] else ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        children: [
+                          const Text('1. Scan QR or enter secret manually'),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            color: Colors.white,
+                            child: QrImageView(
+                              data: 'otpauth://totp/KonserKita:${context.read<AuthProvider>().user?.email ?? ''}?secret=${_setupData!['secret']}&issuer=KonserKita',
+                              version: QrVersions.auto,
+                              size: 200.0,
+                            ),
                           ),
-                  ),
+                          const SizedBox(height: 16),
+                          SelectableText(_setupData!['secret'], style: const TextStyle(fontFamily: 'monospace', fontSize: 18, letterSpacing: 2)),
+                          const SizedBox(height: 16),
+                          const Text('2. Enter 6-digit code'),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: _confirmCodeController,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            decoration: const InputDecoration(border: OutlineInputBorder(), hintText: '000000'),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _is2faLoading ? null : _confirm2FA,
+                            style: ElevatedButton.styleFrom(backgroundColor: AppConstants.primaryColor, minimumSize: const Size(double.infinity, 48)),
+                            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+                          )
+                        ],
+                      ),
+                    )
+                  ]
                 ],
               ),
             ),

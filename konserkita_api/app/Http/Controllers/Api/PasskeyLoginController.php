@@ -52,6 +52,14 @@ class PasskeyLoginController extends Controller
                 \App\Models\Passkey::where('credentialId', $credentialId)->update(['last_used_at' => now()]);
 
                 // Create token
+                if ($user->two_factor_enabled) {
+                    $token = $user->createToken('passkey-login-2FA', ['2fa_challenge'])->plainTextToken;
+                    return response()->json([
+                        'requires_2fa' => true,
+                        'temporary_token' => $token
+                    ]);
+                }
+
                 $token = $user->createToken('passkey-login')->plainTextToken;
 
                 AuditLog::create([

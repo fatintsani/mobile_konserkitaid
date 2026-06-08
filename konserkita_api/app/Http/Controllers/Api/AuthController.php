@@ -46,6 +46,15 @@ class AuthController extends BaseController
 
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
+
+            if ($user->two_factor_enabled) {
+                $tempToken = $user->createToken('KonserKitaApp-2FA', ['2fa_challenge'])->plainTextToken;
+                return response()->json([
+                    'requires_2fa' => true,
+                    'temporary_token' => $tempToken
+                ]);
+            }
+
             $success['token'] =  $user->createToken('KonserKitaApp')->plainTextToken; 
             $success['user'] =  $user;
             

@@ -22,11 +22,19 @@ class _LoginScreenState extends State<LoginScreen> {
   void _login() async {
     if (_formKey.currentState!.validate()) {
       try {
-        await context.read<AuthProvider>().login(
+        final result = await context.read<AuthProvider>().login(
           _emailController.text,
           _passwordController.text,
         );
-        if (mounted) context.go('/');
+        if (result['requires_2fa'] == true && mounted) {
+          context.push('/2fa-challenge', extra: result['temporary_token']);
+        } else if (result['success'] == true && mounted) {
+          context.go('/');
+        } else if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['message'] ?? 'Login failed'), backgroundColor: Colors.red),
+          );
+        }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -38,12 +46,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginWithGoogle() async {
-    final success = await context.read<SocialAuthProvider>().loginWithGoogle();
-    if (success && mounted) {
+    final result = await context.read<SocialAuthProvider>().loginWithGoogle();
+    if (result['requires_2fa'] == true && mounted) {
+      context.push('/2fa-challenge', extra: result['temporary_token']);
+    } else if (result['success'] == true && mounted) {
       await context.read<AuthProvider>().checkAuthStatus();
       if (mounted) context.go('/');
     } else if (mounted) {
-      final error = context.read<SocialAuthProvider>().error;
+      final error = result['message'] ?? context.read<SocialAuthProvider>().error;
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error), backgroundColor: Colors.red),
@@ -53,12 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _loginWithMicrosoft() async {
-    final success = await context.read<SocialAuthProvider>().loginWithMicrosoft();
-    if (success && mounted) {
+    final result = await context.read<SocialAuthProvider>().loginWithMicrosoft();
+    if (result['requires_2fa'] == true && mounted) {
+      context.push('/2fa-challenge', extra: result['temporary_token']);
+    } else if (result['success'] == true && mounted) {
       await context.read<AuthProvider>().checkAuthStatus();
       if (mounted) context.go('/');
     } else if (mounted) {
-      final error = context.read<SocialAuthProvider>().error;
+      final error = result['message'] ?? context.read<SocialAuthProvider>().error;
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error), backgroundColor: Colors.red),
@@ -82,9 +94,15 @@ class _LoginScreenState extends State<LoginScreen> {
       final request = AuthenticateRequestType.fromJson(options);
       final authResponse = await authenticator.authenticate(request);
 
-      final success = await authProvider.verifyPasskeyLogin(authResponse.toJson(), email);
-      if (success && mounted) {
+      final result = await authProvider.verifyPasskeyLogin(authResponse.toJson(), email);
+      if (result['requires_2fa'] == true && mounted) {
+        context.push('/2fa-challenge', extra: result['temporary_token']);
+      } else if (result['success'] == true && mounted) {
         context.go('/');
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result['message'] ?? 'Login failed'), backgroundColor: Colors.red),
+        );
       }
     } catch (e) {
       if (mounted) {
