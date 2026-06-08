@@ -25,9 +25,11 @@ import VenueDetail from './pages/VenueDetail';
 import Reviews from './pages/Reviews';
 import BroadcastNotification from './pages/BroadcastNotification';
 import SubscriptionPlans from './pages/SubscriptionPlans';
+
 import Profile from './pages/Profile';
-import SecurityDashboard from './pages/SecurityDashboard';
-import AccountRecoveryDashboard from './pages/AccountRecoveryDashboard';
+import SecurityDashboard from "./pages/SecurityDashboard";
+import AccountRecoveryDashboard from "./pages/AccountRecoveryDashboard";
+import AuditTrail from "./pages/AuditTrail";
 
 function App() {
   return (
@@ -59,7 +61,8 @@ function App() {
               <Route path="/referrals" element={<Referrals />} />
               <Route path="/subscription-plans" element={<SubscriptionPlans />} />
               <Route path="/security" element={<SecurityDashboard />} />
-              <Route path="/account-recovery" element={<AccountRecoveryDashboard />} />
+              <Route path="account-recovery" element={<AccountRecoveryDashboard />} />
+              <Route path="audit-trail" element={<AuditTrail />} />
             </Route>
           </Route>
           

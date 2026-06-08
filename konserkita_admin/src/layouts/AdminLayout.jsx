@@ -23,7 +23,8 @@ import {
   Share2,
   Sparkles,
   ShieldAlert,
-  Unlock
+  Unlock,
+  FileText
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -57,6 +58,7 @@ const AdminLayout = () => {
     { name: 'Subscription Plans', path: '/subscription-plans', icon: <CreditCard size={20} /> },
     { name: 'Security Monitoring', path: '/security', icon: <ShieldAlert size={20} /> },
     { name: 'Account Recovery', path: '/account-recovery', icon: <Unlock size={20} /> },
+    { name: 'Audit Trail', path: '/audit-trail', icon: <FileText size={20} /> },
   ];
 
   const contentItems = [
