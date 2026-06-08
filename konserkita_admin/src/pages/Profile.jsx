@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { startRegistration } from '@simplewebauthn/browser';
 import api from '../api/axios';
-import { Fingerprint, Trash2, Plus, Key } from 'lucide-react';
+import { Fingerprint, Trash2, Plus, Key, Smartphone, Monitor, History } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { securityService } from '../api/securityService';
 
 const Profile = () => {
   const { user } = useAuth();
@@ -18,6 +19,12 @@ const Profile = () => {
   const [confirmCode, setConfirmCode] = useState('');
   const [recoveryCodes, setRecoveryCodes] = useState([]);
 
+  const [sessions, setSessions] = useState([]);
+  const [loadingSessions, setLoadingSessions] = useState(true);
+  
+  const [activities, setActivities] = useState([]);
+  const [loadingActivities, setLoadingActivities] = useState(true);
+
   const fetchPasskeys = async () => {
     try {
       const response = await api.get('/passkeys');
@@ -29,8 +36,32 @@ const Profile = () => {
     }
   };
 
+  const fetchSessions = async () => {
+    try {
+      const data = await securityService.getSessions();
+      setSessions(data);
+    } catch (err) {
+      console.error('Failed to fetch sessions', err);
+    } finally {
+      setLoadingSessions(false);
+    }
+  };
+
+  const fetchActivities = async () => {
+    try {
+      const data = await securityService.getLoginActivities(1);
+      setActivities(data.data || []);
+    } catch (err) {
+      console.error('Failed to fetch activities', err);
+    } finally {
+      setLoadingActivities(false);
+    }
+  };
+
   useEffect(() => {
     fetchPasskeys();
+    fetchSessions();
+    fetchActivities();
   }, []);
 
   const handleAddPasskey = async () => {
@@ -119,6 +150,28 @@ const Profile = () => {
       setSuccessMsg('Recovery codes regenerated successfully. Please save them immediately.');
     } catch (err) {
       setError('Failed to regenerate recovery codes');
+    }
+  };
+
+  const handleRevokeSession = async (id) => {
+    if (!window.confirm('Are you sure you want to log out this device?')) return;
+    try {
+      await securityService.revokeSession(id);
+      fetchSessions();
+      setSuccessMsg('Session revoked successfully.');
+    } catch (err) {
+      setError('Failed to revoke session');
+    }
+  };
+
+  const handleRevokeOtherSessions = async () => {
+    if (!window.confirm('Are you sure you want to log out all other devices?')) return;
+    try {
+      await securityService.revokeOtherSessions();
+      fetchSessions();
+      setSuccessMsg('Other sessions revoked successfully.');
+    } catch (err) {
+      setError('Failed to revoke other sessions');
     }
   };
 
@@ -274,6 +327,101 @@ const Profile = () => {
             )}
           </div>
         )}
+      </div>
+
+      {/* Active Sessions Section */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+            <Monitor className="mr-2" size={20} />
+            Active Sessions
+          </h2>
+          {sessions.length > 1 && (
+            <button
+              onClick={handleRevokeOtherSessions}
+              className="text-sm px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
+            >
+              Log out other devices
+            </button>
+          )}
+        </div>
+        <p className="text-gray-600 mb-6 text-sm">
+          These devices are currently logged into your account.
+        </p>
+
+        <div className="space-y-4">
+          {loadingSessions ? (
+            <p className="text-gray-500">Loading sessions...</p>
+          ) : (
+            sessions.map(session => (
+              <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+                <div className="flex items-center space-x-4">
+                  {session.platform?.toLowerCase().includes('ios') || session.platform?.toLowerCase().includes('android') ? (
+                    <Smartphone className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-gray-400'} size={28} />
+                  ) : (
+                    <Monitor className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-gray-400'} size={28} />
+                  )}
+                  <div>
+                    <div className="flex items-center">
+                      <p className="font-medium text-gray-900">{session.device_name || 'Unknown Device'}</p>
+                      {session.is_current_device && (
+                        <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded">Current</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      IP: {session.ip_address || 'Unknown'} • Last Active: {new Date(session.last_active_at).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                {!session.is_current_device && (
+                  <button
+                    onClick={() => handleRevokeSession(session.id)}
+                    className="text-red-500 hover:text-red-700 p-2"
+                    title="Log out device"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Login Activity Section */}
+      <div className="bg-white shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+          <History className="mr-2" size={20} />
+          Login Activity
+        </h2>
+        <p className="text-gray-600 mb-6 text-sm">
+          Recent authentication events for your account.
+        </p>
+
+        <div className="space-y-3">
+          {loadingActivities ? (
+            <p className="text-gray-500">Loading activity...</p>
+          ) : activities.length === 0 ? (
+            <p className="text-gray-500 italic">No recent activity.</p>
+          ) : (
+            activities.map(activity => (
+              <div key={activity.id} className="flex items-center p-3 border-b last:border-0">
+                <div className={`w-2 h-2 rounded-full mr-3 ${activity.event_type.includes('success') ? 'bg-green-500' : activity.event_type.includes('failed') ? 'bg-red-500' : 'bg-gray-400'}`}></div>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900 capitalize">
+                    {activity.event_type.replace(/_/g, ' ')}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    {activity.platform || 'Unknown OS'} • {activity.ip_address || 'Unknown IP'}
+                  </p>
+                </div>
+                <div className="text-xs text-gray-400">
+                  {new Date(activity.created_at).toLocaleString()}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

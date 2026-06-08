@@ -13,9 +13,16 @@ use App\Models\AuditLog;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\PersonalAccessToken;
+use App\Services\SecurityService;
 
 class TwoFactorController extends Controller
 {
+    protected $securityService;
+
+    public function __construct(SecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
     public function setup(Request $request)
     {
         $user = $request->user();
@@ -182,7 +189,11 @@ class TwoFactorController extends Controller
         if ($valid) {
             $accessToken->delete(); // Revoke temporary token
 
-            $token = $user->createToken('KonserKitaApp')->plainTextToken;
+            $tokenResult = $user->createToken('KonserKitaApp');
+            $token = $tokenResult->plainTextToken;
+
+            $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
+            $this->securityService->logActivity($request, 'two_factor_success', $user);
             
             if ($user->role === 'organizer') {
                 $user->load('organizer');
@@ -208,6 +219,8 @@ class TwoFactorController extends Controller
             'details' => 'Failed 2FA challenge',
             'ip_address' => $request->ip(),
         ]);
+
+        $this->securityService->logActivity($request, 'two_factor_failed', $user);
 
         return response()->json(['message' => 'Invalid code'], 400);
     }

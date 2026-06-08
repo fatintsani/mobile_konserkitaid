@@ -10,24 +10,22 @@ import 'providers/event_provider.dart';
 import 'providers/checkout_provider.dart';
 import 'providers/ticket_provider.dart';
 import 'providers/ticket_validation_provider.dart';
-import 'providers/transaction_provider.dart';
+import 'providers/payment_provider.dart';
 import 'providers/wishlist_provider.dart';
 import 'providers/notification_provider.dart';
-import 'providers/organizer_provider.dart';
-import 'providers/content_provider.dart';
+import 'providers/social_auth_provider.dart';
+import 'providers/security_provider.dart';
+import 'routes/app_router.dart';
 import 'providers/refund_provider.dart';
 import 'providers/payout_provider.dart';
 import 'providers/seat_provider.dart';
 import 'providers/review_provider.dart';
 import 'providers/recommendation_provider.dart';
 import 'providers/referral_provider.dart';
-import 'providers/checkout_provider.dart';
 import 'providers/public_organizer_provider.dart';
 import 'providers/subscription_provider.dart';
 import 'providers/locale_provider.dart';
-import 'providers/social_auth_provider.dart';
 import 'services/local_notification_service.dart';
-import 'routes/app_router.dart';
 import 'utils/constants.dart';
 
 void main() async {
@@ -66,6 +64,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => SocialAuthProvider()),
+        ChangeNotifierProvider(create: (_) => SecurityProvider()),
       ],
       child: const KonserKitaApp(),
     ),

@@ -101,6 +101,18 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'Active Sessions',
+              icon: Icons.devices,
+              onTap: () => context.push('/active-sessions'),
+            ),
+            _buildMenuCard(
+              context,
+              title: 'Login Activity',
+              icon: Icons.history,
+              onTap: () => context.push('/login-activity'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'Transaction History',
               icon: Icons.receipt_long,
               onTap: () => context.push('/transactions'),

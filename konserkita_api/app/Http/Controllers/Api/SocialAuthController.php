@@ -7,9 +7,16 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Exception;
+use App\Services\SecurityService;
 
 class SocialAuthController extends Controller
 {
+    protected $securityService;
+
+    public function __construct(SecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
     /**
      * Handle social login (Google/Microsoft).
      *
@@ -73,7 +80,11 @@ class SocialAuthController extends Controller
                 ], 200);
             }
 
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $tokenResult = $user->createToken('auth_token');
+            $token = $tokenResult->plainTextToken;
+
+            $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
+            $this->securityService->logActivity($request, 'login_success', $user, null, ['provider' => $provider]);
 
             return response()->json([
                 'success' => true,
@@ -85,6 +96,7 @@ class SocialAuthController extends Controller
             ], 200);
 
         } catch (Exception $e) {
+            $this->securityService->logActivity($request, 'login_failed', null, null, ['provider' => $provider, 'error' => $e->getMessage()]);
             return response()->json([
                 'message' => 'Failed to authenticate with ' . ucfirst($provider),
                 'error' => $e->getMessage(),

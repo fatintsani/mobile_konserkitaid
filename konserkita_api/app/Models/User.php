@@ -46,6 +46,21 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
+    public function passkeys()
+    {
+        return $this->hasMany(Passkey::class);
+    }
+
+    public function sessions()
+    {
+        return $this->hasMany(UserSession::class);
+    }
+
+    public function loginActivities()
+    {
+        return $this->hasMany(LoginActivity::class);
+    }
+
     public function tickets()
     {
         return $this->hasMany(Ticket::class);

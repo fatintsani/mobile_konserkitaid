@@ -75,6 +75,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/passkeys', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'index']);
     Route::delete('/passkeys/{id}', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'destroy']);
 
+    // Security / Sessions / Activity Log
+    Route::get('/security/sessions', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'getSessions']);
+    Route::delete('/security/sessions/revoke-others', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'revokeOtherSessions']);
+    Route::delete('/security/sessions/{id}', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'revokeSession']);
+    Route::get('/security/login-activities', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'getLoginActivities']);
+
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
     Route::get('/transactions/{id}', [App\Http\Controllers\Api\TransactionController::class, 'show']);
@@ -111,8 +117,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/payouts/balance', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'balance']);
         Route::get('/payouts', [\App\Http\Controllers\Api\Organizer\PayoutController::class, 'index']);
 
-        // Subscriptions
-        Route::prefix('subscription')->group(function () {
+        // Check if user is organizer
+        Route::middleware('organizer')->group(function () {
             Route::get('/', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'getSubscription']);
             Route::post('/upgrade', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'upgrade']);
             Route::post('/cancel', [\App\Http\Controllers\Api\Organizer\SubscriptionController::class, 'cancel']);

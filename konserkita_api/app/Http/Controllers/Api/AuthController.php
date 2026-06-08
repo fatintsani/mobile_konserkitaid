@@ -7,9 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Services\SecurityService;
 
 class AuthController extends BaseController
 {
+    protected $securityService;
+
+    public function __construct(SecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
     public function register(\App\Http\Requests\Auth\RegisterRequest $request)
     {
         $input = $request->validated();
@@ -55,8 +62,12 @@ class AuthController extends BaseController
                 ]);
             }
 
-            $success['token'] =  $user->createToken('KonserKitaApp')->plainTextToken; 
+            $tokenResult = $user->createToken('KonserKitaApp');
+            $success['token'] = $tokenResult->plainTextToken;
             $success['user'] =  $user;
+
+            $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
+            $this->securityService->logActivity($request, 'login_success', $user);
             
             if ($user->role === 'organizer') {
                 $user->load('organizer');
@@ -66,6 +77,8 @@ class AuthController extends BaseController
             return $this->sendResponse($success, __('messages.login_success'));
         } 
         else{ 
+            // Log failed attempt
+            $this->securityService->logActivity($request, 'login_failed', null, $request->email);
             return $this->sendError(__('messages.unauthorized'), ['error'=>__('messages.unauthorized')], 401);
         } 
     }
@@ -101,7 +114,19 @@ class AuthController extends BaseController
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        $tokenId = $user->currentAccessToken()->id;
+        
+        $user->currentAccessToken()->delete();
+
+        // Find the associated session and mark it as revoked/deleted
+        $session = \App\Models\UserSession::where('token_id', $tokenId)->first();
+        if ($session) {
+            $session->delete(); // or ->update(['revoked_at' => now()]) based on preferences, let's delete for simplicity
+        }
+
+        $this->securityService->logActivity($request, 'logout', $user);
+
         return $this->sendResponse([], __('messages.login_success')); // Or 'logged_out' if we had one, but this is fine for now or I can just use 'success'
     }
 }

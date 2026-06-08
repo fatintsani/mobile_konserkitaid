@@ -8,9 +8,16 @@ use LaravelWebauthn\Facades\Webauthn;
 use App\Models\User;
 use App\Models\AuditLog;
 use LaravelWebauthn\Models\WebauthnKey;
+use App\Services\SecurityService;
 
 class PasskeyLoginController extends Controller
 {
+    protected $securityService;
+
+    public function __construct(SecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
     public function options(Request $request)
     {
         $user = null;
@@ -60,7 +67,11 @@ class PasskeyLoginController extends Controller
                     ]);
                 }
 
-                $token = $user->createToken('passkey-login')->plainTextToken;
+                $tokenResult = $user->createToken('passkey-login');
+                $token = $tokenResult->plainTextToken;
+
+                $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
+                $this->securityService->logActivity($request, 'passkey_login_success', $user);
 
                 AuditLog::create([
                     'user_id' => $user->id,
@@ -83,6 +94,8 @@ class PasskeyLoginController extends Controller
                 'ip_address' => $request->ip(),
             ]);
 
+            $this->securityService->logActivity($request, 'passkey_login_failed', $user, null, ['error' => $e->getMessage()]);
+
             return response()->json(['message' => 'Invalid passkey', 'error' => $e->getMessage()], 401);
         }
 
@@ -92,6 +105,8 @@ class PasskeyLoginController extends Controller
             'details' => 'Assertion validation failed',
             'ip_address' => $request->ip(),
         ]);
+
+        $this->securityService->logActivity($request, 'passkey_login_failed', $user, null, ['error' => 'Assertion validation failed']);
 
         return response()->json(['message' => 'Invalid passkey'], 401);
     }
