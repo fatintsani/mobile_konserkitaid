@@ -157,6 +157,53 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  // Account Recovery
+  Future<void> forgotPassword(String email) async {
+    _setLoading(true);
+    try {
+      await _authService.forgotPassword(email);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> resetPassword(String email, String token, String password, String passwordConfirmation) async {
+    _setLoading(true);
+    try {
+      await _authService.resetPassword(email, token, password, passwordConfirmation);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> requestTwoFactorReset(String email) async {
+    _setLoading(true);
+    try {
+      await _authService.requestTwoFactorReset(email);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> changePassword(String confirmationToken, String newPassword, String newPasswordConfirmation) async {
+    _setLoading(true);
+    try {
+      await _authService.changePassword(confirmationToken, newPassword, newPasswordConfirmation);
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> changeEmail(String confirmationToken, String newEmail) async {
+    _setLoading(true);
+    try {
+      await _authService.changeEmail(confirmationToken, newEmail);
+      await checkAuthStatus(); // Refresh profile with new email
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();

@@ -61,6 +61,11 @@ class User extends Authenticatable
         return $this->hasMany(AccountLock::class);
     }
 
+    public function accountRecoveryRequests()
+    {
+        return $this->hasMany(AccountRecoveryRequest::class);
+    }
+
     public function sessions()
     {
         return $this->hasMany(UserSession::class);

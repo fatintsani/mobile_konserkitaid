@@ -6,6 +6,7 @@ import 'package:passkeys/authenticator.dart';
 import 'package:passkeys_platform_interface/types/register_request.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../utils/constants.dart';
+import '../widgets/sensitive_action_confirmation_dialog.dart';
 
 class PasskeysScreen extends StatefulWidget {
   const PasskeysScreen({super.key});
@@ -119,8 +120,11 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
   }
 
   Future<void> _deletePasskey(int id) async {
+    final token = await requestSensitiveActionToken(context, 'Hapus Passkey');
+    if (token == null) return;
+
     try {
-      await _apiService.dio.delete('/passkeys/$id');
+      await _apiService.dio.delete('/passkeys/$id', data: {'confirmation_token': token});
       _fetchPasskeys();
     } catch (e) {
       if (mounted) {
@@ -181,17 +185,22 @@ class _PasskeysScreenState extends State<PasskeysScreen> {
   }
 
   Future<void> _disable2FA() async {
+    final token = await requestSensitiveActionToken(context, 'Nonaktifkan 2FA');
+    if (token == null) return;
+
     setState(() => _is2faLoading = true);
     try {
-      final authProvider = context.read<AuthProvider>();
-      await authProvider.disable2FA();
+      // Modifying AuthProvider's disable2FA to pass the token may be required,
+      // but for simplicity we can just call it here or pass token to the provider.
+      // Since AuthProvider.disable2FA doesn't accept a token currently, let's update it or just use API directly.
+      await _apiService.dio.post('/2fa/disable', data: {'confirmation_token': token});
       
       setState(() {
         _is2faEnabled = false;
         _recoveryCodes = [];
       });
       
-      await authProvider.checkAuthStatus(); // refresh user data
+      await context.read<AuthProvider>().checkAuthStatus(); // refresh user data
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

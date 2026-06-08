@@ -102,7 +102,16 @@ class TwoFactorController extends Controller
 
     public function disable(Request $request)
     {
+        $request->validate([
+            'confirmation_token' => 'required|string',
+        ]);
+
         $user = $request->user();
+
+        if (!$this->securityService->validateConfirmationToken($user, $request->confirmation_token)) {
+            return response()->json(['message' => 'Invalid or expired confirmation token.'], 403);
+        }
+
         $user->two_factor_enabled = false;
         $user->two_factor_secret = null;
         $user->two_factor_confirmed_at = null;

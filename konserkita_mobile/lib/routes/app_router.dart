@@ -25,6 +25,9 @@ import '../screens/login_activity_screen.dart';
 import '../screens/security_alerts_screen.dart';
 import '../screens/preferences_screen.dart';
 import '../screens/edit_profile_screen.dart';
+import '../screens/change_credentials_screen.dart';
+import '../screens/recovery_requests_screen.dart';
+import '../screens/forgot_password_screen.dart';
 import '../screens/transaction_history_screen.dart';
 import '../screens/transaction_detail_screen.dart';
 import '../screens/wishlist_screen.dart';
@@ -201,6 +204,18 @@ class AppRouter {
         builder: (context, state) => const EditProfileScreen(),
       ),
       GoRoute(
+        path: '/change-credentials',
+        builder: (context, state) => const ChangeCredentialsScreen(),
+      ),
+      GoRoute(
+        path: '/recovery-requests',
+        builder: (context, state) => const RecoveryRequestsScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+      GoRoute(
         path: '/language',
         builder: (context, state) => const LanguageSettingsScreen(),
       ),
@@ -361,7 +376,7 @@ class AppRouter {
     redirect: (context, state) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final isLoggedIn = authProvider.isAuthenticated;
-      final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/register' || state.uri.path == '/2fa-challenge';
+      final isLoggingIn = state.uri.path == '/login' || state.uri.path == '/register' || state.uri.path == '/2fa-challenge' || state.uri.path == '/forgot-password';
 
       if (!isLoggedIn && !isLoggingIn) return '/login';
       if (isLoggedIn && isLoggingIn) return '/';

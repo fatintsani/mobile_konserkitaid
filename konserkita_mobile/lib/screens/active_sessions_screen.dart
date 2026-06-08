@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/security_provider.dart';
 import '../utils/constants.dart';
+import '../widgets/sensitive_action_confirmation_dialog.dart';
 
 class ActiveSessionsScreen extends StatefulWidget {
   const ActiveSessionsScreen({super.key});
@@ -37,8 +38,11 @@ class _ActiveSessionsScreenState extends State<ActiveSessionsScreen> {
   }
 
   void _revokeOtherSessions() async {
+    final token = await requestSensitiveActionToken(context, 'Cabut Sesi Lain');
+    if (token == null) return;
+
     try {
-      await context.read<SecurityProvider>().revokeOtherSessions();
+      await context.read<SecurityProvider>().revokeOtherSessions(token);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Other sessions revoked successfully'), backgroundColor: Colors.green),

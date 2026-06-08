@@ -117,6 +117,69 @@ class AuthController extends BaseController
         return $this->sendResponse($user, __('messages.updated'));
     }
 
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'confirmation_token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!$this->securityService->validateConfirmationToken($user, $request->confirmation_token)) {
+            return $this->sendError('Invalid or expired confirmation token.', [], 403);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        $this->securityService->logActivity($request, 'password_changed', $user);
+        $this->securityService->createAlert(
+            $user,
+            'password_changed',
+            'high',
+            'Password Changed',
+            'Your account password was just changed.',
+            $request
+        );
+
+        $user->notify(new \App\Notifications\PasswordChangedNotification());
+        $user->notify(new \App\Notifications\SensitiveActionConfirmedNotification('Changed Password'));
+
+        return $this->sendResponse(null, 'Password successfully changed.');
+    }
+
+    public function changeEmail(Request $request)
+    {
+        $request->validate([
+            'confirmation_token' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+        ]);
+
+        $user = $request->user();
+
+        if (!$this->securityService->validateConfirmationToken($user, $request->confirmation_token)) {
+            return $this->sendError('Invalid or expired confirmation token.', [], 403);
+        }
+
+        $user->email = $request->email;
+        $user->save();
+
+        $this->securityService->logActivity($request, 'email_changed', $user);
+        $this->securityService->createAlert(
+            $user,
+            'email_changed',
+            'high',
+            'Email Changed',
+            'Your account email address was just changed to ' . $request->email . '.',
+            $request
+        );
+
+        $user->notify(new \App\Notifications\SensitiveActionConfirmedNotification('Changed Email Address'));
+
+        return $this->sendResponse($user, 'Email successfully changed.');
+    }
+
     public function logout(Request $request)
     {
         $user = $request->user();

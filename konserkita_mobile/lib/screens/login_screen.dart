@@ -6,6 +6,7 @@ import '../providers/social_auth_provider.dart';
 import '../utils/constants.dart';
 import 'package:passkeys/authenticator.dart';
 import 'package:passkeys_platform_interface/types/authenticate_request.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -160,7 +161,19 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   validator: (value) => value!.isEmpty ? 'Password required' : null,
                 ),
-                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                      );
+                    },
+                    child: const Text('Forgot Password?'),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: isLoading ? null : _login,
                   style: ElevatedButton.styleFrom(

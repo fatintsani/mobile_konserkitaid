@@ -26,6 +26,11 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login'])->middleware('throttle:social');
 
+// Account Recovery (Public)
+Route::post('/auth/forgot-password', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'forgotPassword'])->middleware('throttle:6,1');
+Route::post('/auth/reset-password', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'resetPassword']);
+Route::post('/account-recovery/two-factor-reset', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'requestTwoFactorReset']);
+
 // 2FA Public
 Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])->middleware('throttle:2fa');
 
@@ -57,6 +62,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::put('/profile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Sensitive Action Confirmations
+    Route::post('/security/confirm-password', [\App\Http\Controllers\Api\SensitiveActionController::class, 'confirmPassword']);
+    Route::post('/security/confirm-2fa', [\App\Http\Controllers\Api\SensitiveActionController::class, 'confirm2Fa']);
+    Route::put('/profile/change-password', [AuthController::class, 'changePassword']);
+    Route::put('/profile/change-email', [AuthController::class, 'changeEmail']);
+    Route::get('/account-recovery/requests', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'getRecoveryRequests']);
 
     // Device Tokens
     Route::post('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'store']);
@@ -229,6 +241,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/alerts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'alerts']);
             Route::get('/locked-accounts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'lockedAccounts']);
             Route::put('/locked-accounts/{id}/unlock', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'unlockAccount']);
+        });
+
+        // Account Recovery Monitoring
+        Route::prefix('account-recovery')->group(function () {
+            Route::get('/requests', [\App\Http\Controllers\Api\Admin\AdminAccountRecoveryController::class, 'index']);
+            Route::put('/requests/{id}/approve', [\App\Http\Controllers\Api\Admin\AdminAccountRecoveryController::class, 'approve']);
+            Route::put('/requests/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminAccountRecoveryController::class, 'reject']);
         });
 
         Route::prefix('subscriptions')->group(function () {

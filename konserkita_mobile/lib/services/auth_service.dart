@@ -206,4 +206,58 @@ class AuthService {
       throw Exception(e.response?.data['message'] ?? '2FA Challenge failed');
     }
   }
+
+  // Account Recovery
+  Future<void> forgotPassword(String email) async {
+    try {
+      await _apiService.dio.post('/auth/forgot-password', data: {'email': email});
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to send password reset link');
+    }
+  }
+
+  Future<void> resetPassword(String email, String token, String password, String passwordConfirmation) async {
+    try {
+      await _apiService.dio.post('/auth/reset-password', data: {
+        'email': email,
+        'token': token,
+        'password': password,
+        'password_confirmation': passwordConfirmation,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to reset password');
+    }
+  }
+
+  Future<void> requestTwoFactorReset(String email) async {
+    try {
+      await _apiService.dio.post('/account-recovery/two-factor-reset', data: {'email': email});
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to request 2FA reset');
+    }
+  }
+
+  // Change Credentials
+  Future<void> changePassword(String confirmationToken, String newPassword, String newPasswordConfirmation) async {
+    try {
+      await _apiService.dio.put('/auth/change-password', data: {
+        'confirmation_token': confirmationToken,
+        'password': newPassword,
+        'password_confirmation': newPasswordConfirmation,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to change password');
+    }
+  }
+
+  Future<void> changeEmail(String confirmationToken, String newEmail) async {
+    try {
+      await _apiService.dio.put('/auth/change-email', data: {
+        'confirmation_token': confirmationToken,
+        'email': newEmail,
+      });
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to change email');
+    }
+  }
 }

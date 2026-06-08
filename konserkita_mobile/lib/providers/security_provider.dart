@@ -36,6 +36,14 @@ class SecurityProvider with ChangeNotifier {
   bool get hasMoreAlerts => _hasMoreAlerts;
   int get unreadAlertsCount => _unreadAlertsCount;
 
+  List<dynamic> _recoveryRequests = [];
+  bool _isLoadingRecoveryRequests = false;
+  String? _recoveryRequestsError;
+
+  List<dynamic> get recoveryRequests => _recoveryRequests;
+  bool get isLoadingRecoveryRequests => _isLoadingRecoveryRequests;
+  String? get recoveryRequestsError => _recoveryRequestsError;
+
   Future<void> fetchSessions() async {
     _isLoadingSessions = true;
     _sessionsError = null;
@@ -61,9 +69,9 @@ class SecurityProvider with ChangeNotifier {
     }
   }
 
-  Future<void> revokeOtherSessions() async {
+  Future<void> revokeOtherSessions(String token) async {
     try {
-      await _securityService.revokeOtherSessions();
+      await _securityService.revokeOtherSessions(token);
       _sessions.removeWhere((session) => session['is_current_device'] != true);
       notifyListeners();
     } catch (e) {
@@ -161,5 +169,28 @@ class SecurityProvider with ChangeNotifier {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> fetchRecoveryRequests() async {
+    _isLoadingRecoveryRequests = true;
+    _recoveryRequestsError = null;
+    notifyListeners();
+
+    try {
+      _recoveryRequests = await _securityService.getRecoveryRequests();
+    } catch (e) {
+      _recoveryRequestsError = e.toString();
+    } finally {
+      _isLoadingRecoveryRequests = false;
+      notifyListeners();
+    }
+  }
+
+  Future<String> confirmPassword(String password) async {
+    return await _securityService.confirmPassword(password);
+  }
+
+  Future<String> confirm2Fa(String code) async {
+    return await _securityService.confirm2Fa(code);
   }
 }

@@ -110,6 +110,18 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'Change Email / Password',
+              icon: Icons.security,
+              onTap: () => context.push('/change-credentials'),
+            ),
+            _buildMenuCard(
+              context,
+              title: 'Account Recovery Requests',
+              icon: Icons.restore,
+              onTap: () => context.push('/recovery-requests'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'Active Sessions',
               icon: Icons.devices,
               onTap: () => context.push('/active-sessions'),

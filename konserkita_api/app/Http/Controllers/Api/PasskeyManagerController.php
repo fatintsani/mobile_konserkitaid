@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Passkey;
 use App\Models\AuditLog;
+use App\Services\SecurityService;
 
 class PasskeyManagerController extends Controller
 {
+    protected $securityService;
+
+    public function __construct(SecurityService $securityService)
+    {
+        $this->securityService = $securityService;
+    }
     public function index(Request $request)
     {
         $user = $request->user();
@@ -21,7 +28,16 @@ class PasskeyManagerController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $request->validate([
+            'confirmation_token' => 'required|string',
+        ]);
+
         $user = $request->user();
+
+        if (!$this->securityService->validateConfirmationToken($user, $request->confirmation_token)) {
+            return response()->json(['message' => 'Invalid or expired confirmation token.'], 403);
+        }
+
         $passkey = Passkey::where('id', $id)->where('user_id', $user->id)->first();
         
         if (!$passkey) {

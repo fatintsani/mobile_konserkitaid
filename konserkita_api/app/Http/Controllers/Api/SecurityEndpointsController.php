@@ -61,7 +61,16 @@ class SecurityEndpointsController extends Controller
 
     public function revokeOtherSessions(Request $request)
     {
+        $request->validate([
+            'confirmation_token' => 'required|string',
+        ]);
+
         $user = $request->user();
+
+        if (!$this->securityService->validateConfirmationToken($user, $request->confirmation_token)) {
+            return response()->json(['message' => 'Invalid or expired confirmation token.'], 403);
+        }
+
         $currentTokenId = $user->currentAccessToken()->id;
 
         // Delete other sanctum tokens
