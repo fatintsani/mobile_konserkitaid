@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
                   onPressed: context.watch<SocialAuthProvider>().isLoading ? null : _loginWithGoogle,
-                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg', height: 24),
+                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png', height: 24),
                   label: const Text('Continue with Google', style: TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -146,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
                   onPressed: context.watch<SocialAuthProvider>().isLoading ? null : _loginWithMicrosoft,
-                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg', height: 24),
+                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/120px-Microsoft_logo.svg.png', height: 24),
                   label: const Text('Continue with Microsoft', style: TextStyle(fontSize: 16)),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),

@@ -12,7 +12,20 @@
           "package_name": "com.example.konserkita_mobile"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "315924639467-fe9epq0s2e9659gkmebbcql0r1lg0ks3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.konserkita_mobile",
+            "certificate_hash": "d6b9841ac73bbdc33f5f997bf708180194f2e3b5"
+          }
+        },
+        {
+          "client_id": "315924639467-6s5944vv437okc3fuu3m64og0br41nrg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAfBZrAA7xhHRrXkQK5VlLJgbsO5tgbvdM"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "315924639467-6s5944vv437okc3fuu3m64og0br41nrg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "315924639467-sleq19pqm0nipau22bq9k0lu4f9ae0kh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.konserkitaMobile"
+              }
+            }
+          ]
         }
       }
     }
