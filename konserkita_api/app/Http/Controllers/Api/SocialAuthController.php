@@ -43,6 +43,12 @@ class SocialAuthController extends Controller
                 ->orWhere('email', $socialUser->getEmail())
                 ->first();
 
+            $email = $socialUser->getEmail();
+            $lock = $this->securityService->checkLock($email);
+            if ($lock) {
+                return response()->json(['message' => 'Account is temporarily locked.', 'error' => 'Account is temporarily locked.'], 423);
+            }
+
             if ($user) {
                 // If user exists, link the social account
                 $user->update([
@@ -83,6 +89,7 @@ class SocialAuthController extends Controller
             $tokenResult = $user->createToken('auth_token');
             $token = $tokenResult->plainTextToken;
 
+            $this->securityService->detectSuspiciousLogin($request, $user);
             $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
             $this->securityService->logActivity($request, 'login_success', $user, null, ['provider' => $provider]);
 

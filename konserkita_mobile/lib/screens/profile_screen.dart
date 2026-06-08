@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:konserkita_mobile/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
+import '../providers/security_provider.dart';
 import '../utils/constants.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -12,12 +13,20 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.user;
+    final securityProvider = context.watch<SecurityProvider>();
 
     if (user == null) {
       return const Scaffold(
         body: Center(child: Text('Please login first')),
       );
     }
+
+    // Fetch alerts on load to get the unread count
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (securityProvider.alerts.isEmpty && !securityProvider.isLoadingAlerts) {
+        context.read<SecurityProvider>().fetchAlerts();
+      }
+    });
 
     final l10n = AppLocalizations.of(context)!;
 
@@ -109,7 +118,14 @@ class ProfileScreen extends StatelessWidget {
               context,
               title: 'Login Activity',
               icon: Icons.history,
-              onTap: () => context.push('/login-activity'),
+              onTap: () => context.push('/login-activities'),
+            ),
+            _buildMenuCard(
+              context,
+              title: 'Security Alerts',
+              icon: Icons.warning_amber_rounded,
+              badgeCount: securityProvider.unreadAlertsCount,
+              onTap: () => context.push('/security-alerts'),
             ),
             _buildMenuCard(
               context,
@@ -202,19 +218,37 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuCard(BuildContext context, {required String title, required IconData icon, required VoidCallback onTap, bool isDestructive = false}) {
+  Widget _buildMenuCard(BuildContext context, {required String title, required IconData icon, required VoidCallback onTap, bool isDestructive = false, int badgeCount = 0}) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
         leading: Icon(icon, color: isDestructive ? Colors.red : AppConstants.primaryColor),
-        title: Text(
-          title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: isDestructive ? Colors.red : Colors.black87,
-          ),
+        title: Row(
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: isDestructive ? Colors.red : Colors.black87,
+              ),
+            ),
+            if (badgeCount > 0) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  badgeCount > 99 ? '99+' : badgeCount.toString(),
+                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ],
         ),
         trailing: const Icon(Icons.chevron_right, color: Colors.grey),
         onTap: onTap,

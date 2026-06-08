@@ -30,6 +30,9 @@ class AuthService {
       }
       return {'success': false};
     } on DioException catch (e) {
+      if (e.response?.statusCode == 423) {
+        throw Exception('Akun terkunci sementara karena masalah keamanan.');
+      }
       throw Exception(e.response?.data['message'] ?? 'Login failed');
     }
   }
@@ -139,6 +142,9 @@ class AuthService {
       }
       return {'success': false};
     } on DioException catch (e) {
+      if (e.response?.statusCode == 423) {
+        throw Exception('Akun terkunci sementara karena masalah keamanan.');
+      }
       throw Exception(e.response?.data['message'] ?? 'Login failed');
     }
   }

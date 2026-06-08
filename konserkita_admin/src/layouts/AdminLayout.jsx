@@ -21,7 +21,8 @@ import {
   Star,
   Radio,
   Share2,
-  Sparkles
+  Sparkles,
+  ShieldAlert
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -53,6 +54,7 @@ const AdminLayout = () => {
     { name: 'Recommendations', path: '/recommendations', icon: <Sparkles size={20} /> },
     { name: 'Referrals', path: '/referrals', icon: <Share2 size={20} /> },
     { name: 'Subscription Plans', path: '/subscription-plans', icon: <CreditCard size={20} /> },
+    { name: 'Security Monitoring', path: '/security', icon: <ShieldAlert size={20} /> },
   ];
 
   const contentItems = [

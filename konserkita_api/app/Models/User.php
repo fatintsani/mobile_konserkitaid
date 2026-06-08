@@ -51,6 +51,16 @@ class User extends Authenticatable
         return $this->hasMany(Passkey::class);
     }
 
+    public function securityAlerts()
+    {
+        return $this->hasMany(SecurityAlert::class);
+    }
+
+    public function accountLocks()
+    {
+        return $this->hasMany(AccountLock::class);
+    }
+
     public function sessions()
     {
         return $this->hasMany(UserSession::class);

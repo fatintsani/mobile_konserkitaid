@@ -117,6 +117,16 @@ class TwoFactorController extends Controller
             'ip_address' => $request->ip(),
         ]);
 
+        $this->securityService->createAlert(
+            $user,
+            $user->email,
+            'two_factor_disabled',
+            'high',
+            'Two-Factor Authentication Disabled',
+            '2FA has been disabled on your account. If you did not do this, secure your account immediately.',
+            $request
+        );
+
         return response()->json(['message' => '2FA disabled successfully']);
     }
 
@@ -192,6 +202,7 @@ class TwoFactorController extends Controller
             $tokenResult = $user->createToken('KonserKitaApp');
             $token = $tokenResult->plainTextToken;
 
+            $this->securityService->detectSuspiciousLogin($request, $user);
             $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
             $this->securityService->logActivity($request, 'two_factor_success', $user);
             

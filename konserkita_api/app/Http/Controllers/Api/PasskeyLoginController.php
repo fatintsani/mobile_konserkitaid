@@ -50,6 +50,11 @@ class PasskeyLoginController extends Controller
             return response()->json(['message' => 'User not found or passkey not recognized'], 404);
         }
 
+        $lock = $this->securityService->checkLock($user->email);
+        if ($lock) {
+            return response()->json(['message' => 'Account is temporarily locked.', 'error' => 'Account is temporarily locked.'], 423);
+        }
+
         try {
             $isValid = Webauthn::validateAssertion($user, $request->only(['id', 'rawId', 'response', 'type']));
             
@@ -70,6 +75,7 @@ class PasskeyLoginController extends Controller
                 $tokenResult = $user->createToken('passkey-login');
                 $token = $tokenResult->plainTextToken;
 
+                $this->securityService->detectSuspiciousLogin($request, $user);
                 $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
                 $this->securityService->logActivity($request, 'passkey_login_success', $user);
 

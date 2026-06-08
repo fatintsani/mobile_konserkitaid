@@ -50,6 +50,10 @@ class AuthController extends BaseController
 
     public function login(\App\Http\Requests\Auth\LoginRequest $request)
     {
+        $lock = $this->securityService->checkLock($request->email);
+        if ($lock) {
+            return $this->sendError(__('messages.unauthorized'), ['error' => 'Account is temporarily locked.'], 423);
+        }
 
         if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
             $user = Auth::user(); 
@@ -66,6 +70,7 @@ class AuthController extends BaseController
             $success['token'] = $tokenResult->plainTextToken;
             $success['user'] =  $user;
 
+            $this->securityService->detectSuspiciousLogin($request, $user);
             $this->securityService->createSession($request, $user, $tokenResult->accessToken->id);
             $this->securityService->logActivity($request, 'login_success', $user);
             
@@ -78,7 +83,7 @@ class AuthController extends BaseController
         } 
         else{ 
             // Log failed attempt
-            $this->securityService->logActivity($request, 'login_failed', null, $request->email);
+            $this->securityService->handleFailedLogin($request, $request->email);
             return $this->sendError(__('messages.unauthorized'), ['error'=>__('messages.unauthorized')], 401);
         } 
     }

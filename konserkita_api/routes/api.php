@@ -23,15 +23,15 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
+Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login'])->middleware('throttle:social');
 
 // 2FA Public
-Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge']);
+Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])->middleware('throttle:2fa');
 
 // Passkeys Login
-Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:6,1');
-Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:6,1');
+Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:passkey');
+Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:passkey');
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
@@ -75,11 +75,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/passkeys', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'index']);
     Route::delete('/passkeys/{id}', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'destroy']);
 
-    // Security / Sessions / Activity Log
+    // Security / Sessions / Activity Log / Alerts
     Route::get('/security/sessions', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'getSessions']);
     Route::delete('/security/sessions/revoke-others', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'revokeOtherSessions']);
     Route::delete('/security/sessions/{id}', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'revokeSession']);
     Route::get('/security/login-activities', [\App\Http\Controllers\Api\SecurityEndpointsController::class, 'getLoginActivities']);
+    Route::get('/security/alerts', [\App\Http\Controllers\Api\SecurityMonitoringController::class, 'index']);
+    Route::put('/security/alerts/read-all', [\App\Http\Controllers\Api\SecurityMonitoringController::class, 'markAllAsRead']);
+    Route::put('/security/alerts/{id}/read', [\App\Http\Controllers\Api\SecurityMonitoringController::class, 'markAsRead']);
 
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
@@ -219,6 +222,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'createPlan']);
             Route::put('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'updatePlan']);
             Route::delete('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'deletePlan']);
+        });
+
+        // Security Monitoring
+        Route::prefix('security')->group(function () {
+            Route::get('/alerts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'alerts']);
+            Route::get('/locked-accounts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'lockedAccounts']);
+            Route::put('/locked-accounts/{id}/unlock', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'unlockAccount']);
         });
 
         Route::prefix('subscriptions')->group(function () {

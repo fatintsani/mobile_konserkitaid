@@ -22,6 +22,7 @@ import '../screens/profile_screen.dart';
 import '../screens/passkeys_screen.dart';
 import '../screens/active_sessions_screen.dart';
 import '../screens/login_activity_screen.dart';
+import '../screens/security_alerts_screen.dart';
 import '../screens/preferences_screen.dart';
 import '../screens/edit_profile_screen.dart';
 import '../screens/transaction_history_screen.dart';
@@ -180,8 +181,12 @@ class AppRouter {
         builder: (context, state) => const ActiveSessionsScreen(),
       ),
       GoRoute(
-        path: '/login-activity',
+        path: '/login-activities',
         builder: (context, state) => const LoginActivityScreen(),
+      ),
+      GoRoute(
+        path: '/security-alerts',
+        builder: (context, state) => const SecurityAlertsScreen(),
       ),
       GoRoute(
         path: '/my-reviews',

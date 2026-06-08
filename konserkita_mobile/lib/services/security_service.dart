@@ -24,4 +24,20 @@ class SecurityService {
     );
     return response.data;
   }
+
+  Future<Map<String, dynamic>> getSecurityAlerts({int page = 1}) async {
+    final response = await _apiService.dio.get(
+      '/security/alerts',
+      queryParameters: {'page': page},
+    );
+    return response.data;
+  }
+
+  Future<void> markAlertAsRead(int id) async {
+    await _apiService.dio.put('/security/alerts/$id/read');
+  }
+
+  Future<void> markAllAlertsAsRead() async {
+    await _apiService.dio.put('/security/alerts/read-all');
+  }
 }
