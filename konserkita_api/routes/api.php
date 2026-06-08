@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login']);
 
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);

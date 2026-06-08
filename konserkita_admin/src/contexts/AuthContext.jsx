@@ -46,6 +46,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const socialLogin = async (accessToken, provider) => {
+    try {
+      const response = await api.post(`/auth/${provider}`, { access_token: accessToken });
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        if (user.role === 'admin' || user.role === 'super_admin') {
+          localStorage.setItem('token', token);
+          setUser(user);
+          return { success: true };
+        } else {
+          return { success: false, message: 'Unauthorized. Admins only.' };
+        }
+      }
+      return { success: false, message: response.data.message };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Social login failed' };
+    }
+  };
+
   const logout = async () => {
     try {
       await api.post('/logout');
@@ -58,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, socialLogin }}>
       {!loading && children}
     </AuthContext.Provider>
   );

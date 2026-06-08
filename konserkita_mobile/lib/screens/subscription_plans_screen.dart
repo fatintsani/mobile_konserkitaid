@@ -97,7 +97,7 @@ class _SubscriptionPlansScreenState extends State<SubscriptionPlansScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: plan['price'] > 0 ? () => _upgradePlan(plan['id']) : null,
+                          onPressed: (double.tryParse(plan['price'].toString()) ?? 0) > 0 ? () => _upgradePlan(plan['id']) : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppConstants.primaryColor,
                             foregroundColor: Colors.white,

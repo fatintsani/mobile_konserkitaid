@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getSubscriptionPlans, createSubscriptionPlan, updateSubscriptionPlan, deleteSubscriptionPlan } from '../api/subscriptionService';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
 const SubscriptionPlans = () => {

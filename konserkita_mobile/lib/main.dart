@@ -25,6 +25,7 @@ import 'providers/checkout_provider.dart';
 import 'providers/public_organizer_provider.dart';
 import 'providers/subscription_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/social_auth_provider.dart';
 import 'services/local_notification_service.dart';
 import 'routes/app_router.dart';
 import 'utils/constants.dart';
@@ -64,6 +65,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PublicOrganizerProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => SocialAuthProvider()),
       ],
       child: const KonserKitaApp(),
     ),

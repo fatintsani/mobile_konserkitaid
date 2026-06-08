@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/social_auth_provider.dart';
 import '../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,6 +31,36 @@ class _LoginScreenState extends State<LoginScreen> {
             SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
           );
         }
+      }
+    }
+  }
+
+  void _loginWithGoogle() async {
+    final success = await context.read<SocialAuthProvider>().loginWithGoogle();
+    if (success && mounted) {
+      await context.read<AuthProvider>().checkAuthStatus();
+      if (mounted) context.go('/');
+    } else if (mounted) {
+      final error = context.read<SocialAuthProvider>().error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _loginWithMicrosoft() async {
+    final success = await context.read<SocialAuthProvider>().loginWithMicrosoft();
+    if (success && mounted) {
+      await context.read<AuthProvider>().checkAuthStatus();
+      if (mounted) context.go('/');
+    } else if (mounted) {
+      final error = context.read<SocialAuthProvider>().error;
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
       }
     }
   }
@@ -92,6 +123,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Login', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
+                const SizedBox(height: 16),
+                const Row(
+                  children: [
+                    Expanded(child: Divider()),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('OR', style: TextStyle(color: Colors.grey)),
+                    ),
+                    Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: context.watch<SocialAuthProvider>().isLoading ? null : _loginWithGoogle,
+                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg', height: 24),
+                  label: const Text('Continue with Google', style: TextStyle(fontSize: 16)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: context.watch<SocialAuthProvider>().isLoading ? null : _loginWithMicrosoft,
+                  icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg', height: 24),
+                  label: const Text('Continue with Microsoft', style: TextStyle(fontSize: 16)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 TextButton(
                   onPressed: () => context.push('/register'),
                   child: const Text('Don\'t have an account? Register here', style: TextStyle(color: AppConstants.primaryColor)),

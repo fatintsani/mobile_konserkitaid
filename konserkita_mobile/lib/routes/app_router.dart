@@ -28,7 +28,7 @@ import '../screens/notification_screen.dart';
 import '../screens/organizer_dashboard_screen.dart';
 import '../screens/organizer_event_list_screen.dart';
 import '../screens/organizer_event_detail_screen.dart';
-import '../screens/organizer_reviews_screen.dart';
+import '../screens/organizer_sales_screen.dart';
 import '../screens/subscription_plans_screen.dart';
 import '../screens/organizer_subscription_screen.dart';
 import '../screens/subscription_payments_screen.dart';

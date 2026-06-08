@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn, AlertCircle } from 'lucide-react';
+import { useGoogleLogin } from '@react-oauth/google';
+import { useMsal } from '@azure/msal-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -9,8 +11,39 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, socialLogin } = useAuth();
   const navigate = useNavigate();
+  const { instance } = useMsal();
+
+  const handleSocialSuccess = async (accessToken, provider) => {
+    setError('');
+    setIsLoading(true);
+    const result = await socialLogin(accessToken, provider);
+    if (result.success) {
+      navigate('/');
+    } else {
+      setError(result.message);
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: (tokenResponse) => handleSocialSuccess(tokenResponse.access_token, 'google'),
+    onError: () => setError('Google Login Failed'),
+  });
+
+  const loginWithMicrosoft = async () => {
+    try {
+      const response = await instance.loginPopup({
+        scopes: ["user.read"]
+      });
+      if (response.accessToken) {
+        handleSocialSuccess(response.accessToken, 'microsoft');
+      }
+    } catch (e) {
+      setError('Microsoft Login Failed');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -93,6 +126,43 @@ const Login = () => {
                 </>
               )}
             </button>
+          </div>
+
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div>
+                <button
+                  type="button"
+                  onClick={() => loginWithGoogle()}
+                  disabled={isLoading}
+                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-70"
+                >
+                  <span className="sr-only">Sign in with Google</span>
+                  <img className="h-5 w-5" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" />
+                </button>
+              </div>
+
+              <div>
+                <button
+                  type="button"
+                  onClick={loginWithMicrosoft}
+                  disabled={isLoading}
+                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-70"
+                >
+                  <span className="sr-only">Sign in with Microsoft</span>
+                  <img className="h-5 w-5" src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" />
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
