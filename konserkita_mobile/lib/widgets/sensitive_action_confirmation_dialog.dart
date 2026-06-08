@@ -22,7 +22,7 @@ class _SensitiveActionConfirmationDialogState extends State<SensitiveActionConfi
   void initState() {
     super.initState();
     final user = context.read<AuthProvider>().user;
-    if (user != null && user.twoFactorEnabled) {
+    if (user != null && user.twoFactorEnabled == true) {
       _authMethod = '2fa';
     }
   }
