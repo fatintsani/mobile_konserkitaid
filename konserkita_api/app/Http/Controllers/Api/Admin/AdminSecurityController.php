@@ -6,9 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SecurityAlert;
 use App\Models\AccountLock;
+use App\Services\AdminAuditService;
 
 class AdminSecurityController extends Controller
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function alerts(Request $request)
     {
         $query = SecurityAlert::with('user:id,name,email');
@@ -57,10 +64,21 @@ class AdminSecurityController extends Controller
     {
         $lock = AccountLock::findOrFail($id);
         
+        $oldValues = $lock->toArray();
         $lock->update([
             'unlocked_at' => now(),
             'locked_until' => now(), // expire it immediately
         ]);
+
+        $this->auditService->log(
+            auth()->user(),
+            'security_account_unlocked',
+            'security',
+            $lock,
+            $oldValues,
+            $lock->toArray(),
+            "Unlocked account for user ID: {$lock->user_id}"
+        );
 
         return response()->json(['message' => 'Account unlocked successfully']);
     }

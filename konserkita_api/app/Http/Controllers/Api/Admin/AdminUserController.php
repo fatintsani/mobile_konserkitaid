@@ -6,9 +6,16 @@ use App\Http\Controllers\Api\BaseController;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Services\AdminAuditService;
 
 class AdminUserController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index(Request $request)
     {
         $role = $request->query('role');
@@ -57,8 +64,19 @@ class AdminUserController extends BaseController
             return $this->sendError('Unauthorized to modify super_admin.', [], 403);
         }
 
+        $oldValues = $user->toArray();
         $user->role = $request->role;
         $user->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'user_updated',
+            'users',
+            $user,
+            $oldValues,
+            $user->toArray(),
+            "Updated user role: {$user->email}"
+        );
 
         return $this->sendResponse($user, 'User role updated successfully.');
     }
@@ -84,7 +102,18 @@ class AdminUserController extends BaseController
             return $this->sendError('Cannot delete user. User has active transactions or tickets.', [], 400);
         }
 
+        $oldValues = $user->toArray();
         $user->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'user_deleted',
+            'users',
+            $user,
+            $oldValues,
+            null,
+            "Deleted user: {$user->email}"
+        );
 
         return $this->sendResponse([], 'User deleted successfully.');
     }

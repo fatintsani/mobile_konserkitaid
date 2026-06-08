@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use App\Services\AdminAuditService;
 
 class AdminEventController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index(Request $request)
     {
         $status = $request->query('status');
@@ -43,8 +50,19 @@ class AdminEventController extends BaseController
             return $this->sendError('Event not found.', [], 404);
         }
 
+        $oldValues = $event->toArray();
         $event->status = 'published';
         $event->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'event_approved',
+            'events',
+            $event,
+            $oldValues,
+            $event->toArray(),
+            "Approved event: {$event->title}"
+        );
 
         // Increment organizer's total events
         if ($event->organizer) {
@@ -73,8 +91,19 @@ class AdminEventController extends BaseController
             return $this->sendError('Event not found.', [], 404);
         }
 
+        $oldValues = $event->toArray();
         $event->status = 'rejected';
         $event->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'event_rejected',
+            'events',
+            $event,
+            $oldValues,
+            $event->toArray(),
+            "Rejected event: {$event->title}"
+        );
 
         return $this->sendResponse($event, 'Event rejected.');
     }
@@ -96,7 +125,18 @@ class AdminEventController extends BaseController
             return $this->sendError('Cannot delete event with sold tickets.', [], 400);
         }
 
+        $oldValues = $event->toArray();
         $event->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'event_deleted',
+            'events',
+            $event,
+            $oldValues,
+            null,
+            "Deleted event: {$event->title}"
+        );
 
         return $this->sendResponse([], 'Event deleted successfully.');
     }

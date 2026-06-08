@@ -7,9 +7,16 @@ use App\Models\OrganizerPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Services\AdminAuditService;
 
 class AdminPayoutController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index()
     {
         $payouts = OrganizerPayout::with(['organizer.user', 'event', 'requester'])
@@ -44,10 +51,21 @@ class AdminPayoutController extends BaseController
                 return $this->sendError('Only pending payouts can be approved.', [], 400);
             }
 
+            $oldValues = $payout->toArray();
             $payout->update([
                 'status' => 'approved',
                 'approved_at' => now(),
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'payout_approved',
+                'payouts',
+                $payout,
+                $oldValues,
+                $payout->toArray(),
+                "Approved payout #{$payout->id}"
+            );
 
             \App\Models\Notification::create([
                 'user_id' => $payout->requester->id,
@@ -86,10 +104,21 @@ class AdminPayoutController extends BaseController
                 return $this->sendError('Only pending payouts can be rejected.', [], 400);
             }
 
+            $oldValues = $payout->toArray();
             $payout->update([
                 'status' => 'rejected',
                 'admin_note' => $request->admin_note,
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'payout_rejected',
+                'payouts',
+                $payout,
+                $oldValues,
+                $payout->toArray(),
+                "Rejected payout #{$payout->id}"
+            );
 
             \App\Models\Notification::create([
                 'user_id' => $payout->requester->id,
@@ -128,11 +157,22 @@ class AdminPayoutController extends BaseController
                 return $this->sendError('Only approved payouts can be marked as paid.', [], 400);
             }
 
+            $oldValues = $payout->toArray();
             $payout->update([
                 'status' => 'paid',
                 'paid_at' => now(),
                 'admin_note' => $request->admin_note ?? $payout->admin_note,
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'payout_paid',
+                'payouts',
+                $payout,
+                $oldValues,
+                $payout->toArray(),
+                "Marked payout as paid #{$payout->id}"
+            );
 
             \App\Models\Notification::create([
                 'user_id' => $payout->requester->id,

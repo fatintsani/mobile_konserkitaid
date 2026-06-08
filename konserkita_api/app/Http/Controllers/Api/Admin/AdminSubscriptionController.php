@@ -7,9 +7,16 @@ use Illuminate\Http\Request;
 use App\Models\SubscriptionPlan;
 use App\Models\OrganizerSubscription;
 use App\Models\SubscriptionPayment;
+use App\Services\AdminAuditService;
 
 class AdminSubscriptionController extends Controller
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function getPlans()
     {
         return response()->json([
@@ -35,6 +42,16 @@ class AdminSubscriptionController extends Controller
 
         $plan = SubscriptionPlan::create($validated);
 
+        $this->auditService->log(
+            auth()->user(),
+            'subscription_plan_created',
+            'subscription_plans',
+            $plan,
+            null,
+            $plan->toArray(),
+            "Created subscription plan: {$plan->name}"
+        );
+
         return response()->json([
             'success' => true,
             'data' => $plan,
@@ -59,7 +76,18 @@ class AdminSubscriptionController extends Controller
             'status' => 'required|in:active,inactive'
         ]);
 
+        $oldValues = $plan->toArray();
         $plan->update($validated);
+
+        $this->auditService->log(
+            auth()->user(),
+            'subscription_plan_updated',
+            'subscription_plans',
+            $plan,
+            $oldValues,
+            $plan->toArray(),
+            "Updated subscription plan: {$plan->name}"
+        );
 
         return response()->json([
             'success' => true,
@@ -79,7 +107,18 @@ class AdminSubscriptionController extends Controller
             ], 400);
         }
 
+        $oldValues = $plan->toArray();
         $plan->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'subscription_plan_deleted',
+            'subscription_plans',
+            $plan,
+            $oldValues,
+            null,
+            "Deleted subscription plan: {$plan->name}"
+        );
 
         return response()->json([
             'success' => true,

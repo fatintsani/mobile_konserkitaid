@@ -7,15 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\AccountRecoveryRequest;
 use App\Models\User;
 use App\Services\SecurityService;
+use App\Services\AdminAuditService;
 use App\Notifications\TwoFactorResetDecisionNotification;
 
 class AdminAccountRecoveryController extends BaseController
 {
     protected $securityService;
+    protected $auditService;
 
-    public function __construct(SecurityService $securityService)
+    public function __construct(SecurityService $securityService, AdminAuditService $auditService)
     {
         $this->securityService = $securityService;
+        $this->auditService = $auditService;
     }
 
     public function index(Request $request)
@@ -65,11 +68,22 @@ class AdminAccountRecoveryController extends BaseController
         $user->sessions()->update(['revoked_at' => now()]);
 
         // Mark request as approved
+        $oldValues = $recoveryRequest->toArray();
         $recoveryRequest->update([
             'status' => AccountRecoveryRequest::STATUS_APPROVED,
             'completed_at' => now(),
             'admin_note' => $request->admin_note,
         ]);
+
+        $this->auditService->log(
+            auth()->user(),
+            'account_recovery_approved',
+            'account_recoveries',
+            $recoveryRequest,
+            $oldValues,
+            $recoveryRequest->toArray(),
+            "Approved two-factor reset for user: {$user->email}"
+        );
 
         $this->securityService->logActivity($request, 'two_factor_disabled_by_admin', $user);
         $this->securityService->createAlert(
@@ -103,11 +117,22 @@ class AdminAccountRecoveryController extends BaseController
         }
 
         // Mark request as rejected
+        $oldValues = $recoveryRequest->toArray();
         $recoveryRequest->update([
             'status' => AccountRecoveryRequest::STATUS_REJECTED,
             'completed_at' => now(),
             'admin_note' => $request->admin_note,
         ]);
+
+        $this->auditService->log(
+            auth()->user(),
+            'account_recovery_rejected',
+            'account_recoveries',
+            $recoveryRequest,
+            $oldValues,
+            $recoveryRequest->toArray(),
+            "Rejected two-factor reset request #{$recoveryRequest->id}"
+        );
 
         $user = $recoveryRequest->user;
         if ($user) {

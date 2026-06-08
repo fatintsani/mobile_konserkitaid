@@ -250,6 +250,12 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/requests/{id}/reject', [\App\Http\Controllers\Api\Admin\AdminAccountRecoveryController::class, 'reject']);
         });
 
+        // Audit Trail
+        Route::prefix('audit-logs')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Admin\AdminAuditLogController::class, 'index']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\Admin\AdminAuditLogController::class, 'show']);
+        });
+
         Route::prefix('subscriptions')->group(function () {
             Route::get('/', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getSubscriptions']);
             Route::get('/{id}', [\App\Http\Controllers\Api\Admin\AdminSubscriptionController::class, 'getSubscription']);

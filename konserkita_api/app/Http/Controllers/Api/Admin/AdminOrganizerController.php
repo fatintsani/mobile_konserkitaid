@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Organizer;
 use Illuminate\Http\Request;
+use App\Services\AdminAuditService;
 
 class AdminOrganizerController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index(Request $request)
     {
         $organizers = Organizer::with('user')->withCount(['events', 'followers', 'reviews'])->orderBy('created_at', 'desc')->paginate(10);
@@ -33,9 +40,20 @@ class AdminOrganizerController extends BaseController
             return $this->sendError('Organizer not found.', [], 404);
         }
 
+        $oldValues = $organizer->toArray();
         $organizer->verification_badge = true;
         $organizer->status = 'verified';
         $organizer->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'organizer_verified',
+            'organizers',
+            $organizer,
+            $oldValues,
+            $organizer->toArray(),
+            "Verified organizer: {$organizer->company_name}"
+        );
 
         \App\Models\Notification::create([
             'user_id' => $organizer->user_id,
@@ -55,9 +73,20 @@ class AdminOrganizerController extends BaseController
             return $this->sendError('Organizer not found.', [], 404);
         }
 
+        $oldValues = $organizer->toArray();
         $organizer->verification_badge = false;
         $organizer->status = 'rejected';
         $organizer->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'organizer_rejected',
+            'organizers',
+            $organizer,
+            $oldValues,
+            $organizer->toArray(),
+            "Rejected organizer: {$organizer->company_name}"
+        );
 
         return $this->sendResponse($organizer, 'Organizer rejected.');
     }
@@ -70,9 +99,20 @@ class AdminOrganizerController extends BaseController
             return $this->sendError('Organizer not found.', [], 404);
         }
 
+        $oldValues = $organizer->toArray();
         $organizer->verification_badge = false;
         $organizer->status = 'suspended';
         $organizer->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'organizer_suspended',
+            'organizers',
+            $organizer,
+            $oldValues,
+            $organizer->toArray(),
+            "Suspended organizer: {$organizer->company_name}"
+        );
 
         \App\Models\Notification::create([
             'user_id' => $organizer->user_id,
@@ -95,8 +135,19 @@ class AdminOrganizerController extends BaseController
         $review = \App\Models\OrganizerReview::find($id);
         if (!$review) return $this->sendError('Review not found.', [], 404);
         
+        $oldValues = $review->toArray();
         $review->status = 'approved';
         $review->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'organizer_review_approved',
+            'organizer_reviews',
+            $review,
+            $oldValues,
+            $review->toArray(),
+            "Approved review ID: {$review->id}"
+        );
 
         // Update organizer total_reviews and rating_average
         $organizer = $review->organizer;
@@ -119,8 +170,19 @@ class AdminOrganizerController extends BaseController
         $review = \App\Models\OrganizerReview::find($id);
         if (!$review) return $this->sendError('Review not found.', [], 404);
         
+        $oldValues = $review->toArray();
         $review->status = 'rejected';
         $review->save();
+
+        $this->auditService->log(
+            auth()->user(),
+            'organizer_review_rejected',
+            'organizer_reviews',
+            $review,
+            $oldValues,
+            $review->toArray(),
+            "Rejected review ID: {$review->id}"
+        );
 
         return $this->sendResponse($review, 'Review rejected.');
     }

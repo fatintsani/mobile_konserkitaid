@@ -6,9 +6,16 @@ use App\Http\Controllers\Api\BaseController;
 use App\Models\Banner;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AdminAuditService;
 
 class AdminBannerController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index()
     {
         $banners = Banner::orderBy('created_at', 'desc')->paginate(10);
@@ -32,6 +39,17 @@ class AdminBannerController extends BaseController
         }
 
         $banner = Banner::create($validated);
+
+        $this->auditService->log(
+            auth()->user(),
+            'banner_created',
+            'banners',
+            $banner,
+            null,
+            $banner->toArray(),
+            "Created banner: {$banner->title}"
+        );
+
         return $this->sendResponse($banner, 'Banner created successfully.');
     }
 
@@ -60,7 +78,19 @@ class AdminBannerController extends BaseController
             $validated['image_url'] = url('storage/' . $path);
         }
 
+        $oldValues = $banner->toArray();
         $banner->update($validated);
+
+        $this->auditService->log(
+            auth()->user(),
+            'banner_updated',
+            'banners',
+            $banner,
+            $oldValues,
+            $banner->toArray(),
+            "Updated banner: {$banner->title}"
+        );
+
         return $this->sendResponse($banner, 'Banner updated successfully.');
     }
 
@@ -76,7 +106,19 @@ class AdminBannerController extends BaseController
             Storage::disk('public')->delete($oldPath);
         }
 
+        $oldValues = $banner->toArray();
         $banner->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'banner_deleted',
+            'banners',
+            $banner,
+            $oldValues,
+            null,
+            "Deleted banner: {$banner->title}"
+        );
+
         return $this->sendResponse([], 'Banner deleted successfully.');
     }
 }

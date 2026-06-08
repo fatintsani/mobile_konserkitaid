@@ -7,9 +7,16 @@ use App\Models\EventCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AdminAuditService;
 
 class AdminCategoryController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index()
     {
         $categories = EventCategory::orderBy('created_at', 'desc')->paginate(10);
@@ -33,6 +40,17 @@ class AdminCategoryController extends BaseController
         }
 
         $category = EventCategory::create($validated);
+
+        $this->auditService->log(
+            auth()->user(),
+            'category_created',
+            'event_categories',
+            $category,
+            null,
+            $category->toArray(),
+            "Created category: {$category->name}"
+        );
+
         return $this->sendResponse($category, 'Category created successfully.');
     }
 
@@ -61,7 +79,19 @@ class AdminCategoryController extends BaseController
             $validated['icon'] = url('storage/' . $path);
         }
 
+        $oldValues = $category->toArray();
         $category->update($validated);
+
+        $this->auditService->log(
+            auth()->user(),
+            'category_updated',
+            'event_categories',
+            $category,
+            $oldValues,
+            $category->toArray(),
+            "Updated category: {$category->name}"
+        );
+
         return $this->sendResponse($category, 'Category updated successfully.');
     }
 
@@ -81,7 +111,19 @@ class AdminCategoryController extends BaseController
             Storage::disk('public')->delete($oldPath);
         }
 
+        $oldValues = $category->toArray();
         $category->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'category_deleted',
+            'event_categories',
+            $category,
+            $oldValues,
+            null,
+            "Deleted category: {$category->name}"
+        );
+
         return $this->sendResponse([], 'Category deleted successfully.');
     }
 }

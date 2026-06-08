@@ -7,9 +7,16 @@ use App\Models\ReferralCode;
 use App\Models\ReferralConversion;
 use App\Models\ReferralReward;
 use Illuminate\Http\Request;
+use App\Services\AdminAuditService;
 
 class AdminReferralController extends Controller
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function codes(Request $request)
     {
         $codes = ReferralCode::with('user')->withCount('conversions')->latest()->paginate(15);
@@ -44,8 +51,19 @@ class AdminReferralController extends Controller
             return response()->json(['success' => false, 'message' => 'Hanya reward pending yang bisa disetujui.'], 400);
         }
 
+        $oldValues = $reward->toArray();
         $reward->update(['status' => 'approved']);
         $reward->conversion()->update(['status' => 'approved']);
+
+        $this->auditService->log(
+            auth()->user(),
+            'referral_reward_approved',
+            'referral_rewards',
+            $reward,
+            $oldValues,
+            $reward->toArray(),
+            "Approved referral reward #{$reward->id}"
+        );
 
         return response()->json(['success' => true, 'message' => 'Reward disetujui.']);
     }
@@ -58,8 +76,19 @@ class AdminReferralController extends Controller
             return response()->json(['success' => false, 'message' => 'Hanya reward pending yang bisa ditolak.'], 400);
         }
 
+        $oldValues = $reward->toArray();
         $reward->update(['status' => 'rejected']);
         $reward->conversion()->update(['status' => 'rejected']);
+
+        $this->auditService->log(
+            auth()->user(),
+            'referral_reward_rejected',
+            'referral_rewards',
+            $reward,
+            $oldValues,
+            $reward->toArray(),
+            "Rejected referral reward #{$reward->id}"
+        );
 
         return response()->json(['success' => true, 'message' => 'Reward ditolak.']);
     }
@@ -72,8 +101,19 @@ class AdminReferralController extends Controller
             return response()->json(['success' => false, 'message' => 'Hanya reward yang disetujui yang bisa ditandai sebagai dibayar.'], 400);
         }
 
+        $oldValues = $reward->toArray();
         $reward->update(['status' => 'paid', 'paid_at' => now()]);
         $reward->conversion()->update(['status' => 'paid']);
+
+        $this->auditService->log(
+            auth()->user(),
+            'referral_reward_paid',
+            'referral_rewards',
+            $reward,
+            $oldValues,
+            $reward->toArray(),
+            "Marked referral reward as paid #{$reward->id}"
+        );
 
         return response()->json(['success' => true, 'message' => 'Reward ditandai sebagai dibayar.']);
     }

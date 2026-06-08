@@ -5,9 +5,16 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\BaseController;
 use App\Models\Review;
 use Illuminate\Http\Request;
+use App\Services\AdminAuditService;
 
 class AdminReviewController extends BaseController
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index(Request $request)
     {
         $query = Review::with(['user', 'event']);
@@ -33,10 +40,21 @@ class AdminReviewController extends BaseController
             return $this->sendError('Review not found.', [], 404);
         }
 
+        $oldValues = $review->toArray();
         $review->update([
             'status' => 'approved',
             'admin_note' => null,
         ]);
+
+        $this->auditService->log(
+            auth()->user(),
+            'review_approved',
+            'reviews',
+            $review,
+            $oldValues,
+            $review->toArray(),
+            "Approved review #{$review->id}"
+        );
 
         \App\Models\Notification::create([
             'user_id' => $review->user_id,
@@ -60,10 +78,21 @@ class AdminReviewController extends BaseController
             return $this->sendError('Review not found.', [], 404);
         }
 
+        $oldValues = $review->toArray();
         $review->update([
             'status' => 'rejected',
             'admin_note' => $request->admin_note,
         ]);
+
+        $this->auditService->log(
+            auth()->user(),
+            'review_rejected',
+            'reviews',
+            $review,
+            $oldValues,
+            $review->toArray(),
+            "Rejected review #{$review->id}"
+        );
 
         \App\Models\Notification::create([
             'user_id' => $review->user_id,
@@ -83,7 +112,18 @@ class AdminReviewController extends BaseController
             return $this->sendError('Review not found.', [], 404);
         }
 
+        $oldValues = $review->toArray();
         $review->delete();
+
+        $this->auditService->log(
+            auth()->user(),
+            'review_deleted',
+            'reviews',
+            $review,
+            $oldValues,
+            null,
+            "Deleted review #{$review->id}"
+        );
 
         return $this->sendResponse([], 'Review deleted successfully.');
     }

@@ -9,9 +9,16 @@ use App\Models\Transaction;
 use App\Models\ReferralConversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Services\AdminAuditService;
 
 class AdminRefundController extends Controller
 {
+    protected $auditService;
+
+    public function __construct(AdminAuditService $auditService)
+    {
+        $this->auditService = $auditService;
+    }
     public function index(Request $request)
     {
         $query = Refund::with(['transaction', 'user'])->latest();
@@ -47,10 +54,21 @@ class AdminRefundController extends Controller
                 return response()->json(['success' => false, 'message' => 'Hanya refund pending yang bisa disetujui.'], 400);
             }
 
+            $oldValues = $refund->toArray();
             $refund->update([
                 'status' => 'approved',
                 'approved_at' => now(),
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'refund_approved',
+                'refunds',
+                $refund,
+                $oldValues,
+                $refund->toArray(),
+                "Approved refund #{$refund->id}"
+            );
 
             $refund->transaction()->update([
                 'payment_status' => 'refund_approved'
@@ -80,10 +98,21 @@ class AdminRefundController extends Controller
                 return response()->json(['success' => false, 'message' => 'Hanya refund pending yang bisa ditolak.'], 400);
             }
 
+            $oldValues = $refund->toArray();
             $refund->update([
                 'status' => 'rejected',
                 'admin_note' => $request->admin_note,
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'refund_rejected',
+                'refunds',
+                $refund,
+                $oldValues,
+                $refund->toArray(),
+                "Rejected refund #{$refund->id}"
+            );
 
             Notification::create([
                 'user_id' => $refund->user_id,
@@ -105,10 +134,21 @@ class AdminRefundController extends Controller
                 return response()->json(['success' => false, 'message' => 'Hanya refund yang disetujui yang bisa diproses.'], 400);
             }
 
+            $oldValues = $refund->toArray();
             $refund->update([
                 'status' => 'processed',
                 'processed_at' => now(),
             ]);
+
+            $this->auditService->log(
+                auth()->user(),
+                'refund_processed',
+                'refunds',
+                $refund,
+                $oldValues,
+                $refund->toArray(),
+                "Processed refund #{$refund->id}"
+            );
 
             $transaction = $refund->transaction;
             $transaction->update([
