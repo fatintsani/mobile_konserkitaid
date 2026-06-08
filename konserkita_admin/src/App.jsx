@@ -25,6 +25,7 @@ import VenueDetail from './pages/VenueDetail';
 import Reviews from './pages/Reviews';
 import BroadcastNotification from './pages/BroadcastNotification';
 import SubscriptionPlans from './pages/SubscriptionPlans';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/events" element={<Events />} />
               <Route path="users" element={<Users />} />
               <Route path="recommendations" element={<Recommendations />} />

@@ -95,6 +95,12 @@ class ProfileScreen extends StatelessWidget {
             ),
             _buildMenuCard(
               context,
+              title: 'Passkeys & Security',
+              icon: Icons.fingerprint,
+              onTap: () => context.push('/passkeys'),
+            ),
+            _buildMenuCard(
+              context,
               title: 'Transaction History',
               icon: Icons.receipt_long,
               onTap: () => context.push('/transactions'),

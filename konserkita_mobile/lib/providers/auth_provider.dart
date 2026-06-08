@@ -66,6 +66,32 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<Map<String, dynamic>> getPasskeyLoginOptions(String email) async {
+    return await _authService.getPasskeyLoginOptions(email);
+  }
+
+  Future<Map<String, dynamic>> getPasskeyRegisterOptions() async {
+    return await _authService.getPasskeyRegisterOptions();
+  }
+
+  Future<void> verifyPasskeyRegistration(Map<String, dynamic> responseData) async {
+    await _authService.verifyPasskeyRegistration(responseData);
+  }
+
+  Future<bool> verifyPasskeyLogin(Map<String, dynamic> response, String email) async {
+    _setLoading(true);
+    try {
+      _user = await _authService.verifyPasskeyLogin(response, email);
+      if (_user != null) {
+        FCMService().registerToken();
+        return true;
+      }
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   Future<void> register(String name, String email, String password, String passwordConfirmation) async {
     _setLoading(true);
     try {

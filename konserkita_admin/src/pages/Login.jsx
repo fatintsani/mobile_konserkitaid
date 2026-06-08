@@ -4,6 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { LogIn, AlertCircle } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useMsal } from '@azure/msal-react';
+import { startAuthentication } from '@simplewebauthn/browser';
+import api from '../api/axios';
+import { Fingerprint } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +14,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login, socialLogin } = useAuth();
+  const { login, socialLogin, passkeyLogin } = useAuth();
   const navigate = useNavigate();
   const { instance } = useMsal();
 
@@ -56,6 +59,33 @@ const Login = () => {
       navigate('/');
     } else {
       setError(result.message);
+      setIsLoading(false);
+    }
+  };
+
+  const handlePasskeyLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      const optionsRes = await api.post('/passkeys/login/options', { email });
+      const options = optionsRes.data;
+
+      const asseResp = await startAuthentication(options);
+
+      const result = await passkeyLogin({
+        ...asseResp,
+        email
+      });
+
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.message);
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message || 'Passkey login failed');
       setIsLoading(false);
     }
   };
@@ -162,6 +192,18 @@ const Login = () => {
                   <img className="h-5 w-5" src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" />
                 </button>
               </div>
+            </div>
+
+            <div className="mt-4">
+              <button
+                type="button"
+                onClick={handlePasskeyLogin}
+                disabled={isLoading}
+                className="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-70"
+              >
+                <Fingerprint className="h-5 w-5 mr-2 text-[#6C2BD9]" />
+                Sign in with Passkey
+              </button>
             </div>
           </div>
         </form>

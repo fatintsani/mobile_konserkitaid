@@ -18,6 +18,7 @@ import '../screens/my_tickets_screen.dart';
 import '../screens/qr_scanner_screen.dart';
 import '../screens/scan_result_screen.dart';
 import '../screens/profile_screen.dart';
+import '../screens/passkeys_screen.dart';
 import '../screens/preferences_screen.dart';
 import '../screens/edit_profile_screen.dart';
 import '../screens/transaction_history_screen.dart';
@@ -159,6 +160,10 @@ class AppRouter {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/passkeys',
+        builder: (context, state) => const PasskeysScreen(),
       ),
       GoRoute(
         path: '/my-reviews',

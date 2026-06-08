@@ -82,4 +82,50 @@ class AuthService {
       await _storage.delete(key: 'auth_token');
     }
   }
+
+  Future<Map<String, dynamic>> getPasskeyRegisterOptions() async {
+    try {
+      final response = await _apiService.dio.post('/passkeys/register/options');
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to get passkey options');
+    }
+  }
+
+  Future<void> verifyPasskeyRegistration(Map<String, dynamic> responseData) async {
+    try {
+      await _apiService.dio.post('/passkeys/register/verify', data: responseData);
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to verify passkey');
+    }
+  }
+
+  Future<Map<String, dynamic>> getPasskeyLoginOptions(String email) async {
+    try {
+      final response = await _apiService.dio.post('/passkeys/login/options', data: {'email': email});
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Failed to get login options');
+    }
+  }
+
+  Future<User?> verifyPasskeyLogin(Map<String, dynamic> responseData, String email) async {
+    try {
+      final response = await _apiService.dio.post('/passkeys/login/verify', data: {
+        ...responseData,
+        'email': email,
+      });
+
+      if (response.data['message'] == 'Login successful') {
+        final token = response.data['token'];
+        final user = User.fromJson(response.data['user']);
+        
+        await _storage.write(key: 'auth_token', value: token);
+        return user;
+      }
+      return null;
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? 'Login failed');
+    }
+  }
 }

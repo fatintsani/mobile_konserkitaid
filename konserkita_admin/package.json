@@ -13,6 +13,7 @@
     "@azure/msal-browser": "^5.12.0",
     "@azure/msal-react": "^5.4.3",
     "@react-oauth/google": "^0.13.5",
+    "@simplewebauthn/browser": "^13.3.0",
     "axios": "^1.17.0",
     "date-fns": "^4.4.0",
     "i18next": "^26.3.1",

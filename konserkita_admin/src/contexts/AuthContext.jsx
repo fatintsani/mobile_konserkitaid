@@ -65,6 +65,25 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const passkeyLogin = async (data) => {
+    try {
+      const response = await api.post('/passkeys/login/verify', data);
+      if (response.data.message === 'Login successful') {
+        const { token, user } = response.data;
+        if (user.role === 'admin' || user.role === 'super_admin') {
+          localStorage.setItem('token', token);
+          setUser(user);
+          return { success: true };
+        } else {
+          return { success: false, message: 'Unauthorized. Admins only.' };
+        }
+      }
+      return { success: false, message: response.data.message || 'Passkey login failed' };
+    } catch (error) {
+      return { success: false, message: error.response?.data?.message || 'Passkey login failed' };
+    }
+  };
+
   const logout = async () => {
     try {
       await api.post('/logout');
@@ -77,7 +96,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, socialLogin }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, socialLogin, passkeyLogin }}>
       {!loading && children}
     </AuthContext.Provider>
   );

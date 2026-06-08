@@ -142,8 +142,8 @@ const AdminLayout = () => {
               <option value="id">Indonesia</option>
               <option value="en">English</option>
             </select>
-            <div className="flex items-center space-x-3">
-              <div className="flex flex-col text-right">
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/profile')}>
+              <div className="flex flex-col text-right hover:text-[#6C2BD9]">
                 <span className="text-sm font-medium">{user?.name}</span>
                 <span className="text-xs text-gray-500">{user?.role}</span>
               </div>

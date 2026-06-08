@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/social_auth_provider.dart';
 import '../utils/constants.dart';
+import 'package:passkeys/authenticator.dart';
+import 'package:passkeys_platform_interface/types/authenticate_request.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -60,6 +62,34 @@ class _LoginScreenState extends State<LoginScreen> {
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  void _loginWithPasskey() async {
+    final authenticator = PasskeyAuthenticator();
+    final authProvider = context.read<AuthProvider>();
+
+    try {
+      final email = _emailController.text;
+      Map<String, dynamic> rawOptions = await authProvider.getPasskeyLoginOptions(email);
+
+      Map<String, dynamic> options = rawOptions.containsKey('publicKey')
+          ? Map<String, dynamic>.from(rawOptions['publicKey'])
+          : Map<String, dynamic>.from(rawOptions);
+
+      final request = AuthenticateRequestType.fromJson(options);
+      final authResponse = await authenticator.authenticate(request);
+
+      final success = await authProvider.verifyPasskeyLogin(authResponse.toJson(), email);
+      if (success && mounted) {
+        context.go('/');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     }
@@ -148,6 +178,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: context.watch<SocialAuthProvider>().isLoading ? null : _loginWithMicrosoft,
                   icon: Image.network('https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Microsoft_logo.svg/120px-Microsoft_logo.svg.png', height: 24),
                   label: const Text('Continue with Microsoft', style: TextStyle(fontSize: 16)),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: context.watch<AuthProvider>().isLoading ? null : _loginWithPasskey,
+                  icon: const Icon(Icons.fingerprint, size: 24, color: AppConstants.primaryColor),
+                  label: const Text('Sign in with Passkey', style: TextStyle(fontSize: 16, color: AppConstants.primaryColor)),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),

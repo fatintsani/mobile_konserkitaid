@@ -12,12 +12,14 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use LaravelWebauthn\WebauthnAuthenticatable;
+
 #[Fillable(['name', 'email', 'password', 'role', 'phone', 'avatar', 'provider', 'provider_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, WebauthnAuthenticatable;
 
     /**
      * Get the attributes that should be cast.

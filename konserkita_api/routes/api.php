@@ -26,6 +26,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login']);
 
+// Passkeys Login
+Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:6,1');
+Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:6,1');
+
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
 Route::get('/events', [EventController::class, 'index']);
@@ -54,6 +58,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Device Tokens
     Route::post('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'store']);
     Route::delete('/device-tokens', [\App\Http\Controllers\Api\DeviceTokenController::class, 'destroy']);
+
+    // Passkeys Management
+    Route::post('/passkeys/register/options', [\App\Http\Controllers\Api\PasskeyRegisterController::class, 'options']);
+    Route::post('/passkeys/register/verify', [\App\Http\Controllers\Api\PasskeyRegisterController::class, 'verify']);
+    Route::get('/passkeys', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'index']);
+    Route::delete('/passkeys/{id}', [\App\Http\Controllers\Api\PasskeyManagerController::class, 'destroy']);
 
     // Transactions
     Route::get('/transactions', [App\Http\Controllers\Api\TransactionController::class, 'index']);
