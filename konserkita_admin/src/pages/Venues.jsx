@@ -119,25 +119,19 @@ const Venues = () => {
       </div>
 
       {loading ? (
-        <div className="p-12 flex justify-center">
-          <RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} />
-        </div>
-      ) : venues.length === 0 ? (
-        <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-12 text-center">
-          <div className="w-16 h-16 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#6C2BD9]">
-            <MapPin size={32} />
-          </div>
-          <h3 className="text-lg font-medium text-white mb-1">No venues found</h3>
-          <p className="text-white/60 mb-4">Get started by creating a new venue for your events.</p>
-          <button 
-            onClick={() => openModal()}
-            className="inline-flex items-center px-4 py-2 bg-[#6C2BD9] text-white rounded-lg hover:bg-purple-700 transition"
-          >
-            <Plus size={18} className="mr-2" />
-            Add Venue
-          </button>
-        </div>
-      ) : (
+            <div className="animate-pulse">
+              <div className="h-10 bg-[#1C1C1F] rounded-t-lg mb-2"></div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex space-x-4 px-6 py-5 border-b border-white/5">
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {venues.map((venue) => (
             <div key={venue.id} className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden hover:shadow-md transition flex flex-col">

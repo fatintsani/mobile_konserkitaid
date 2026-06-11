@@ -344,8 +344,17 @@ const Referrals = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6C2BD9]"></div>
+        <div className="animate-pulse">
+          <div className="h-10 bg-[#1C1C1F] rounded-t-lg mb-2"></div>
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex space-x-4 px-6 py-5 border-b border-white/5">
+              <div className="h-4 bg-white/5 rounded w-1/5"></div>
+              <div className="h-4 bg-white/5 rounded w-1/5"></div>
+              <div className="h-4 bg-white/5 rounded w-1/5"></div>
+              <div className="h-4 bg-white/5 rounded w-1/5"></div>
+              <div className="h-4 bg-white/5 rounded w-1/5"></div>
+            </div>
+          ))}
         </div>
       ) : (
         <>

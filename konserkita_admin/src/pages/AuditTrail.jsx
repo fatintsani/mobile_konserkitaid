@@ -135,12 +135,20 @@ const AuditTrail = () => {
             </thead>
             <tbody className="divide-y divide-white/10">
               {loading ? (
-                <tr>
-                  <td colSpan="7" className="px-6 py-8 text-center text-white/60">
-                    Memuat data...
-                  </td>
-                </tr>
-              ) : logs.length === 0 ? (
+                [...Array(5)].map((_, i) => (
+                  <tr key={i} className="animate-pulse border-b border-white/5">
+                    <td colSpan="10" className="px-6 py-5">
+                      <div className="flex space-x-4">
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) :  logs.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-8 text-center text-white/60">
                     Tidak ada log audit ditemukan.

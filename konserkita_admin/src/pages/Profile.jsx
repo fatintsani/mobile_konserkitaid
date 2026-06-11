@@ -201,7 +201,10 @@ const Profile = () => {
 
         <div className="space-y-4">
           {loading ? (
-            <p className="text-white/60">Loading passkeys...</p>
+            <div className="animate-pulse space-y-3">
+              <div className="h-16 bg-[#2a2a2a] rounded-lg w-full"></div>
+              <div className="h-16 bg-[#2a2a2a] rounded-lg w-full"></div>
+            </div>
           ) : passkeys.length === 0 ? (
             <p className="text-white/60 italic">No passkeys registered yet.</p>
           ) : (

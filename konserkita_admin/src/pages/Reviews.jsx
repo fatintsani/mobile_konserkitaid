@@ -163,10 +163,20 @@ function Reviews() {
                 </thead>
                 <tbody className="divide-y divide-white/10 bg-[#141416] border border-white/5">
                   {loading ? (
-                    <tr>
-                      <td colSpan="5" className="py-4 text-center text-sm text-white/60">Loading...</td>
-                    </tr>
-                  ) : reviews.length === 0 ? (
+                [...Array(5)].map((_, i) => (
+                  <tr key={i} className="animate-pulse border-b border-white/5">
+                    <td colSpan="10" className="px-6 py-5">
+                      <div className="flex space-x-4">
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                        <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : reviews.length === 0 ? (
                     <tr>
                       <td colSpan="5" className="py-4 text-center text-sm text-white/60">No reviews found.</td>
                     </tr>

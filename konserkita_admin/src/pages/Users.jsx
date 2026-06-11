@@ -77,8 +77,19 @@ const Users = () => {
 
       <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
         {loading ? (
-          <div className="p-8 flex justify-center"><RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} /></div>
-        ) : (
+            <div className="animate-pulse">
+              <div className="h-10 bg-[#1C1C1F] rounded-t-lg mb-2"></div>
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="flex space-x-4 px-6 py-5 border-b border-white/5">
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                  <div className="h-4 bg-white/5 rounded w-1/5"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-white/10">
               <thead className="bg-[#1C1C1F]">
