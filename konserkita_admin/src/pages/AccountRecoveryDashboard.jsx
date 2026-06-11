@@ -17,7 +17,7 @@ const AccountRecoveryDashboard = () => {
     setLoading(true);
     try {
       const response = await api.get('/admin/account-recovery/requests');
-      setRequests(response.data.data || response.data);
+      setRequests(response.data.data.data || response.data.data || response.data);
     } catch (error) {
       toast.error('Failed to fetch account recovery requests');
     } finally {
