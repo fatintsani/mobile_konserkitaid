@@ -16,6 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(append: [
             \App\Http\Middleware\LocalizationMiddleware::class,
         ]);
+        $middleware->alias([
+            'throttle' => \App\Http\Middleware\LogRateLimitAbuse::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

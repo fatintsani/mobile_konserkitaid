@@ -33,6 +33,11 @@ class ApiService {
           await _storage.delete(key: 'auth_token');
           await _storage.delete(key: 'user_data');
           AppRouter.router.go('/login');
+        } else if (e.response?.statusCode == 429) {
+          e.response?.data = {
+            'message': 'Terlalu banyak percobaan. Coba lagi beberapa saat.',
+            ...(e.response?.data is Map ? e.response?.data as Map : {}),
+          };
         }
         return handler.next(e);
       }

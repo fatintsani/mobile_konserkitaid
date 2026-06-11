@@ -23,8 +23,8 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
-Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login'])->middleware('throttle:social');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth_login');
+Route::post('/auth/{provider}', [\App\Http\Controllers\Api\SocialAuthController::class, 'login'])->middleware('throttle:social_login');
 
 // Account Recovery (Public)
 Route::post('/auth/forgot-password', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'forgotPassword'])->middleware('throttle:6,1');
@@ -32,16 +32,18 @@ Route::post('/auth/reset-password', [\App\Http\Controllers\Api\AccountRecoveryCo
 Route::post('/account-recovery/two-factor-reset', [\App\Http\Controllers\Api\AccountRecoveryController::class, 'requestTwoFactorReset']);
 
 // 2FA Public
-Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])->middleware('throttle:2fa');
+Route::post('/2fa/challenge', [\App\Http\Controllers\Api\TwoFactorController::class, 'challenge'])->middleware('throttle:auth_2fa');
 
 // Passkeys Login
-Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:passkey');
-Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:passkey');
+Route::post('/passkeys/login/options', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'options'])->middleware('throttle:passkey_challenge');
+Route::post('/passkeys/login/verify', [\App\Http\Controllers\Api\PasskeyLoginController::class, 'verify'])->middleware('throttle:passkey_challenge');
 
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
-Route::get('/events', [EventController::class, 'index']);
-Route::get('/events/{id}', [EventController::class, 'show']);
+Route::middleware('throttle:public_search')->group(function () {
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/{id}', [EventController::class, 'show']);
+});
 Route::get('/events/{event}/seat-map', [\App\Http\Controllers\Api\EventSeatController::class, 'getSeatMap']);
 Route::get('/events/{event}/reviews', [\App\Http\Controllers\Api\EventReviewController::class, 'index']);
 Route::get('/events/{event}/rating-summary', [\App\Http\Controllers\Api\EventReviewController::class, 'ratingSummary']);
@@ -101,7 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/transactions/{id}', [App\Http\Controllers\Api\TransactionController::class, 'show']);
 
     // Payments
-    Route::get('/payments/status/{id}', [PaymentController::class, 'status']);
+    Route::get('/payments/status/{id}', [PaymentController::class, 'status'])->middleware('throttle:payment_status');
 
     // Wishlist
     Route::get('/wishlists', [WishlistController::class, 'index']);
@@ -145,7 +147,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/promos/validate', [App\Http\Controllers\Api\PromoController::class, 'validateCode']);
 
     // Admin Dashboard
-    Route::prefix('admin')->middleware(\App\Http\Middleware\AdminMiddleware::class)->group(function () {
+    Route::prefix('admin')->middleware([\App\Http\Middleware\AdminMiddleware::class, 'throttle:admin_actions'])->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard']);
         
         Route::get('/events', [\App\Http\Controllers\Api\Admin\AdminEventController::class, 'index']);
@@ -241,6 +243,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/alerts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'alerts']);
             Route::get('/locked-accounts', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'lockedAccounts']);
             Route::put('/locked-accounts/{id}/unlock', [\App\Http\Controllers\Api\Admin\AdminSecurityController::class, 'unlockAccount']);
+            Route::get('/api-abuse-logs', [\App\Http\Controllers\Api\Admin\ApiAbuseLogController::class, 'index']);
         });
 
         // Account Recovery Monitoring
@@ -268,7 +271,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/event-categories', [\App\Http\Controllers\Api\OrganizerController::class, 'getCategories']);
 
     // Checkout
-    Route::post('/checkout', [CheckoutController::class, 'process']);
+    Route::post('/checkout', [CheckoutController::class, 'process'])->middleware('throttle:checkout');
     Route::post('/events/{event}/seats/hold', [\App\Http\Controllers\Api\EventSeatController::class, 'holdSeats']);
     Route::post('/events/{event}/seats/release', [\App\Http\Controllers\Api\EventSeatController::class, 'releaseSeats']);
 
@@ -276,7 +279,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/referrals/my-code', [\App\Http\Controllers\Api\ReferralController::class, 'myCode']);
     Route::get('/referrals/rewards', [\App\Http\Controllers\Api\ReferralController::class, 'rewards']);
     Route::get('/referrals/conversions', [\App\Http\Controllers\Api\ReferralController::class, 'conversions']);
-    Route::post('/referrals/apply', [\App\Http\Controllers\Api\ReferralController::class, 'apply']);
+    Route::post('/referrals/apply', [\App\Http\Controllers\Api\ReferralController::class, 'apply'])->middleware('throttle:referral_apply');
 
     // Tickets
     Route::post('/tickets/scan', [TicketController::class, 'scanTicket']);
@@ -290,13 +293,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/preferences', [RecommendationController::class, 'updatePreferences']);
 
     // Refunds
-    Route::post('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'store']);
+    Route::post('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'store'])->middleware('throttle:refund_request');
     Route::get('/refunds', [\App\Http\Controllers\Api\RefundController::class, 'index']);
     Route::get('/refunds/{id}', [\App\Http\Controllers\Api\RefundController::class, 'show']);
 
     // Reviews
     Route::get('/my-reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'myReviews']);
-    Route::post('/events/{event}/reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'store']);
+    Route::post('/events/{event}/reviews', [\App\Http\Controllers\Api\CustomerReviewController::class, 'store'])->middleware('throttle:review_submit');
     Route::put('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [\App\Http\Controllers\Api\CustomerReviewController::class, 'destroy']);
 

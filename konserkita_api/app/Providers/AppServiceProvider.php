@@ -22,20 +22,48 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        RateLimiter::for('login', function (Request $request) {
+        RateLimiter::for('auth_login', function (Request $request) {
             return Limit::perMinute(5)->by($request->email ?: $request->ip());
         });
 
-        RateLimiter::for('2fa', function (Request $request) {
+        RateLimiter::for('auth_2fa', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
         });
 
-        RateLimiter::for('passkey', function (Request $request) {
-            return Limit::perMinute(5)->by($request->email ?: $request->ip());
+        RateLimiter::for('passkey_challenge', function (Request $request) {
+            return Limit::perMinute(10)->by($request->email ?: $request->ip());
         });
 
-        RateLimiter::for('social', function (Request $request) {
+        RateLimiter::for('social_login', function (Request $request) {
             return Limit::perMinute(5)->by($request->ip());
+        });
+
+        RateLimiter::for('checkout', function (Request $request) {
+            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('payment_status', function (Request $request) {
+            return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('referral_apply', function (Request $request) {
+            return Limit::perHour(10)->by(($request->user()?->id ?: '') . $request->ip());
+        });
+
+        RateLimiter::for('review_submit', function (Request $request) {
+            return Limit::perHour(5)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('refund_request', function (Request $request) {
+            return Limit::perHour(3)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('public_search', function (Request $request) {
+            return Limit::perMinute(60)->by($request->ip());
+        });
+
+        RateLimiter::for('admin_actions', function (Request $request) {
+            return Limit::perMinute(120)->by($request->user()?->id ?: $request->ip());
         });
     }
 }
