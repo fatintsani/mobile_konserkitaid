@@ -11,7 +11,17 @@
     "refunds": "Refunds",
     "payouts": "Payouts",
     "reviews": "Reviews",
-    "broadcast": "Broadcast Notification"
+    "broadcast": "Broadcast Notification",
+    "organizers": "Organizers",
+    "users": "Users",
+    "reports": "Reports",
+    "organizer_reviews": "Organizer Reviews",
+    "recommendations": "Recommendations",
+    "referrals": "Referrals",
+    "subscriptions": "Subscription Plans",
+    "security": "Security Monitoring",
+    "account_recovery": "Account Recovery",
+    "audit_trail": "Audit Trail"
   },
   "topbar": {
     "language": "Language",

@@ -73,11 +73,11 @@ const Referrals = () => {
   const renderStats = () => (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Conversions</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats?.total_conversions || 0}</h3>
+              <p className="text-sm font-medium text-white/60">Total Conversions</p>
+              <h3 className="text-2xl font-bold text-white mt-1">{stats?.total_conversions || 0}</h3>
             </div>
             <div className="h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
               <Activity size={24} />
@@ -85,11 +85,11 @@ const Referrals = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Pending Commissions</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">Rp {stats?.pending_commission?.toLocaleString('id-ID') || 0}</h3>
+              <p className="text-sm font-medium text-white/60">Pending Commissions</p>
+              <h3 className="text-2xl font-bold text-white mt-1">Rp {stats?.pending_commission?.toLocaleString('id-ID') || 0}</h3>
             </div>
             <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
               <DollarSign size={24} />
@@ -97,11 +97,11 @@ const Referrals = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-500">Paid Commissions</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">Rp {stats?.paid_commission?.toLocaleString('id-ID') || 0}</h3>
+              <p className="text-sm font-medium text-white/60">Paid Commissions</p>
+              <h3 className="text-2xl font-bold text-white mt-1">Rp {stats?.paid_commission?.toLocaleString('id-ID') || 0}</h3>
             </div>
             <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center text-green-600">
               <CheckCircle size={24} />
@@ -110,20 +110,20 @@ const Referrals = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900">Top Referrers</h3>
+      <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/5">
+          <h3 className="text-lg font-semibold text-white">Top Referrers</h3>
         </div>
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-white/5">
           {stats?.top_referrers?.map((ref) => (
-            <div key={ref.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+            <div key={ref.id} className="p-4 flex items-center justify-between hover:bg-[#1C1C1F] transition-colors">
               <div className="flex items-center space-x-4">
                 <div className="h-10 w-10 rounded-full bg-[#6C2BD9]/10 flex items-center justify-center text-[#6C2BD9] font-bold">
                   {ref.user?.name?.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-900">{ref.user?.name}</h4>
-                  <p className="text-xs text-gray-500">{ref.code}</p>
+                  <h4 className="text-sm font-semibold text-white">{ref.user?.name}</h4>
+                  <p className="text-xs text-white/60">{ref.code}</p>
                 </div>
               </div>
               <div className="text-right">
@@ -134,7 +134,7 @@ const Referrals = () => {
             </div>
           ))}
           {stats?.top_referrers?.length === 0 && (
-            <div className="p-8 text-center text-gray-500">No referrers yet.</div>
+            <div className="p-8 text-center text-white/60">No referrers yet.</div>
           )}
         </div>
       </div>
@@ -142,29 +142,29 @@ const Referrals = () => {
   );
 
   const renderRewards = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Referrer</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Transaction ID</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Amount</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase text-right">Actions</th>
+            <tr className="bg-[#1C1C1F] border-b border-white/5">
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Referrer</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Transaction ID</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Amount</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Status</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {rewards.map((reward) => (
-              <tr key={reward.id} className="hover:bg-gray-50/50">
+              <tr key={reward.id} className="hover:bg-[#1C1C1F]/50">
                 <td className="p-4">
-                  <div className="font-medium text-gray-900">{reward.user?.name}</div>
-                  <div className="text-xs text-gray-500">{reward.user?.email}</div>
+                  <div className="font-medium text-white">{reward.user?.name}</div>
+                  <div className="text-xs text-white/60">{reward.user?.email}</div>
                 </td>
-                <td className="p-4 text-sm text-gray-600">
+                <td className="p-4 text-sm text-white/70">
                   {reward.conversion?.transaction_id}
                 </td>
-                <td className="p-4 font-medium text-gray-900">
+                <td className="p-4 font-medium text-white">
                   Rp {parseInt(reward.amount).toLocaleString('id-ID')}
                 </td>
                 <td className="p-4">
@@ -192,7 +192,7 @@ const Referrals = () => {
             ))}
             {rewards.length === 0 && (
               <tr>
-                <td colSpan="5" className="p-8 text-center text-gray-500">No rewards found.</td>
+                <td colSpan="5" className="p-8 text-center text-white/60">No rewards found.</td>
               </tr>
             )}
           </tbody>
@@ -202,40 +202,40 @@ const Referrals = () => {
   );
 
   const renderCodes = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Code</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">User</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Type & Comm</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Uses</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+            <tr className="bg-[#1C1C1F] border-b border-white/5">
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Code</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">User</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Type & Comm</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Uses</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {codes.map((code) => (
-              <tr key={code.id} className="hover:bg-gray-50/50">
+              <tr key={code.id} className="hover:bg-[#1C1C1F]/50">
                 <td className="p-4">
-                  <span className="font-mono bg-gray-100 px-2 py-1 rounded text-sm text-gray-800">{code.code}</span>
+                  <span className="font-mono bg-[#2A2A2D] px-2 py-1 rounded text-sm text-white/90">{code.code}</span>
                 </td>
                 <td className="p-4">
-                  <div className="font-medium text-gray-900">{code.user?.name}</div>
-                  <div className="text-xs text-gray-500">{code.user?.email}</div>
+                  <div className="font-medium text-white">{code.user?.name}</div>
+                  <div className="text-xs text-white/60">{code.user?.email}</div>
                 </td>
                 <td className="p-4">
-                  <div className="text-sm text-gray-900">{code.type}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-sm text-white">{code.type}</div>
+                  <div className="text-xs text-white/60">
                     {code.commission_type === 'percentage' ? `${code.commission_value}%` : `Rp ${code.commission_value}`}
                   </div>
                 </td>
-                <td className="p-4 text-sm text-gray-600">
+                <td className="p-4 text-sm text-white/70">
                   {code.used_count} / {code.usage_limit || '∞'}
                 </td>
                 <td className="p-4">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    code.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    code.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-[#2A2A2D] text-white/90'
                   }`}>
                     {code.status.toUpperCase()}
                   </span>
@@ -249,32 +249,32 @@ const Referrals = () => {
   );
 
   const renderConversions = () => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Referrer</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Buyer</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Transaction ID</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Commission</th>
-              <th className="p-4 text-xs font-semibold text-gray-500 uppercase">Status</th>
+            <tr className="bg-[#1C1C1F] border-b border-white/5">
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Referrer</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Buyer</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Transaction ID</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Commission</th>
+              <th className="p-4 text-xs font-semibold text-white/60 uppercase">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-white/5">
             {conversions.map((conv) => (
-              <tr key={conv.id} className="hover:bg-gray-50/50">
+              <tr key={conv.id} className="hover:bg-[#1C1C1F]/50">
                 <td className="p-4">
-                  <div className="font-medium text-gray-900">{conv.referral_code?.user?.name}</div>
-                  <div className="text-xs text-gray-500">{conv.referral_code?.code}</div>
+                  <div className="font-medium text-white">{conv.referral_code?.user?.name}</div>
+                  <div className="text-xs text-white/60">{conv.referral_code?.code}</div>
                 </td>
                 <td className="p-4">
-                  <div className="font-medium text-gray-900">{conv.referred_user?.name || 'Guest'}</div>
+                  <div className="font-medium text-white">{conv.referred_user?.name || 'Guest'}</div>
                 </td>
-                <td className="p-4 text-sm text-gray-600">
+                <td className="p-4 text-sm text-white/70">
                   {conv.transaction_id}
                 </td>
-                <td className="p-4 font-medium text-gray-900">
+                <td className="p-4 font-medium text-white">
                   Rp {parseInt(conv.commission_amount).toLocaleString('id-ID')}
                 </td>
                 <td className="p-4">
@@ -299,16 +299,16 @@ const Referrals = () => {
     <div className="max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Referrals Management</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage affiliate codes, track conversions, and approve commissions.</p>
+          <h1 className="text-2xl font-bold text-white">Referrals Management</h1>
+          <p className="text-white/60 text-sm mt-1">Manage affiliate codes, track conversions, and approve commissions.</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-2 flex space-x-2">
+      <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-2 flex space-x-2">
         <button
           onClick={() => setActiveTab('stats')}
           className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'stats' ? 'bg-[#6C2BD9] text-white' : 'text-gray-600 hover:bg-gray-100'
+            activeTab === 'stats' ? 'bg-[#6C2BD9] text-white' : 'text-white/70 hover:bg-[#2A2A2D]'
           }`}
         >
           <Activity size={18} className="mr-2" />
@@ -317,7 +317,7 @@ const Referrals = () => {
         <button
           onClick={() => setActiveTab('rewards')}
           className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'rewards' ? 'bg-[#6C2BD9] text-white' : 'text-gray-600 hover:bg-gray-100'
+            activeTab === 'rewards' ? 'bg-[#6C2BD9] text-white' : 'text-white/70 hover:bg-[#2A2A2D]'
           }`}
         >
           <DollarSign size={18} className="mr-2" />
@@ -326,7 +326,7 @@ const Referrals = () => {
         <button
           onClick={() => setActiveTab('codes')}
           className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'codes' ? 'bg-[#6C2BD9] text-white' : 'text-gray-600 hover:bg-gray-100'
+            activeTab === 'codes' ? 'bg-[#6C2BD9] text-white' : 'text-white/70 hover:bg-[#2A2A2D]'
           }`}
         >
           <Share2 size={18} className="mr-2" />
@@ -335,7 +335,7 @@ const Referrals = () => {
         <button
           onClick={() => setActiveTab('conversions')}
           className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'conversions' ? 'bg-[#6C2BD9] text-white' : 'text-gray-600 hover:bg-gray-100'
+            activeTab === 'conversions' ? 'bg-[#6C2BD9] text-white' : 'text-white/70 hover:bg-[#2A2A2D]'
           }`}
         >
           <CheckCircle size={18} className="mr-2" />

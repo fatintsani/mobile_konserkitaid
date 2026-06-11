@@ -93,12 +93,12 @@ const Refunds = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Refunds Management</h1>
+        <h1 className="text-2xl font-bold text-white/90">Refunds Management</h1>
         <div className="flex items-center space-x-4">
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border-gray-300 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border"
+            className="border-white/20 rounded-md shadow-sm focus:ring-[#6C2BD9] focus:border-[#6C2BD9] px-3 py-2 border"
           >
             <option value="">All Statuses</option>
             <option value="pending">Pending</option>
@@ -106,42 +106,42 @@ const Refunds = () => {
             <option value="rejected">Rejected</option>
             <option value="processed">Processed</option>
           </select>
-          <button onClick={fetchRefunds} className="p-2 text-gray-500 hover:text-[#6C2BD9] bg-white rounded-full shadow-sm">
+          <button onClick={fetchRefunds} className="p-2 text-white/60 hover:text-[#6C2BD9] bg-[#141416] border border-white/5 rounded-full shadow-sm">
             <RefreshCcw size={20} />
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
         {loading ? (
           <div className="p-8 flex justify-center"><RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} /></div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-[#1C1C1F]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Transaction</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Amount</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                 {refunds.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">No refunds found.</td>
+                    <td colSpan="5" className="px-6 py-8 text-center text-white/60">No refunds found.</td>
                   </tr>
                 ) : (
                   refunds.map((refund) => (
-                    <tr key={refund.id} className="hover:bg-gray-50">
+                    <tr key={refund.id} className="hover:bg-[#1C1C1F]">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">#{refund.transaction_id}</div>
-                        <div className="text-xs text-gray-500">{new Date(refund.requested_at).toLocaleDateString()}</div>
+                        <div className="text-sm font-medium text-white">#{refund.transaction_id}</div>
+                        <div className="text-xs text-white/60">{new Date(refund.requested_at).toLocaleDateString()}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{refund.user?.name}</div>
-                        <div className="text-xs text-gray-500">{refund.user?.email}</div>
+                        <div className="text-sm text-white">{refund.user?.name}</div>
+                        <div className="text-xs text-white/60">{refund.user?.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-green-600">Rp {Number(refund.refund_amount).toLocaleString()}</div>
@@ -157,21 +157,21 @@ const Refunds = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
-                          <button onClick={() => openDetailModal(refund)} className="text-gray-600 hover:text-gray-900 bg-gray-50 p-1.5 rounded-md" title="View Detail">
+                          <button onClick={() => openDetailModal(refund)} className="text-white/70 hover:text-white bg-[#1C1C1F] p-1.5 rounded-md" title="View Detail">
                             <Eye size={18} />
                           </button>
                           {refund.status === 'pending' && (
                             <>
-                              <button onClick={() => handleApprove(refund.id)} className="text-blue-600 hover:text-blue-900 bg-blue-50 p-1.5 rounded-md" title="Approve">
+                              <button onClick={() => handleApprove(refund.id)} className="text-blue-600 hover:text-blue-900 bg-blue-500/10 p-1.5 rounded-md" title="Approve">
                                 <CheckCircle size={18} />
                               </button>
-                              <button onClick={() => openRejectModal(refund)} className="text-red-600 hover:text-red-900 bg-red-50 p-1.5 rounded-md" title="Reject">
+                              <button onClick={() => openRejectModal(refund)} className="text-red-600 hover:text-red-900 bg-red-500/10 p-1.5 rounded-md" title="Reject">
                                 <XCircle size={18} />
                               </button>
                             </>
                           )}
                           {refund.status === 'approved' && (
-                            <button onClick={() => handleProcess(refund.id)} className="text-green-600 hover:text-green-900 bg-green-50 p-1.5 rounded-md" title="Mark as Processed">
+                            <button onClick={() => handleProcess(refund.id)} className="text-green-600 hover:text-green-900 bg-green-500/10 p-1.5 rounded-md" title="Mark as Processed">
                               <DollarSign size={18} />
                             </button>
                           )}
@@ -188,10 +188,10 @@ const Refunds = () => {
 
       {/* Pagination Controls */}
       {!loading && pagination.total > 0 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 border border-gray-100 rounded-xl shadow-sm sm:px-6">
+        <div className="flex items-center justify-between bg-[#141416] border border-white/5 px-4 py-3 border border-white/5 rounded-xl shadow-sm sm:px-6">
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-white/80">
                 Showing <span className="font-medium">{pagination.from}</span> to <span className="font-medium">{pagination.to}</span> of{' '}
                 <span className="font-medium">{pagination.total}</span> results
               </p>
@@ -201,14 +201,14 @@ const Refunds = () => {
                 <button
                   onClick={() => fetchRefunds(pagination.prev_page_url)}
                   disabled={!pagination.prev_page_url}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-white/20 bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => fetchRefunds(pagination.next_page_url)}
                   disabled={!pagination.next_page_url}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-white/20 bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-50"
                 >
                   Next
                 </button>
@@ -221,11 +221,11 @@ const Refunds = () => {
       {/* Reject Modal */}
       {showRejectModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
+          <div className="bg-[#141416] border border-white/5 rounded-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Reject Refund Request</h2>
-            <p className="text-sm text-gray-600 mb-4">Please provide a reason for rejecting this refund request.</p>
+            <p className="text-sm text-white/70 mb-4">Please provide a reason for rejecting this refund request.</p>
             <textarea
-              className="w-full border-gray-300 rounded-md p-2 border focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
+              className="w-full border-white/20 rounded-md p-2 border focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
               rows="4"
               value={rejectNote}
               onChange={(e) => setRejectNote(e.target.value)}
@@ -234,7 +234,7 @@ const Refunds = () => {
             <div className="flex justify-end space-x-3 mt-6">
               <button 
                 onClick={() => setShowRejectModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-white/20 rounded-md text-white/80 hover:bg-[#1C1C1F]"
               >
                 Cancel
               </button>
@@ -252,39 +252,39 @@ const Refunds = () => {
       {/* Detail Modal */}
       {showDetailModal && selectedRefund && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#141416] border border-white/5 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Refund Details</h2>
-              <button onClick={() => setShowDetailModal(false)} className="text-gray-500 hover:text-gray-800">
+              <button onClick={() => setShowDetailModal(false)} className="text-white/60 hover:text-white/90">
                 <XCircle size={24} />
               </button>
             </div>
             
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-500">Transaction ID</p>
+                <p className="text-sm text-white/60">Transaction ID</p>
                 <p className="font-medium">#{selectedRefund.transaction_id}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">User</p>
+                <p className="text-sm text-white/60">User</p>
                 <p className="font-medium">{selectedRefund.user?.name} ({selectedRefund.user?.email})</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Refund Amount</p>
+                <p className="text-sm text-white/60">Refund Amount</p>
                 <p className="font-medium text-green-600">Rp {Number(selectedRefund.refund_amount).toLocaleString()}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Status</p>
+                <p className="text-sm text-white/60">Status</p>
                 <p className="font-medium uppercase">{selectedRefund.status}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-500">Customer Reason</p>
-                <p className="font-medium bg-gray-50 p-2 rounded">{selectedRefund.reason}</p>
+                <p className="text-sm text-white/60">Customer Reason</p>
+                <p className="font-medium bg-[#1C1C1F] p-2 rounded">{selectedRefund.reason}</p>
               </div>
               {selectedRefund.admin_note && (
                 <div>
                   <p className="text-sm text-red-500">Admin Note</p>
-                  <p className="font-medium bg-red-50 p-2 rounded text-red-800">{selectedRefund.admin_note}</p>
+                  <p className="font-medium bg-red-500/10 p-2 rounded text-red-800">{selectedRefund.admin_note}</p>
                 </div>
               )}
             </div>

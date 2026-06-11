@@ -38,15 +38,15 @@ const BroadcastNotification = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Broadcast Notification</h1>
+        <h1 className="text-2xl font-bold text-white">Broadcast Notification</h1>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm overflow-hidden">
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Target Audience</label>
+              <label className="block text-sm font-medium text-white/80 mb-1">Target Audience</label>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { id: 'all', name: 'All Users', icon: Users },
@@ -62,7 +62,7 @@ const BroadcastNotification = () => {
                       className={`cursor-pointer border rounded-lg p-4 flex flex-col items-center justify-center space-y-2 transition-colors ${
                         formData.target === target.id
                           ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
-                          : 'border-gray-200 hover:border-indigo-300 text-gray-600'
+                          : 'border-white/10 hover:border-indigo-300 text-white/70'
                       }`}
                     >
                       <Icon className="h-6 w-6" />
@@ -74,27 +74,27 @@ const BroadcastNotification = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Notification Title</label>
+              <label className="block text-sm font-medium text-white/80 mb-1">Notification Title</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
                 placeholder="e.g. Special Promo Code!"
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-white/20 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Message Body</label>
+              <label className="block text-sm font-medium text-white/80 mb-1">Message Body</label>
               <textarea
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
                 placeholder="Enter your broadcast message here..."
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-white/20 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                 required
               />
             </div>

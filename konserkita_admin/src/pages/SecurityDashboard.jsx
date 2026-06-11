@@ -60,7 +60,7 @@ const SecurityDashboard = () => {
       case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
       case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
       case 'low': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      default: return 'bg-[#2A2A2D] text-white/90 border-white/10';
     }
   };
 
@@ -68,29 +68,29 @@ const SecurityDashboard = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Security Monitoring</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-white">Security Monitoring</h1>
+          <p className="mt-1 text-sm text-white/60">
             Monitor suspicious activities and manage locked accounts
           </p>
         </div>
         <button
           onClick={fetchData}
-          className="flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+          className="flex items-center px-4 py-2 bg-[#141416] border border-white/5 border border-white/20 rounded-md shadow-sm text-sm font-medium text-white/80 hover:bg-[#1C1C1F]"
         >
           <RefreshCw size={16} className={`mr-2 ${loading ? 'animate-spin' : ''}`} />
           Refresh
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="border-b border-gray-200">
+      <div className="bg-[#141416] border border-white/5 rounded-lg shadow">
+        <div className="border-b border-white/10">
           <nav className="flex -mb-px px-6" aria-label="Tabs">
             <button
               onClick={() => setActiveTab('alerts')}
               className={`${
                 activeTab === 'alerts'
                   ? 'border-[#6C2BD9] text-[#6C2BD9]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-white/60 hover:text-white/80 hover:border-white/20'
               } flex items-center whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm`}
             >
               <AlertTriangle size={16} className="mr-2" />
@@ -101,7 +101,7 @@ const SecurityDashboard = () => {
               className={`${
                 activeTab === 'locked-accounts'
                   ? 'border-[#6C2BD9] text-[#6C2BD9]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-white/60 hover:text-white/80 hover:border-white/20'
               } flex items-center whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm ml-8`}
             >
               <Lock size={16} className="mr-2" />
@@ -112,7 +112,7 @@ const SecurityDashboard = () => {
               className={`${
                 activeTab === 'api-abuse-logs'
                   ? 'border-[#6C2BD9] text-[#6C2BD9]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-white/60 hover:text-white/80 hover:border-white/20'
               } flex items-center whitespace-nowrap py-4 px-4 border-b-2 font-medium text-sm ml-8`}
             >
               <Activity size={16} className="mr-2" />
@@ -124,41 +124,41 @@ const SecurityDashboard = () => {
         <div className="p-6">
           {loading ? (
             <div className="flex justify-center items-center h-64">
-              <RefreshCw size={32} className="animate-spin text-gray-400" />
+              <RefreshCw size={32} className="animate-spin text-white/50" />
             </div>
           ) : activeTab === 'alerts' ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-[#1C1C1F]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date & Time</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type & Severity</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Info</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Date & Time</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Type & Severity</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Details</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Client Info</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                   {alerts?.map((alert) => (
                     <tr key={alert.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         {new Date(alert.created_at).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{alert.user?.name || 'Unknown'}</div>
-                        <div className="text-sm text-gray-500">{alert.user?.email || alert.email}</div>
+                        <div className="text-sm font-medium text-white">{alert.user?.name || 'Unknown'}</div>
+                        <div className="text-sm text-white/60">{alert.user?.email || alert.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 mb-1">{alert.type.replace(/_/g, ' ').toUpperCase()}</div>
+                        <div className="text-sm text-white mb-1">{alert.type.replace(/_/g, ' ').toUpperCase()}</div>
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${getSeverityColor(alert.severity)}`}>
                           {alert.severity.toUpperCase()}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{alert.title}</div>
-                        <div className="text-sm text-gray-500 truncate max-w-xs">{alert.message}</div>
+                        <div className="text-sm font-medium text-white">{alert.title}</div>
+                        <div className="text-sm text-white/60 truncate max-w-xs">{alert.message}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         <div className="flex items-center mb-1">
                           <Globe size={14} className="mr-1" />
                           {alert.ip_address || 'N/A'}
@@ -172,7 +172,7 @@ const SecurityDashboard = () => {
                   ))}
                   {(!alerts || alerts.length === 0) && (
                     <tr>
-                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-white/60">
                         No security alerts found.
                       </td>
                     </tr>
@@ -182,30 +182,30 @@ const SecurityDashboard = () => {
             </div>
           ) : activeTab === 'locked-accounts' ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-[#1C1C1F]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locked At</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Locked Until</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Locked At</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Locked Until</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                   {lockedAccounts?.map((lock) => {
                     const isCurrentlyLocked = !lock.unlocked_at && (!lock.locked_until || new Date(lock.locked_until) > new Date());
                     
                     return (
                       <tr key={lock.id}>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{lock.user?.name || 'Unknown'}</div>
-                          <div className="text-sm text-gray-500">{lock.user?.email || lock.email}</div>
+                          <div className="text-sm font-medium text-white">{lock.user?.name || 'Unknown'}</div>
+                          <div className="text-sm text-white/60">{lock.user?.email || lock.email}</div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                           {new Date(lock.created_at).toLocaleString()}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                           {lock.locked_until ? new Date(lock.locked_until).toLocaleString() : 'Permanent'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -235,7 +235,7 @@ const SecurityDashboard = () => {
                   })}
                   {(!lockedAccounts || lockedAccounts.length === 0) && (
                     <tr>
-                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-white/60">
                         No locked accounts found.
                       </td>
                     </tr>
@@ -249,7 +249,7 @@ const SecurityDashboard = () => {
                 <input 
                   type="text" 
                   placeholder="Filter IP..." 
-                  className="border border-gray-300 rounded px-3 py-1.5 text-sm"
+                  className="border border-white/20 rounded px-3 py-1.5 text-sm"
                   onChange={(e) => {
                     // Simple client-side filter for now, or debounce and fetch
                     // For brevity, we could just rely on backend filter by triggering fetch with params
@@ -259,7 +259,7 @@ const SecurityDashboard = () => {
                 <input 
                   type="text" 
                   placeholder="Limiter..." 
-                  className="border border-gray-300 rounded px-3 py-1.5 text-sm"
+                  className="border border-white/20 rounded px-3 py-1.5 text-sm"
                   id="filter-limiter"
                 />
                 <button 
@@ -276,20 +276,20 @@ const SecurityDashboard = () => {
                 </button>
               </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-[#1C1C1F]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Limiter</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Endpoint & Method</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP / Client Info</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Time</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Limiter</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Endpoint & Method</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">IP / Client Info</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User ID</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                   {abuseLogs?.map((log) => (
                     <tr key={log.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         {new Date(log.created_at).toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -298,10 +298,10 @@ const SecurityDashboard = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">{log.endpoint}</div>
-                        <div className="text-sm text-gray-500">{log.method}</div>
+                        <div className="text-sm font-medium text-white">{log.endpoint}</div>
+                        <div className="text-sm text-white/60">{log.method}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         <div className="flex items-center mb-1">
                           <Globe size={14} className="mr-1" />
                           {log.ip_address || 'N/A'}
@@ -311,14 +311,14 @@ const SecurityDashboard = () => {
                           {log.user_agent?.split(' ')[0] || 'N/A'}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-white/60">
                         {log.user_id ? `User #${log.user_id}` : 'Guest'}
                       </td>
                     </tr>
                   ))}
                   {(!abuseLogs || abuseLogs.length === 0) && (
                     <tr>
-                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td colSpan="5" className="px-6 py-4 text-center text-sm text-white/60">
                         No API abuse logs found.
                       </td>
                     </tr>

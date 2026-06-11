@@ -55,7 +55,7 @@ const Reports = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Sales Reports</h1>
+        <h1 className="text-2xl font-bold text-white/90">Sales Reports</h1>
         <div className="flex space-x-3">
           <button 
             onClick={exportCSV}
@@ -65,7 +65,7 @@ const Reports = () => {
             <Download size={18} className="mr-2" />
             Export CSV
           </button>
-          <button onClick={fetchReport} className="p-2 text-gray-500 hover:text-[#6C2BD9] bg-white rounded-full shadow-sm">
+          <button onClick={fetchReport} className="p-2 text-white/60 hover:text-[#6C2BD9] bg-[#141416] border border-white/5 rounded-full shadow-sm">
             <RefreshCcw size={20} />
           </button>
         </div>
@@ -75,43 +75,43 @@ const Reports = () => {
         <div className="p-8 flex justify-center"><RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} /></div>
       ) : (
         <>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center space-x-4">
-            <div className="p-4 rounded-full bg-emerald-50 text-emerald-500">
+          <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 p-6 flex items-center space-x-4">
+            <div className="p-4 rounded-full bg-emerald-500/10 text-emerald-500">
               <DollarSign size={32} />
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-500">Total Platform Revenue (Success)</p>
-              <h3 className="text-3xl font-bold text-gray-800">{formatCurrency(report?.total_revenue || 0)}</h3>
+              <p className="text-sm font-medium text-white/60">Total Platform Revenue (Success)</p>
+              <h3 className="text-3xl font-bold text-white/90">{formatCurrency(report?.total_revenue || 0)}</h3>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-4 border-b border-gray-100">
-              <h2 className="text-lg font-bold text-gray-800">Revenue per Event</h2>
+          <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
+            <div className="p-4 border-b border-white/5">
+              <h2 className="text-lg font-bold text-white/90">Revenue per Event</h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-[#1C1C1F]">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Event ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Tickets Sold</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Event ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Title</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">Tickets Sold</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">Revenue</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                   {!report?.revenue_per_event || report.revenue_per_event.length === 0 ? (
                     <tr>
-                      <td colSpan="4" className="px-6 py-8 text-center text-gray-500">No sales data available.</td>
+                      <td colSpan="4" className="px-6 py-8 text-center text-white/60">No sales data available.</td>
                     </tr>
                   ) : (
                     report.revenue_per_event.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{item.id}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.title}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                      <tr key={item.id} className="hover:bg-[#1C1C1F]">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">#{item.id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-white">{item.title}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-white">
                           <span className="flex items-center justify-end">
-                            <Ticket size={14} className="mr-1 text-gray-400" />
+                            <Ticket size={14} className="mr-1 text-white/50" />
                             {item.tickets_sold}
                           </span>
                         </td>

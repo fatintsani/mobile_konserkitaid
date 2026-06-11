@@ -61,49 +61,49 @@ const Organizers = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Organizer Management</h1>
-        <button onClick={fetchOrganizers} className="p-2 text-gray-500 hover:text-[#6C2BD9] bg-white rounded-full shadow-sm">
+        <h1 className="text-2xl font-bold text-white/90">Organizer Management</h1>
+        <button onClick={fetchOrganizers} className="p-2 text-white/60 hover:text-[#6C2BD9] bg-[#141416] border border-white/5 rounded-full shadow-sm">
           <RefreshCcw size={20} />
         </button>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-[#141416] border border-white/5 rounded-xl shadow-sm border border-white/5 overflow-hidden">
         {loading ? (
           <div className="p-8 flex justify-center"><RefreshCcw className="animate-spin text-[#6C2BD9]" size={32} /></div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="bg-[#1C1C1F]">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Organization Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stats</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Organization Name</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">User Email</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Stats</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/60 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-white/60 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-[#141416] border border-white/5 divide-y divide-white/10">
                 {organizers.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-gray-500">No organizers found.</td>
+                    <td colSpan="5" className="px-6 py-8 text-center text-white/60">No organizers found.</td>
                   </tr>
                 ) : (
                   organizers.map((org) => (
-                    <tr key={org.id} className="hover:bg-gray-50">
+                    <tr key={org.id} className="hover:bg-[#1C1C1F]">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 flex items-center">
+                        <div className="text-sm font-medium text-white flex items-center">
                           {org.company_name}
                           {org.verification_badge && <BadgeCheck className="w-4 h-4 text-blue-500 ml-1" />}
                         </div>
-                        <div className="text-xs text-gray-500">{org.public_name}</div>
+                        <div className="text-xs text-white/60">{org.public_name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{org.user?.email}</div>
+                        <div className="text-sm text-white/60">{org.user?.email}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-xs text-gray-500">{org.events_count || 0} Events</div>
-                        <div className="text-xs text-gray-500">{org.followers_count || 0} Followers</div>
-                        <div className="text-xs text-gray-500">{org.reviews_count || 0} Reviews</div>
+                        <div className="text-xs text-white/60">{org.events_count || 0} Events</div>
+                        <div className="text-xs text-white/60">{org.followers_count || 0} Followers</div>
+                        <div className="text-xs text-white/60">{org.reviews_count || 0} Reviews</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
@@ -118,17 +118,17 @@ const Organizers = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end space-x-2">
                           {org.status !== 'verified' && (
-                            <button onClick={() => handleVerify(org.id)} className="text-green-600 hover:text-green-900 bg-green-50 p-1.5 rounded-md" title="Verify">
+                            <button onClick={() => handleVerify(org.id)} className="text-green-600 hover:text-green-900 bg-green-500/10 p-1.5 rounded-md" title="Verify">
                               <CheckCircle size={18} />
                             </button>
                           )}
                           {org.status !== 'rejected' && (
-                            <button onClick={() => handleReject(org.id)} className="text-orange-600 hover:text-orange-900 bg-orange-50 p-1.5 rounded-md" title="Reject">
+                            <button onClick={() => handleReject(org.id)} className="text-orange-600 hover:text-orange-900 bg-orange-500/10 p-1.5 rounded-md" title="Reject">
                               <XCircle size={18} />
                             </button>
                           )}
                           {org.status !== 'suspended' && (
-                            <button onClick={() => handleSuspend(org.id)} className="text-red-600 hover:text-red-900 bg-red-50 p-1.5 rounded-md" title="Suspend">
+                            <button onClick={() => handleSuspend(org.id)} className="text-red-600 hover:text-red-900 bg-red-500/10 p-1.5 rounded-md" title="Suspend">
                               <ShieldAlert size={18} />
                             </button>
                           )}
@@ -145,10 +145,10 @@ const Organizers = () => {
 
       {/* Pagination Controls */}
       {!loading && pagination.total > 0 && (
-        <div className="flex items-center justify-between bg-white px-4 py-3 border border-gray-100 rounded-xl shadow-sm sm:px-6">
+        <div className="flex items-center justify-between bg-[#141416] border border-white/5 px-4 py-3 border border-white/5 rounded-xl shadow-sm sm:px-6">
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-gray-700">
+              <p className="text-sm text-white/80">
                 Showing <span className="font-medium">{pagination.from}</span> to <span className="font-medium">{pagination.to}</span> of{' '}
                 <span className="font-medium">{pagination.total}</span> results
               </p>
@@ -158,14 +158,14 @@ const Organizers = () => {
                 <button
                   onClick={() => fetchOrganizers(pagination.prev_page_url)}
                   disabled={!pagination.prev_page_url}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-white/20 bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-50"
                 >
                   Previous
                 </button>
                 <button
                   onClick={() => fetchOrganizers(pagination.next_page_url)}
                   disabled={!pagination.next_page_url}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-white/20 bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-50"
                 >
                   Next
                 </button>

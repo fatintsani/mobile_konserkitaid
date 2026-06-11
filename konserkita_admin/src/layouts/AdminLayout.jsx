@@ -49,16 +49,16 @@ const AdminLayout = () => {
     { name: t('sidebar.transactions'), path: '/transactions', icon: <CreditCard size={20} /> },
     { name: t('sidebar.refunds'), path: '/refunds', icon: <RefreshCcw size={20} /> },
     { name: t('sidebar.reviews'), path: '/reviews', icon: <Star size={20} /> },
-    { name: 'Organizer Reviews', path: '/organizer-reviews', icon: <Star size={20} /> },
+    { name: t('sidebar.organizer_reviews'), path: '/organizer-reviews', icon: <Star size={20} /> },
     { name: t('sidebar.payouts'), path: '/payouts', icon: <Wallet size={20} /> },
     { name: t('sidebar.reports'), path: '/reports', icon: <BarChart3 size={20} /> },
     { name: t('sidebar.broadcast'), path: '/broadcast', icon: <Radio size={20} /> },
-    { name: 'Recommendations', path: '/recommendations', icon: <Sparkles size={20} /> },
-    { name: 'Referrals', path: '/referrals', icon: <Share2 size={20} /> },
-    { name: 'Subscription Plans', path: '/subscription-plans', icon: <CreditCard size={20} /> },
-    { name: 'Security Monitoring', path: '/security', icon: <ShieldAlert size={20} /> },
-    { name: 'Account Recovery', path: '/account-recovery', icon: <Unlock size={20} /> },
-    { name: 'Audit Trail', path: '/audit-trail', icon: <FileText size={20} /> },
+    { name: t('sidebar.recommendations'), path: '/recommendations', icon: <Sparkles size={20} /> },
+    { name: t('sidebar.referrals'), path: '/referrals', icon: <Share2 size={20} /> },
+    { name: t('sidebar.subscriptions'), path: '/subscription-plans', icon: <CreditCard size={20} /> },
+    { name: t('sidebar.security'), path: '/security', icon: <ShieldAlert size={20} /> },
+    { name: t('sidebar.account_recovery'), path: '/account-recovery', icon: <Unlock size={20} /> },
+    { name: t('sidebar.audit_trail'), path: '/audit-trail', icon: <FileText size={20} /> },
   ];
 
   const contentItems = [
@@ -68,11 +68,11 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-[#F8F7FC] text-gray-800 font-sans">
+    <div className="flex h-screen bg-[#0A0A0B] text-gray-300 font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col hidden md:flex">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <span className="text-2xl font-bold text-[#6C2BD9]">KonserKita</span>
+      <aside className="w-64 bg-[#141416] border-r border-white/10 flex flex-col hidden md:flex">
+        <div className="h-16 flex items-center px-6 border-b border-white/10">
+          <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#4B9FFF]">KonserKita</span>
         </div>
         <div className="flex-1 overflow-y-auto py-4">
           <nav className="space-y-1 px-3">
@@ -83,8 +83,8 @@ const AdminLayout = () => {
                 className={({ isActive }) =>
                   `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#6C2BD9] text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-[#6C2BD9] text-white shadow-[0_0_15px_rgba(108,43,217,0.3)]'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
@@ -106,8 +106,8 @@ const AdminLayout = () => {
                 className={({ isActive }) =>
                   `flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-[#6C2BD9] text-white'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      ? 'bg-[#6C2BD9] text-white shadow-[0_0_15px_rgba(108,43,217,0.3)]'
+                      : 'text-gray-400 hover:bg-white/5 hover:text-white'
                   }`
                 }
               >
@@ -117,10 +117,10 @@ const AdminLayout = () => {
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-white/10">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+            className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-400 rounded-lg hover:bg-red-500/10 hover:text-red-300 transition-colors"
           >
             <LogOut size={20} className="mr-3" />
             {t('topbar.logout')}
@@ -131,27 +131,27 @@ const AdminLayout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Topbar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6">
+        <header className="h-16 bg-[#141416] border-b border-white/10 flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center md:hidden">
-            <button className="text-gray-500 hover:text-gray-700">
+            <button className="text-gray-400 hover:text-white">
               <Menu size={24} />
             </button>
-            <span className="ml-3 text-xl font-bold text-[#6C2BD9]">KonserKita</span>
+            <span className="ml-3 text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#4B9FFF]">KonserKita</span>
           </div>
           <div className="hidden md:block"></div>
           <div className="flex items-center space-x-6">
             <select
               onChange={changeLanguage}
               defaultValue={i18n.language}
-              className="text-sm border-gray-300 rounded-md focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
+              className="text-sm bg-[#1C1C1F] border border-white/10 text-white rounded-md focus:ring-[#6C2BD9] focus:border-[#6C2BD9]"
             >
               <option value="id">Indonesia</option>
               <option value="en">English</option>
             </select>
             <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/profile')}>
-              <div className="flex flex-col text-right hover:text-[#6C2BD9]">
-                <span className="text-sm font-medium">{user?.name}</span>
-                <span className="text-xs text-gray-500">{user?.role}</span>
+              <div className="flex flex-col text-right hover:text-white transition-colors">
+                <span className="text-sm font-medium text-white">{user?.name}</span>
+                <span className="text-xs text-gray-400">{user?.role}</span>
               </div>
               <div className="h-8 w-8 rounded-full bg-[#6C2BD9] flex items-center justify-center text-white font-bold">
                 {user?.name?.charAt(0).toUpperCase()}

@@ -34,7 +34,7 @@ export default function Recommendations() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">Recommendation Analytics</h1>
+        <h1 className="text-2xl font-bold text-white/90">Recommendation Analytics</h1>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -43,7 +43,7 @@ export default function Recommendations() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div className="bg-[#141416] border border-white/5 p-6 rounded-lg shadow-sm border border-white/5">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <BarChart className="w-5 h-5 mr-2 text-indigo-500" />
             Top Categories
@@ -51,15 +51,15 @@ export default function Recommendations() {
           <div className="space-y-4">
             {Object.entries(data.top_categories).map(([category, count]) => (
               <div key={category} className="flex justify-between items-center border-b pb-2">
-                <span className="text-gray-700">{category}</span>
+                <span className="text-white/80">{category}</span>
                 <span className="font-semibold">{count}</span>
               </div>
             ))}
-            {Object.keys(data.top_categories).length === 0 && <span className="text-gray-500 text-sm">No data</span>}
+            {Object.keys(data.top_categories).length === 0 && <span className="text-white/60 text-sm">No data</span>}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+        <div className="bg-[#141416] border border-white/5 p-6 rounded-lg shadow-sm border border-white/5">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <MapPin className="w-5 h-5 mr-2 text-red-500" />
             Top Locations
@@ -67,27 +67,27 @@ export default function Recommendations() {
           <div className="space-y-4">
             {Object.entries(data.top_locations).map(([location, count]) => (
               <div key={location} className="flex justify-between items-center border-b pb-2">
-                <span className="text-gray-700">{location}</span>
+                <span className="text-white/80">{location}</span>
                 <span className="font-semibold">{count}</span>
               </div>
             ))}
-            {Object.keys(data.top_locations).length === 0 && <span className="text-gray-500 text-sm">No data</span>}
+            {Object.keys(data.top_locations).length === 0 && <span className="text-white/60 text-sm">No data</span>}
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 lg:col-span-2">
+        <div className="bg-[#141416] border border-white/5 p-6 rounded-lg shadow-sm border border-white/5 lg:col-span-2">
           <h2 className="text-lg font-semibold mb-4 flex items-center">
             <Activity className="w-5 h-5 mr-2 text-green-500" />
             Interactions Summary
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {Object.entries(data.interaction_stats).map(([type, count]) => (
-              <div key={type} className="bg-gray-50 p-4 rounded text-center">
-                <span className="block text-sm text-gray-500 uppercase">{type}</span>
+              <div key={type} className="bg-[#1C1C1F] p-4 rounded text-center">
+                <span className="block text-sm text-white/60 uppercase">{type}</span>
                 <span className="block text-2xl font-bold mt-1">{count}</span>
               </div>
             ))}
-            {Object.keys(data.interaction_stats).length === 0 && <span className="text-gray-500 text-sm">No data</span>}
+            {Object.keys(data.interaction_stats).length === 0 && <span className="text-white/60 text-sm">No data</span>}
           </div>
         </div>
       </div>
@@ -97,12 +97,12 @@ export default function Recommendations() {
 
 function StatCard({ title, value, icon }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center">
-      <div className="p-3 rounded-full bg-gray-50 mr-4">
+    <div className="bg-[#141416] border border-white/5 p-6 rounded-lg shadow-sm border border-white/5 flex items-center">
+      <div className="p-3 rounded-full bg-[#1C1C1F] mr-4">
         {icon}
       </div>
       <div>
-        <p className="text-sm text-gray-500 mb-1">{title}</p>
+        <p className="text-sm text-white/60 mb-1">{title}</p>
         <p className="text-2xl font-bold">{value}</p>
       </div>
     </div>

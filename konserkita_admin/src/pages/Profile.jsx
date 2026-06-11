@@ -177,41 +177,41 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
+      <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
       
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <div className="bg-[#141416] border border-white/5 shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center">
           <Key className="mr-2" size={20} />
           Passkeys / WebAuthn
         </h2>
-        <p className="text-gray-600 mb-6 text-sm">
+        <p className="text-white/70 mb-6 text-sm">
           Passkeys allow you to securely log in without a password using your device's fingerprint, face recognition, or screen lock.
         </p>
 
         {error && (
-          <div className="bg-red-50 text-red-700 p-3 rounded mb-4 text-sm">
+          <div className="bg-red-500/10 text-red-700 p-3 rounded mb-4 text-sm">
             {error}
           </div>
         )}
         {successMsg && (
-          <div className="bg-green-50 text-green-700 p-3 rounded mb-4 text-sm">
+          <div className="bg-green-500/10 text-green-700 p-3 rounded mb-4 text-sm">
             {successMsg}
           </div>
         )}
 
         <div className="space-y-4">
           {loading ? (
-            <p className="text-gray-500">Loading passkeys...</p>
+            <p className="text-white/60">Loading passkeys...</p>
           ) : passkeys.length === 0 ? (
-            <p className="text-gray-500 italic">No passkeys registered yet.</p>
+            <p className="text-white/60 italic">No passkeys registered yet.</p>
           ) : (
             passkeys.map(pk => (
-              <div key={pk.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+              <div key={pk.id} className="flex items-center justify-between p-4 border rounded-lg bg-[#1C1C1F]">
                 <div className="flex items-center space-x-3">
                   <Fingerprint className="text-[#6C2BD9]" size={24} />
                   <div>
-                    <p className="font-medium text-gray-900">{pk.name}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="font-medium text-white">{pk.name}</p>
+                    <p className="text-xs text-white/60">
                       Created: {new Date(pk.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -239,12 +239,12 @@ const Profile = () => {
       </div>
 
       {/* 2FA Settings Section */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <div className="bg-[#141416] border border-white/5 shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center">
           <Key className="mr-2" size={20} />
           Two-Factor Authentication (TOTP)
         </h2>
-        <p className="text-gray-600 mb-6 text-sm">
+        <p className="text-white/70 mb-6 text-sm">
           Add additional security to your account using two-factor authentication.
         </p>
 
@@ -261,14 +261,14 @@ const Profile = () => {
             </div>
             
             {recoveryCodes.length > 0 ? (
-              <div className="mt-4 p-4 bg-gray-50 border rounded-lg">
-                <h3 className="font-semibold text-gray-800 mb-2">Recovery Codes</h3>
-                <p className="text-sm text-gray-600 mb-4">
+              <div className="mt-4 p-4 bg-[#1C1C1F] border rounded-lg">
+                <h3 className="font-semibold text-white/90 mb-2">Recovery Codes</h3>
+                <p className="text-sm text-white/70 mb-4">
                   Please save these recovery codes in a secure location. They will not be shown again.
                 </p>
                 <div className="grid grid-cols-2 gap-2 font-mono text-sm">
                   {recoveryCodes.map((code, index) => (
-                    <div key={index} className="bg-white p-2 border rounded text-center">
+                    <div key={index} className="bg-[#141416] border border-white/5 p-2 border rounded text-center">
                       {code}
                     </div>
                   ))}
@@ -293,18 +293,18 @@ const Profile = () => {
                 Enable 2FA
               </button>
             ) : (
-              <div className="space-y-4 border p-4 rounded-lg bg-gray-50">
-                <h3 className="font-semibold text-gray-800">Scan this QR Code</h3>
-                <p className="text-sm text-gray-600">
+              <div className="space-y-4 border p-4 rounded-lg bg-[#1C1C1F]">
+                <h3 className="font-semibold text-white/90">Scan this QR Code</h3>
+                <p className="text-sm text-white/70">
                   Scan the QR code below using an authenticator app like Google Authenticator or Authy.
                 </p>
-                <div className="flex justify-center bg-white p-4 rounded border inline-block">
+                <div className="flex justify-center bg-[#141416] border border-white/5 p-4 rounded border inline-block">
                   <img src={setupData.qr_code_svg} alt="2FA QR Code" className="w-48 h-48" />
                 </div>
-                <p className="text-sm text-gray-600">Or enter this secret manually: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{setupData.secret}</span></p>
+                <p className="text-sm text-white/70">Or enter this secret manually: <span className="font-mono bg-gray-200 px-2 py-1 rounded">{setupData.secret}</span></p>
                 
                 <div className="pt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-white/80 mb-2">
                     Enter the 6-digit code to confirm
                   </label>
                   <div className="flex space-x-2">
@@ -330,9 +330,9 @@ const Profile = () => {
       </div>
 
       {/* Active Sessions Section */}
-      <div className="bg-white shadow rounded-lg p-6">
+      <div className="bg-[#141416] border border-white/5 shadow rounded-lg p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center">
+          <h2 className="text-xl font-semibold text-white/90 flex items-center">
             <Monitor className="mr-2" size={20} />
             Active Sessions
           </h2>
@@ -345,30 +345,30 @@ const Profile = () => {
             </button>
           )}
         </div>
-        <p className="text-gray-600 mb-6 text-sm">
+        <p className="text-white/70 mb-6 text-sm">
           These devices are currently logged into your account.
         </p>
 
         <div className="space-y-4">
           {loadingSessions ? (
-            <p className="text-gray-500">Loading sessions...</p>
+            <p className="text-white/60">Loading sessions...</p>
           ) : (
             sessions.map(session => (
-              <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg bg-gray-50">
+              <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg bg-[#1C1C1F]">
                 <div className="flex items-center space-x-4">
                   {session.platform?.toLowerCase().includes('ios') || session.platform?.toLowerCase().includes('android') ? (
-                    <Smartphone className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-gray-400'} size={28} />
+                    <Smartphone className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-white/50'} size={28} />
                   ) : (
-                    <Monitor className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-gray-400'} size={28} />
+                    <Monitor className={session.is_current_device ? 'text-[#6C2BD9]' : 'text-white/50'} size={28} />
                   )}
                   <div>
                     <div className="flex items-center">
-                      <p className="font-medium text-gray-900">{session.device_name || 'Unknown Device'}</p>
+                      <p className="font-medium text-white">{session.device_name || 'Unknown Device'}</p>
                       {session.is_current_device && (
                         <span className="ml-2 px-2 py-0.5 text-xs bg-green-100 text-green-700 rounded">Current</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-white/60">
                       IP: {session.ip_address || 'Unknown'} • Last Active: {new Date(session.last_active_at).toLocaleString()}
                     </p>
                   </div>
@@ -389,33 +389,33 @@ const Profile = () => {
       </div>
 
       {/* Login Activity Section */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+      <div className="bg-[#141416] border border-white/5 shadow rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-white/90 mb-4 flex items-center">
           <History className="mr-2" size={20} />
           Login Activity
         </h2>
-        <p className="text-gray-600 mb-6 text-sm">
+        <p className="text-white/70 mb-6 text-sm">
           Recent authentication events for your account.
         </p>
 
         <div className="space-y-3">
           {loadingActivities ? (
-            <p className="text-gray-500">Loading activity...</p>
+            <p className="text-white/60">Loading activity...</p>
           ) : activities.length === 0 ? (
-            <p className="text-gray-500 italic">No recent activity.</p>
+            <p className="text-white/60 italic">No recent activity.</p>
           ) : (
             activities.map(activity => (
               <div key={activity.id} className="flex items-center p-3 border-b last:border-0">
-                <div className={`w-2 h-2 rounded-full mr-3 ${activity.event_type.includes('success') ? 'bg-green-500' : activity.event_type.includes('failed') ? 'bg-red-500' : 'bg-gray-400'}`}></div>
+                <div className={`w-2 h-2 rounded-full mr-3 ${activity.event_type.includes('success') ? 'bg-green-500/100' : activity.event_type.includes('failed') ? 'bg-red-500/100' : 'bg-gray-400'}`}></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900 capitalize">
+                  <p className="text-sm font-medium text-white capitalize">
                     {activity.event_type.replace(/_/g, ' ')}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-white/60">
                     {activity.platform || 'Unknown OS'} • {activity.ip_address || 'Unknown IP'}
                   </p>
                 </div>
-                <div className="text-xs text-gray-400">
+                <div className="text-xs text-white/50">
                   {new Date(activity.created_at).toLocaleString()}
                 </div>
               </div>

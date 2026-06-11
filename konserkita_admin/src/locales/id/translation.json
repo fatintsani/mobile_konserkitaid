@@ -11,7 +11,17 @@
     "refunds": "Pengembalian Dana",
     "payouts": "Penarikan Dana",
     "reviews": "Ulasan",
-    "broadcast": "Notifikasi Siaran"
+    "broadcast": "Notifikasi Siaran",
+    "organizers": "Penyelenggara",
+    "users": "Pengguna",
+    "reports": "Laporan",
+    "organizer_reviews": "Ulasan Penyelenggara",
+    "recommendations": "Rekomendasi",
+    "referrals": "Referal",
+    "subscriptions": "Paket Langganan",
+    "security": "Pemantauan Keamanan",
+    "account_recovery": "Pemulihan Akun",
+    "audit_trail": "Jejak Audit"
   },
   "topbar": {
     "language": "Bahasa",

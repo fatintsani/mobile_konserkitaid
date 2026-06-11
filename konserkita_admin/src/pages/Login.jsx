@@ -123,19 +123,19 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#1C1C1F] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-[#141416] border border-white/5 p-8 rounded-xl shadow-lg border border-white/5">
         <div>
-          <h2 className="mt-2 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-2 text-center text-3xl font-extrabold text-white">
             <span className="text-[#6C2BD9]">KonserKita</span> Admin
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-2 text-center text-sm text-white/70">
             Sign in to access the dashboard
           </p>
         </div>
         
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+          <div className="bg-red-500/10 border-l-4 border-red-500 p-4 mb-4">
             <div className="flex items-center">
               <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
               <p className="text-sm text-red-700">{error}</p>
@@ -153,7 +153,7 @@ const Login = () => {
                 name="email"
                 type="email"
                 required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-500 text-white rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
                 placeholder="Admin Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -166,7 +166,7 @@ const Login = () => {
                 name="password"
                 type="password"
                 required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-500 text-white rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -194,10 +194,10 @@ const Login = () => {
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-white/20"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                <span className="px-2 bg-[#141416] border border-white/5 text-white/60">Or continue with</span>
               </div>
             </div>
 
@@ -207,7 +207,7 @@ const Login = () => {
                   type="button"
                   onClick={() => loginWithGoogle()}
                   disabled={isLoading}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-70"
+                  className="w-full inline-flex justify-center py-2 px-4 border border-white/20 rounded-md shadow-sm bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-70"
                 >
                   <span className="sr-only">Sign in with Google</span>
                   <img className="h-5 w-5" src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google" />
@@ -219,7 +219,7 @@ const Login = () => {
                   type="button"
                   onClick={loginWithMicrosoft}
                   disabled={isLoading}
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-70"
+                  className="w-full inline-flex justify-center py-2 px-4 border border-white/20 rounded-md shadow-sm bg-[#141416] border border-white/5 text-sm font-medium text-white/60 hover:bg-[#1C1C1F] disabled:opacity-70"
                 >
                   <span className="sr-only">Sign in with Microsoft</span>
                   <img className="h-5 w-5" src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" />
@@ -232,7 +232,7 @@ const Login = () => {
                 type="button"
                 onClick={handlePasskeyLogin}
                 disabled={isLoading}
-                className="w-full inline-flex justify-center items-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-70"
+                className="w-full inline-flex justify-center items-center py-2 px-4 border border-white/20 rounded-md shadow-sm bg-[#141416] border border-white/5 text-sm font-medium text-white/80 hover:bg-[#1C1C1F] disabled:opacity-70"
               >
                 <Fingerprint className="h-5 w-5 mr-2 text-[#6C2BD9]" />
                 Sign in with Passkey
@@ -252,7 +252,7 @@ const Login = () => {
                 name="code"
                 type="text"
                 required
-                className="appearance-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
+                className="appearance-none relative block w-full px-3 py-3 border border-white/20 placeholder-gray-500 text-white rounded-lg focus:outline-none focus:ring-[#6C2BD9] focus:border-[#6C2BD9] focus:z-10 sm:text-sm"
                 placeholder={isRecoveryCode ? "Enter Recovery Code" : "Enter 6-digit code"}
                 value={twoFactorCode}
                 onChange={(e) => setTwoFactorCode(e.target.value)}
